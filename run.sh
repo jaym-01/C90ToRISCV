@@ -8,3 +8,5 @@ riscv64-unknown-elf-gcc -march=rv32imfd -mabi=ilp32d -o "bin/riscv_example" "bin
 
 set +e
 spike pk "bin/riscv_example"
+
+rm -f bin/riscv_example.s
