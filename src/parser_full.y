@@ -51,6 +51,7 @@
 ROOT
   : translation_unit { g_root = $1; }
 
+
 translation_unit
 	: external_declaration { $$ = $1; }
 	| translation_unit external_declaration
@@ -411,6 +412,7 @@ compound_statement
 		// TODO: correct this
 		$$ = nullptr;
 	}
+	/* Statement list then dec list? */
 	;
 
 declaration_list

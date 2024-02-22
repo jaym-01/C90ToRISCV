@@ -28,8 +28,12 @@ bin/c_compiler: $(OBJECTS)
 src/parser.tab.cpp src/parser.tab.hpp: src/parser.y
 	bison -v -d src/parser.y -o src/parser.tab.cpp
 
-src/lexer.yy.cpp : src/lexer.flex src/parser.tab.hpp
-	flex -o src/lexer.yy.cpp src/lexer.flex
+# src/lexer.yy.cpp : src/lexer.flex src/parser.tab.hpp
+# 	flex -o src/lexer.yy.cpp src/lexer.flex
+
+# For lexer.l
+src/lexer.yy.cpp : src/lexer.l src/parser.tab.hpp
+	flex -o src/lexer.yy.cpp src/lexer.l
 
 with_coverage : CXXFLAGS += --coverage
 with_coverage : bin/c_compiler

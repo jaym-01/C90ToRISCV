@@ -5,7 +5,6 @@
   // https://www.lysator.liu.se/c/ANSI-C-grammar-l.html#MUL-ASSIGN
   // Avoid error "error: `fileno' was not declared in this scope"
   extern "C" int fileno(FILE *stream);
-
   #include "parser.tab.hpp"
 %}
 
@@ -17,7 +16,15 @@ FS  (f|F|l|L)
 IS  (u|U|l|L)*
 
 %%
-"/*"			{/* consumes comment - TODO you might want to process and emit it in your assembly for debugging */}
+
+
+
+"/*"([^*]|(\*+[^*/]))*"*/"   {
+  // printf("Block comment found:\n%s\n", yytext);
+}
+"// ".*\n   {
+  // printf("Single line comment found:\n%s\n", yytext);
+}
 
 "auto"			{return(AUTO);}
 "break"			{return(BREAK);}
@@ -62,6 +69,7 @@ L?'(\\.|[^\\'])+'	{yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_
 {D}+{E}{FS}?		        {yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
 {D}*"."{D}+({E})?{FS}?	{yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
 {D}+"."{D}*({E})?{FS}?	{yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
+
 
 L?\"(\\.|[^\\"])*\"	{/* TODO process string literal */; return(STRING_LITERAL);}
 
@@ -112,7 +120,7 @@ L?\"(\\.|[^\\"])*\"	{/* TODO process string literal */; return(STRING_LITERAL);}
 "|"			   {return('|');}
 "?"			   {return('?');}
 
-[ \a\b\t\v\f\n\r]		{/* ignore new lines and special sequences */}
+[\a\b\t\v\f\n\r]		{/* ignore new lines and special sequences */}
 .			              {/* ignore bad characters */}
 
 %%

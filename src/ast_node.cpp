@@ -36,3 +36,12 @@ void NodeList::Print(std::ostream &stream) const
         node->Print(stream);
     }
 }
+
+void NodeList::Extend(NodeList* new_nodes) const
+{
+    for (auto node : new_nodes->nodes_)
+    {
+        // nodes_.push_back(node);
+        std::cout<<"Inserting new node"<<std::endl;
+    }
+}

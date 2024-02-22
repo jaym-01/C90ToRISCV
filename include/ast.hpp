@@ -14,6 +14,13 @@
 #include "ast_constant.hpp"
 #include "ast_context.hpp"
 
+// Declaration
+#include "declaration/ast_declaration.hpp"
+#include "declaration/ast_init_declarator.hpp"
+
+// Expression
+#include "expression/ast_assignment_expression.hpp"
+
 extern Node *ParseAST(std::string file_name);
 
 #endif
