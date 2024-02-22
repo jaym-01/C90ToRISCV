@@ -18,7 +18,25 @@ public:
         delete declarator_;
         delete compound_statement_;
     };
-    void EmitRISC(std::ostream &stream, Context &context) const override;
+
+    void EmitRISC(std::ostream &stream, Context &context) const override
+    {
+        // Emit assembler directives.
+        // TODO: these are just examples ones, make sure you understand
+        // the concept of directives and correct them.
+        // std::cout << "Emitting RISC for function def" << std::endl;
+        stream << ".text" << std::endl;
+        stream << ".globl f" << std::endl;
+
+        declarator_->EmitRISC(stream, context);
+
+        if (compound_statement_ != nullptr)
+        {
+            compound_statement_->EmitRISC(stream, context);
+        }
+    };
+
+
     void Print(std::ostream &stream) const override;
 };
 

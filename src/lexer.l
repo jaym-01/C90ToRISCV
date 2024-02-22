@@ -23,7 +23,8 @@ IS  (u|U|l|L)*
   // printf("Block comment found:\n%s\n", yytext);
 }
 "// ".*\n   {
-  // printf("Single line comment found:\n%s\n", yytext);
+  // printf("%s\n", yytext);
+  // return(COMMENT);
 }
 
 "auto"			{return(AUTO);}

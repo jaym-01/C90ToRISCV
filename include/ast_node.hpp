@@ -15,6 +15,7 @@ public:
     Node(){};
     virtual ~Node();
     virtual void EmitRISC(std::ostream &stream, Context &context) const = 0;
+
     virtual void Print(std::ostream &stream) const = 0;
 };
 
@@ -40,7 +41,7 @@ public:
     virtual void Print(std::ostream &stream) const override;
 
     // New
-    virtual void Extend(NodeList* nodes) const;
+    virtual void Extend(NodeList* nodes);
 };
 
 #endif

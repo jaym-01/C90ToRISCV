@@ -11,7 +11,10 @@ private:
 public:
     Identifier(std::string identifier) : identifier_(identifier){};
     ~Identifier(){};
-    void EmitRISC(std::ostream &stream, Context &context) const override;
+    void EmitRISC(std::ostream &stream, Context &context) const override {
+        std::cout<<"Emitting RISC for identifier"<<std::endl;
+    };
+
     void Print(std::ostream &stream) const override;
 };
 

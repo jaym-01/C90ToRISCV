@@ -1,3 +1,5 @@
+
+#include <map>
 #ifndef AST_CONTEXT_HPP
 #define AST_CONTEXT_HPP
 
@@ -7,6 +9,7 @@
 class Context
 {
     /* TODO decide what goes inside here */
+    std::map<std::string, std::string> symbol_table;
 };
 
 #endif

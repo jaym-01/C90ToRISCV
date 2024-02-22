@@ -11,7 +11,10 @@ private:
 public:
     TypeSpecifier(std::string type) : type_(type){};
     ~TypeSpecifier(){};
-    void EmitRISC(std::ostream &stream, Context &context) const override;
+    void EmitRISC(std::ostream &stream, Context &context) const override {
+        std::cout<<"Emitting risc for type_spec, "<<type_<<std::endl;
+    };
+
     void Print(std::ostream &stream) const override;
 };
 

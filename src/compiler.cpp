@@ -6,7 +6,7 @@
 
 Node *Parse(CommandLineArguments &args)
 {
-    std::cout << "\nParsing: " << args.compile_source_path << std::endl;
+    std::cout << "\nParsing: " << args.compile_source_path << std::endl<<std::endl;
     auto root = ParseAST(args.compile_source_path);
     std::cout << "\nAST parsing complete" << std::endl;
     return root;
@@ -51,15 +51,15 @@ int main(int argc, char **argv)
     auto ast_root = Parse(command_line_arguments);
     // ast_root->Print(std::cout);
 
-    // if (ast_root == nullptr)
-    // {
-    //     // Check something was actually returned by parseAST().
-    //     std::cerr << "The root of the AST was a null pointer. Likely the root was never initialised correctly during parsing." << std::endl;
-    //     return 3;
-    // }
+    if (ast_root == nullptr)
+    {
+        // Check something was actually returned by parseAST().
+        std::cerr << "The root of the AST was a null pointer. Likely the root was never initialised correctly during parsing." << std::endl;
+        return 3;
+    }
 
     // PrettyPrint(ast_root, command_line_arguments);
-    // Compile(ast_root, command_line_arguments);
+    Compile(ast_root, command_line_arguments);
 
     // // Clean up afterwards.
     // delete ast_root;

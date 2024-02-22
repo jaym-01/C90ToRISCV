@@ -8,6 +8,12 @@ Node::~Node()
     }
 }
 
+// void Node::PushBack(Node *item)
+// {
+//     branches_.push_back(item);
+// }
+
+
 void NodeList::PushBack(Node *item)
 {
     nodes_.push_back(item);
@@ -37,11 +43,11 @@ void NodeList::Print(std::ostream &stream) const
     }
 }
 
-void NodeList::Extend(NodeList* new_nodes) const
+void NodeList::Extend(NodeList* new_nodes)
 {
     for (auto node : new_nodes->nodes_)
     {
-        // nodes_.push_back(node);
-        std::cout<<"Inserting new node"<<std::endl;
+        nodes_.push_back(node);
+        // std::cout<<"Inserting new node"<<std::endl;
     }
 }

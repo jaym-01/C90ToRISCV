@@ -29,20 +29,21 @@
 %token TYPE_NAME TYPEDEF EXTERN STATIC AUTO REGISTER SIZEOF
 %token CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOLATILE VOID
 %token STRUCT UNION ENUM ELLIPSIS
-%token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
+%token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN COMMENT
 
 
 /* Declare the data type for each grammar rule */
-%type <node> translation_unit external_declaration function_definition primary_expression postfix_expression argument_expression_list
+%type <node> translation_unit external_declaration function_definition primary_expression postfix_expression
 %type <node> unary_expression cast_expression multiplicative_expression additive_expression shift_expression relational_expression
 %type <node> equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
-%type <node> conditional_expression assignment_expression expression constant_expression declaration declaration_specifiers init_declarator_list
+%type <node> conditional_expression assignment_expression expression constant_expression declaration declaration_specifiers
 %type <node> init_declarator type_specifier struct_specifier struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list
 %type <node> struct_declarator enum_specifier enumerator_list enumerator declarator direct_declarator pointer parameter_list parameter_declaration
 %type <node> identifier_list type_name abstract_declarator direct_abstract_declarator initializer initializer_list statement labeled_statement
-%type <node> compound_statement expression_statement selection_statement iteration_statement jump_statement
+%type <node> expression_statement selection_statement iteration_statement jump_statement
 
-%type <nodes> statement_list declaration_list
+/* Moved declaration_list, argument_expression_list, compound_statement to nodes */
+%type <nodes> statement_list declaration_list compound_statement argument_expression_list init_declarator_list
 
 %type <string> unary_operator assignment_operator storage_class_specifier
 
@@ -74,6 +75,8 @@ external_declaration
 
 function_definition
 	: declaration_specifiers declarator compound_statement {
+		std::cout<<"Printing function contents:"<<std::endl;
+		$3->Print(std::cout);
 		$$ = new FunctionDefinition($1, $2, $3);
 	}
 	;
@@ -85,30 +88,20 @@ compound_statement
 		$$  = new NodeList(nullptr); // empty node list
 	}
 	| '{' statement_list '}' { $$ = $2; }
-	| '{' declaration_list '}' {
-		// TODO: correct this
-		$$ = nullptr;
-	}
+	| '{' declaration_list '}' { $$ = $2; }
 	| '{' declaration_list statement_list '}'  {
 		// TODO: correct this
-		// printf("Inside dec list, statement list");
-		// // $$ = nullptr;
-		// $1->PushBack($2);
-		// $$ = $1;
-		// NodeList *temp = new NodeList();
-		std::cout<<"Combining dec list and statement list"<<std::endl;
+		// Combin both lists into 1
+		$2->Extend($3);
+		$$ = $2;
 	}
 	;
 
 
 /* DECLARATION PARSING (Should declaration_list be a NodeList?) */
 declaration_list
-	: declaration {
-		$1->Print(std::cout);
-		$$ = new NodeList($1);
-	}
+	: declaration { $$ = new NodeList($1); }
 	| declaration_list declaration {
-		$2->Print(std::cout);
 		$1->PushBack($2);
 		$$ = $1;
 	}
@@ -123,7 +116,10 @@ declaration
 /* Parent of type_specifier and storage_class_specifier
 (includes e.g. int, static, int statc, static int) */
 declaration_specifiers
-	: type_specifier { $$ = $1; }
+	: type_specifier
+	/* | storage_class_specifier { $$ = new DeclarationSpecifiers(nullptr, $1); } */
+	/* | storage_class_specifier declaration_specifiers { $2->AddStorageClassSpecifier($1); $$ = $2;} */
+	/* | type_specifier declaration_specifiers { $2->AddTypeSpecifier($1); $$ = $2; } */
 	;
 
 type_specifier
@@ -138,26 +134,22 @@ type_specifier
 
 /* Parent of init_declarator & initialiser (e.g. x = 5, y = 10) */
 init_declarator_list
-	: init_declarator
-	| init_declarator_list ',' init_declarator
+	: init_declarator { $$ = new NodeList($1); }
+	| init_declarator_list ',' init_declarator {
+		std::cout<<"Handling init declarator list..."<<std::endl;
+		$1->PushBack($3);
+		$$ = $1;
+	}
 	;
 
 init_declarator
-	: declarator
-	| declarator '=' initializer {
-		$$ = new InitDeclarator($1, $3);
-	}
+	: declarator { $$ = new InitDeclarator($1, nullptr); }
+	| declarator '=' initializer { $$ = new InitDeclarator($1, $3); }
 	;
 
 /* parent of direct declarator (to include pointer syntax) */
 declarator
-	: direct_declarator {
-		// std::cout<<"Dec, direct_dec: ";
-		// $1->Print(std::cout);
-		// std::cout<<std::endl;
-
-		$$ = $1;
-	}
+	: direct_declarator { $$ = $1; }
 	;
 
 direct_declarator
@@ -185,17 +177,8 @@ initializer_list
 /* STATEMENT PARSING */
 
 statement_list
-	: statement {
-		std::cout<<"Statement: ";
-		$1->Print(std::cout);
-		$$ = new NodeList($1);
-	}
-	| statement_list statement {
-		std::cout<<"Statement: ";
-		$2->Print(std::cout);
-		std::cout<<std::endl;
-		$1->PushBack($2); $$=$1;
-	}
+	: statement { $$ = new NodeList($1); }
+	| statement_list statement { $1->PushBack($2); $$=$1; }
 	;
 
 /* Handle if statements, switch, while, for */
@@ -226,8 +209,10 @@ expression
 	;
 
 assignment_expression
-	: unary_expression /* : replace later with conditional_expression */
+	: additive_expression /* : replace later with conditional_expression */
 	| unary_expression assignment_operator assignment_expression {
+
+		// Should unary_expression be replaced with primary_expression?
 		$$ = new AssignmentExpression($1, *$2, $3);
 		delete $2;
 	}
@@ -247,33 +232,72 @@ assignment_operator
 	| OR_ASSIGN
 	;
 
+/* Binary Expressions (Parent of cast expression / unary expression) */
+additive_expression
+	: multiplicative_expression
+	| additive_expression '+' multiplicative_expression { $$ = new BinaryExpression($1, "+", $3);}
+	| additive_expression '-' multiplicative_expression { $$ = new BinaryExpression($1, "-", $3);}
+	;
+
+multiplicative_expression
+	: cast_expression
+	| multiplicative_expression '*' cast_expression { $$ = new BinaryExpression($1, "*", $3);}
+	| multiplicative_expression '/' cast_expression { $$ = new BinaryExpression($1, "/", $3);}
+	| multiplicative_expression '%' cast_expression { $$ = new BinaryExpression($1, "%", $3);}
+	;
+
+/* Unary Expressions */
+cast_expression
+	: unary_expression
+	/* | '(' type_name ')' cast_expression */
+	;
+
 unary_expression
 	: postfix_expression
-	| INC_OP unary_expression
-	| DEC_OP unary_expression
-	/* | unary_operator cast_expression */
-	/* | SIZEOF unary_expression */
+	| INC_OP unary_expression { $$ = new UnaryExpression("++", $2); }
+	| DEC_OP unary_expression { $$ = new UnaryExpression("--", $2);}
+	| unary_operator cast_expression {
+		$$ = new UnaryExpression(*$1, $2);
+		delete $1;
+	}
+	/* | SIZEOF unary_expression { $$ = new UnaryExpression("sizeof", $2); } */
 	/* | SIZEOF '(' type_name ')' */
+	;
+
+unary_operator
+	: '&' { $$ = new std::string("&"); }
+	| '*' { $$ = new std::string("*"); }
+	| '+' { $$ = new std::string("+"); }
+	| '-' { $$ = new std::string("-"); }
+	| '~' { $$ = new std::string("~"); }
+	| '!' { $$ = new std::string("!"); }
+	;
+
+argument_expression_list
+	: assignment_expression { $$ = new NodeList($1); }
+	| argument_expression_list ',' assignment_expression {
+		$1->PushBack($3);
+		$$ = $1;
+	}
 	;
 
 postfix_expression
 	: primary_expression
+	| postfix_expression INC_OP { $$ = new PostfixExpression($1, "++"); }
+	| postfix_expression DEC_OP { $$ = new PostfixExpression($1, "--"); }
+	| postfix_expression '(' argument_expression_list ')' { $$ = new FunctionCall($1, $3); }
 	/* To add the rest for arrays, functions & structs */
-	| postfix_expression INC_OP
-	| postfix_expression DEC_OP
 	;
 
-
 primary_expression
-	: IDENTIFIER { $$ = new Identifier(*$1);
+	: IDENTIFIER {
+		$$ = new Identifier(*$1);
 		delete $1;
 	}
 	| INT_CONSTANT { $$ = new IntConstant($1); }
+	/* | FLOAT_CONSTANT { $$ = new FloatConstant($1); } */
+	| '(' expression ')' { $$ = $2; }
 	;
-
-
-
-
 
 
 /* For function calls */
@@ -349,3 +373,9 @@ Node *ParseAST(std::string file_name)
   yyparse();
   return g_root;
 }
+
+
+
+
+
+
