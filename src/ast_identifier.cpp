@@ -5,7 +5,7 @@
 //     stream << identifier_;
 // }
 
-void Identifier::Print(std::ostream &stream) const
-{
-    stream << identifier_;
-};
+// void Identifier::Print(std::ostream &stream) const
+// {
+//     stream << identifier_;
+// };

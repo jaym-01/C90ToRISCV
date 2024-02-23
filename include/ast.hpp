@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+
+#include "ast_node_list.hpp"
 #include "ast_direct_declarator.hpp"
 #include "ast_function_definition.hpp"
 #include "ast_identifier.hpp"
@@ -24,6 +26,9 @@
 #include "expression/ast_unary_expression.hpp"
 #include "expression/ast_binary_expression.hpp"
 #include "expression/ast_assignment_expression.hpp"
+
+// Statements
+#include "statement/ast_compound_statement.hpp"
 
 extern Node *ParseAST(std::string file_name);
 

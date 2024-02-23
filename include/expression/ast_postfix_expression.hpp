@@ -34,6 +34,7 @@ public:
 #define AST_FUNCTION_CALL_HPP
 
 #include "../ast_node.hpp"
+#include "../ast_node_list.hpp"
 
 class FunctionCall : public Node
 {

@@ -2,6 +2,7 @@
 #define AST_DECLARATION_SPECIFIERS_HPP
 
 #include "../ast_node.hpp"
+#include "../ast_node_list.hpp"
 
 class DeclarationSpecifiers : public NodeList
 {

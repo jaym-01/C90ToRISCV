@@ -1,12 +1,7 @@
 int test1() {
-    // Assembly steps:
-    // 1. Allocate stack space for y: sub stack pointer
-    // 2. Store 10 in y: mov w8, #10 (store 10 in register)
-    // 3. Store y in memory: str w8, [sp, #12] (store register in memory)
-    int y = 10;
-
-    // 4. Clean up: Move stack pointer up
-    // 5. ret
+    int x, y = 5;
+    int z = 10;
+    // x = 5 + 10;
 }
 
 // // TEST 1: VARIABLES & DATA TYPES

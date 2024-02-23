@@ -3,6 +3,7 @@
 
 #include "ast_node.hpp"
 
+// NOTE: Create a class for each type of direct declarator?
 class DirectDeclarator : public Node
 {
 private:
@@ -14,11 +15,18 @@ public:
     {
         delete identifier_;
     };
-    void EmitRISC(std::ostream &stream, Context &context) const {
-        std::cout<<"Emitting RISC for direct declarator"<<std::endl;
-        // identifier_->EmitRISC(stream, context);
+    void EmitRISC(std::ostream &stream, Context &context) const override{
+        identifier_->EmitRISC(stream, context);
+        stream << ":" << std::endl;
     };
-    void Print(std::ostream &stream) const override;
+
+    void Print(std::ostream &stream) const {
+        std::cout<<"direct_decl{ ";
+        identifier_->Print(stream);
+        std::cout<<" }";
+    };
 };
 
 #endif
+
+

@@ -6,7 +6,7 @@
 //     stream << ":" << std::endl;
 // }
 
-void DirectDeclarator::Print(std::ostream &stream) const
-{
-    identifier_->Print(stream);
-}
+// void DirectDeclarator::Print(std::ostream &stream) const
+// {
+//     identifier_->Print(stream);
+// }

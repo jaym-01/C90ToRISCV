@@ -15,12 +15,15 @@
 
 // Represents the value associated with any kind of AST node.
 %union{
-  Node         *node;
-  NodeList     *nodes;
-  int          number_int;
-  double       number_float;
-  std::string* string;
-  yytokentype  token;
+	Node         *node;
+	NodeList     *nodes;
+	int          number_int;
+	double       number_float;
+	std::string* string;
+	yytokentype  token;
+
+	// New
+	CompoundStatement* compound_statement;
 }
 
 %token IDENTIFIER INT_CONSTANT FLOAT_CONSTANT STRING_LITERAL
@@ -43,7 +46,10 @@
 %type <node> expression_statement selection_statement iteration_statement jump_statement
 
 /* Moved declaration_list, argument_expression_list, compound_statement to nodes */
-%type <nodes> statement_list declaration_list compound_statement argument_expression_list init_declarator_list
+%type <nodes> statement_list declaration_list argument_expression_list init_declarator_list
+
+/* New */
+%type <compound_statement> compound_statement
 
 %type <string> unary_operator assignment_operator storage_class_specifier
 
@@ -82,19 +88,12 @@ function_definition
 	;
 
 
-/* Empty or contains list of statements, decs or both */
+/* In C90, all declarations have to come before statements */
 compound_statement
-	: '{' '}' {
-		$$  = new NodeList(nullptr); // empty node list
-	}
-	| '{' statement_list '}' { $$ = $2; }
-	| '{' declaration_list '}' { $$ = $2; }
-	| '{' declaration_list statement_list '}'  {
-		// TODO: correct this
-		// Combin both lists into 1
-		$2->Extend($3);
-		$$ = $2;
-	}
+	: '{' '}' { $$ = new CompoundStatement(nullptr, nullptr); }
+	| '{' statement_list '}' { $$ = new CompoundStatement(nullptr, $2); }
+	| '{' declaration_list '}' { $$ = new CompoundStatement(nullptr, $2); }
+	| '{' declaration_list statement_list '}'  { $$ = new CompoundStatement($2, $3);}
 	;
 
 
@@ -144,7 +143,7 @@ init_declarator_list
 
 init_declarator
 	: declarator { $$ = new InitDeclarator($1, nullptr); }
-	| declarator '=' initializer { $$ = new InitDeclarator($1, $3); }
+	| declarator '=' initializer { $$ = new InitDeclarator($1, $3);}
 	;
 
 /* parent of direct declarator (to include pointer syntax) */
@@ -153,10 +152,8 @@ declarator
 	;
 
 direct_declarator
-	: IDENTIFIER {
-		$$ = new Identifier(*$1);
-		delete $1;
-	}
+	: IDENTIFIER { $$ = new Identifier(*$1); delete $1; }
+	| '(' declarator ')' { $$ = $2; }
 	| direct_declarator '(' ')' { $$ = new DirectDeclarator($1); }
 	;
 

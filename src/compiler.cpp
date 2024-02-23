@@ -33,10 +33,13 @@ void Compile(Node *root, CommandLineArguments &args)
     // what's currently being compiled (e.g. function scope and variable names).
     Context ctx;
 
+    std::cout << "-----------------------" << std::endl;
     std::cout << "Compiling parsed AST..." << std::endl;
     std::ofstream output(args.compile_output_path, std::ios::trunc);
-    root->EmitRISC(output, ctx);
+    // root->EmitRISC(output, ctx);
+    root->EmitRISC(std::cout, ctx);
     output.close();
+    std::cout << "-----------------------" << std::endl;
     std::cout << "Compiled to: " << args.compile_output_path << std::endl;
 }
 
@@ -51,6 +54,7 @@ int main(int argc, char **argv)
     auto ast_root = Parse(command_line_arguments);
     // ast_root->Print(std::cout);
 
+    // return 0;
     if (ast_root == nullptr)
     {
         // Check something was actually returned by parseAST().

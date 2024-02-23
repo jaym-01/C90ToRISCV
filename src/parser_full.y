@@ -421,7 +421,7 @@ compound_statement
 		// TODO: correct this
 		$$ = nullptr;
 	}
-	/* Statement list then dec list? */
+
 	;
 
 declaration_list

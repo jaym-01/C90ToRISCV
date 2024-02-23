@@ -23,26 +23,27 @@ public:
         delete initializer_;
     };
 
+
+
     void EmitRISC(std::ostream &stream, Context &context) const {
-        std::cout<<"Emitting RISC for init declarator"<<std::endl;
-
-        // 1. If initializer is present, store value in register
-
-        // 2. Allocate memory and store identifier / function in context
-
-        // 1. Store identifier in context: [identifier: register, type]
-        // declarator_->EmitRISC(stream, context);
+        // Declarator, initializer
     };
 
     void Print(std::ostream &stream) const override {
+        std::cout<<"init_decl{ ";
         declarator_->Print(stream);
         if (initializer_ != nullptr)
         {
             std::cout << " = ";
             initializer_->Print(stream);
-            std::cout << ", ";
+            // std::cout << ", ";
         }
+        std::cout<<" }";
     };
+
+    std::string GetIdentifier() const override {
+        return declarator_->GetIdentifier();
+    }
 };
 
 #endif
