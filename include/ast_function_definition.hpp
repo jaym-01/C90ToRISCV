@@ -69,10 +69,6 @@ public:
         stream << "lw fp, " << total_frame_size - 8 << "(sp)" << std::endl;
         stream << "addi sp, sp, " << total_frame_size << std::endl;
         stream << "jr ra" << std::endl;
-
-        // 1. Create ScopeContext for function
-
-        // 1. set context.current_scope to be arg_scope
     };
 
 

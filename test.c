@@ -4,7 +4,7 @@ int test1() {
     int z, y;
     z = 4 + 3;
 
-    return y;
+    return z;
 }
 
 // // TEST 1: VARIABLES & DATA TYPES

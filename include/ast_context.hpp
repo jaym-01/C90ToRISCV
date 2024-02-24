@@ -1,6 +1,7 @@
 
 #include <map>
 #include <iostream>
+#include "vector"
 #include "helpers.hpp"
 
 #ifndef AST_CONTEXT_HPP
@@ -92,14 +93,15 @@ public:
 
 
     FunctionContext(std::string id) {
+
         identifier = id;
-        root_scope = nullptr;
+        // root_scope = nullptr;
+        total_var_size = 0;
         local_var_offset = -16;
 
         saved_registers_avail = {"s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11"};
         saved_registers_used = {};
 
-        total_var_size = 0;
     }
 
     void SetRootScope(ScopeContext* scope) {
@@ -143,6 +145,11 @@ public:
     {
         temp_registers_avail = {"t1", "t2", "t3", "t4", "t5", "t6"};
         temp_registers_used = {};
+    }
+
+    ~Context() {
+        delete f_context;
+        delete cur_scope;
     }
 
     std::string GetReturnRegister()
