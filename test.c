@@ -2,7 +2,8 @@ int test1() {
 
 
     int x = 3;
-    // x++;
+    // int y = x++;
+    int z = x--;
     return x;
 }
 

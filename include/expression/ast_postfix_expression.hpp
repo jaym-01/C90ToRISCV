@@ -21,6 +21,35 @@ public:
     };
 
     void EmitRISC(std::ostream &stream, Context &context) const {};
+    void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest_reg) const
+    {
+        if (dest_reg == ""){
+            dest_reg = context.ReserveTempRegister();
+        }
+
+        expression_->EmitRISCWithDest(stream, context, dest_reg);
+
+        // Increment id
+        std::string id = expression_->GetIdentifier();
+        ScopeContext* cur_scope = context.GetCurScope();
+        VariableContext var = cur_scope->GetVarFromId(id);
+
+        // Load var into temp reg
+        std::string temp_reg = context.ReserveTempRegister();
+        load_var_to_reg(stream, var.type, var.offset, temp_reg);
+
+        // Increment or decrement
+        if (postfix_operator_ == "++") {
+            stream << "addi " << temp_reg << ", " << temp_reg << ", 1" << std::endl;
+        }
+        else if (postfix_operator_ == "--"){
+            stream << "addi " << temp_reg << ", " << temp_reg << ", -1" << std::endl;
+        }
+
+        // Store temp reg back into var
+        store_var_to_reg(stream, var.type, var.offset, temp_reg);
+    };
+
     void Print(std::ostream &stream) const
     {
         expression_->Print(stream);
@@ -55,6 +84,8 @@ public:
     };
 
     void EmitRISC(std::ostream &stream, Context &context) const {};
+
+
     void Print(std::ostream &stream) const
     {
         identifier_->Print(stream);

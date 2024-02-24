@@ -1,8 +1,8 @@
 #include <stdio.h>
-int f(int x) {
-    int x = 5;
-}
 
-int main() {
-    f(5);
+int main()
+{
+    int x = 3;
+    int y = x++;
+    printf("%d\n", y);
 }
