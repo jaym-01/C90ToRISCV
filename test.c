@@ -2,9 +2,8 @@ int test1() {
 
 
     int x = 3;
-    // int y = x++;
-    int z = x--;
-    return x;
+    int y = !3;
+    return y;
 }
 
 // // TEST 1: VARIABLES & DATA TYPES
