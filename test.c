@@ -1,6 +1,5 @@
 int test1() {
 
-
     int x = 3;
     int y = !3;
     return y;
