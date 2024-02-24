@@ -39,14 +39,14 @@
 %type <node> translation_unit external_declaration function_definition primary_expression postfix_expression
 %type <node> unary_expression cast_expression multiplicative_expression additive_expression shift_expression relational_expression
 %type <node> equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
-%type <node> conditional_expression assignment_expression expression constant_expression declaration declaration_specifiers
+%type <node> conditional_expression assignment_expression constant_expression declaration declaration_specifiers
 %type <node> init_declarator type_specifier struct_specifier struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list
 %type <node> struct_declarator enum_specifier enumerator_list enumerator declarator direct_declarator pointer parameter_list parameter_declaration
 %type <node> identifier_list type_name abstract_declarator direct_abstract_declarator initializer initializer_list statement labeled_statement
 %type <node> expression_statement selection_statement iteration_statement jump_statement
 
 /* Moved declaration_list, argument_expression_list, compound_statement to nodes */
-%type <nodes> statement_list declaration_list argument_expression_list init_declarator_list
+%type <nodes> statement_list declaration_list argument_expression_list init_declarator_list expression
 
 /* New */
 %type <compound_statement> compound_statement
@@ -207,7 +207,11 @@ expression_statement
 
 /* Parent of all expressions */
 expression
-	: assignment_expression
+	: assignment_expression { $$ = new NodeList($1); }
+	| expression ',' assignment_expression {
+		$1->PushBack($3);
+		$$ = $1;
+	}
 	;
 
 assignment_expression

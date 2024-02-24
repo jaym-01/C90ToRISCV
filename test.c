@@ -1,8 +1,9 @@
 int test1() {
 
     int x = 3;
-    int y = !3;
-    return y;
+    int y = 4;
+    x = 7, 4 + 5;
+    return x;
 }
 
 // // TEST 1: VARIABLES & DATA TYPES

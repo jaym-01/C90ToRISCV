@@ -22,6 +22,10 @@ public:
             dest_reg = context.ReserveTempRegister();
         }
 
+        std::cout<<"Dest reg: "<<dest_reg<<", Emitting RISC for ";
+        Print(std::cout);
+        std::cout<<std::endl;
+
         ScopeContext* cur_scope = context.GetCurScope();
         VariableContext var = cur_scope->GetVarFromId(identifier_);
 

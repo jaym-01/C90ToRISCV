@@ -39,6 +39,30 @@ public:
         }
     };
 
+    virtual void EmitRISCWithDest(std::ostream &stream, Context &context, std::string& dest_reg) const override {
+
+        // For single expr statements
+        if (nodes_.size() == 1) {
+            nodes_[0]->EmitRISCWithDest(stream, context, dest_reg);
+            return;
+        }
+
+        // For expr statements like x = 5, y = 6;
+        for (auto node : nodes_) {
+            if (node == nullptr){
+                continue;
+            }
+
+            // TODO: dest_reg can't be shared with multiple nodes...
+            // Make these 3 lines more efficient?
+            std::string regD = "";
+            node->EmitRISCWithDest(stream, context, regD);
+            if (regD != "") {
+                context.FreeTempRegister(regD);
+            }
+        }
+    };
+
     virtual void Print(std::ostream &stream) const override{
         for (auto node : nodes_)
         {
