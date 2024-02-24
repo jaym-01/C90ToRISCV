@@ -15,13 +15,25 @@ public:
         delete expression_;
     };
 
-    void EmitRISC(std::ostream &stream, Context &context) const override
+
+    void EmitRISC(std::ostream &stream, Context &context) const override {};
+
+    void EmitRISCWithDest(std::ostream &stream, Context &context, std::string dest_reg) const override
     {
+
+        // Evaluate expression
+        std::cout << "Emitting RISC for ";
+        Print(std::cout);
+
+        dest_reg = context.GetReturnRegister();
+
         if (expression_ != nullptr)
         {
-            expression_->EmitRISC(stream, context);
+            expression_->EmitRISCWithDest(stream, context, dest_reg);
         }
-        stream << "ret" << std::endl;
+
+        // Jump to return label
+        stream << "j return" << std::endl;
     };
 
     void Print(std::ostream &stream) const override

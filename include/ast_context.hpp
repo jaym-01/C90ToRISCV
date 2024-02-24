@@ -45,6 +45,18 @@ public:
         var_map[identifier].offset = offset;
     }
 
+    int GetVarOffset(std::string identifier) {
+        return var_map[identifier].offset;
+    }
+
+    VariableContext GetVarFromId(std::string identifier)
+    {
+        if (var_map.find(identifier) == var_map.end())
+            throw std::runtime_error("Error: variable " + identifier + " not found in scope");
+
+        return var_map[identifier];
+    }
+
     void PrintTree(int level)
     {
         std::cout<<"Context Level "<<level<<std::endl;
@@ -125,8 +137,18 @@ public:
     std::map<std::string, FunctionContext *> id2function;
     std::vector<std::string> temp_registers_avail;
     std::vector<std::string> temp_registers_used;
-
     ScopeContext *cur_scope;
+
+    Context()
+    {
+        temp_registers_avail = {"t1", "t2", "t3", "t4", "t5", "t6"};
+        temp_registers_used = {};
+    }
+
+    std::string GetReturnRegister()
+    {
+        return "a0";
+    }
 
     ScopeContext *GetCurScope()
     {
@@ -136,11 +158,6 @@ public:
     void SetCurScope(ScopeContext *scope)
     {
         cur_scope = scope;
-    }
-
-    Context() {
-        temp_registers_avail = {"t1", "t2", "t3", "t4", "t5", "t6"};
-        temp_registers_used = {};
     }
 
     void InitFunctionContext(FunctionContext* context) {

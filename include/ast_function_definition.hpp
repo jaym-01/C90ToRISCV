@@ -56,11 +56,13 @@ public:
         stream<<"addi sp, sp, "<<-total_frame_size<<std::endl; // TODO: if total frame_size > imm num of bits (12 bits)?
         stream<<"sw ra, "<<total_frame_size - 4<<"(sp)"<<std::endl;
         stream<<"sw fp, "<<total_frame_size - 8<<"(sp)"<<std::endl;
+        stream << "addi fp, "<< "sp, " << total_frame_size<< std::endl;
 
         // 4. Emit RISC for compound statement
         compound_statement_->EmitRISC(stream, context);
 
         // 5. Restore
+        stream << "return:" << std::endl;
         stream << "lw ra, " << total_frame_size - 4 << "(sp)" << std::endl;
         stream << "lw fp, " << total_frame_size - 8 << "(sp)" << std::endl;
         stream << "addi sp, sp, " << total_frame_size << std::endl;

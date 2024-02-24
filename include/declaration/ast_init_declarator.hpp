@@ -31,9 +31,6 @@ public:
 
         if (initializer_ != nullptr)
         {
-            // std::cout<<"Em RISC for init decl: ";
-            // Print(std::cout);
-            // std::cout<<std::endl;
 
             // 1. Store result of initializer in register using available func registers
             std::string dest_reg = context.ReserveTempRegister();
@@ -52,7 +49,7 @@ public:
             cur_scope->SetVarOffset(id, var_offset);
 
             // 2c. Print store instruction
-            std::cout<<"sw "<<dest_reg<<", "<<var_offset<<"(fp)"<<std::endl;
+            stream<<"sw "<<dest_reg<<", "<<var_offset<<"(fp)"<<std::endl;
 
             context.FreeTempRegister(dest_reg);
             // 2. Store result in memory

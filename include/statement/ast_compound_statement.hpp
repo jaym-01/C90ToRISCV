@@ -56,7 +56,7 @@ public:
         context.SetCurScope(scope_context_);
 
         // Set context.cur_scope to be compound statement's scope
-        std::cout<<"------"<<std::endl;
+        std::cout<<"---------"<<std::endl;
         std::cout<<"Emitting RISC for compound statement\n";
 
         if (declaration_list_ != nullptr) {
@@ -68,8 +68,7 @@ public:
 
         if (statement_list_ != nullptr) {
             for (auto stmt : statement_list_->GetNodes()) {
-                // stmt->EmitRISC(stream, context);
-                stmt->Print(std::cout);
+                stmt->EmitRISCWithDest(stream, context, "");
             }
         }
 

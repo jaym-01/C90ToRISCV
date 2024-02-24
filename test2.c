@@ -12,14 +12,17 @@
 //     }
 // }
 
-int test2(int x) {
-    x = 5;
+// int test2(int x) {
+//     x = 5;
 
-    printf("x in func = %d\n", x);
-}
+//     printf("x in func = %d\n", x);
+// }
 
 int main() {
+    // int x = 1;
+    // test2(x);
     int x = 1;
-    test2(x);
+    int y = x = 5;
     printf("x in main = %d\n", x);
+    printf("y in main = %d\n", y);
 }
