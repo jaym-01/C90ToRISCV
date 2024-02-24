@@ -36,8 +36,8 @@ void Compile(Node *root, CommandLineArguments &args)
     std::cout << "-----------------------" << std::endl;
     std::cout << "Compiling parsed AST..." << std::endl;
     std::ofstream output(args.compile_output_path, std::ios::trunc);
-    // root->EmitRISC(output, ctx);
-    root->EmitRISC(std::cout, ctx);
+    root->EmitRISC(output, ctx);
+    // root->EmitRISC(std::cout, ctx);
     output.close();
     std::cout << "-----------------------" << std::endl;
     std::cout << "Compiled to: " << args.compile_output_path << std::endl;

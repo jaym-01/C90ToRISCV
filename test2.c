@@ -1,19 +1,25 @@
 #include <stdio.h>
-// int x = 5;
+// int align_to_multiple_of_4(int offset)
+// {
+//     int remainder = offset % 4;
+//     if (remainder == 0)
+//     {
+//         return offset;
+//     }
+//     else
+//     {
+//         return offset + (4 - remainder);
+//     }
+// }
 
-int f(int, float);
+int test2(int x) {
+    x = 5;
 
-int f(int a, float b) {
-    return a + b;
+    printf("x in func = %d\n", x);
 }
 
 int main() {
-    int x = 10;
-
-    x = 10 + 5;
-
-    int i = 12;
-    printf("Hello, World!\n");
-
-    return 0;
+    int x = 1;
+    test2(x);
+    printf("x in main = %d\n", x);
 }

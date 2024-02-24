@@ -3,8 +3,7 @@
 
 #include "../ast_node.hpp"
 #include "../ast_node_list.hpp"
-
-
+#include "helpers.hpp"
 class Declaration : public Node
 {
 private:
@@ -25,17 +24,42 @@ public:
         delete init_declarator_list_;
     };
 
-    void EmitRISC(std::ostream &stream, Context &context) const {
-        std::cout<<"Em RISC for decl: \n";
-        Print(std::cout);
-        std::cout<<std::endl;
+    ScopeContext *BuildContext(Context &context, ScopeContext* cur_scope) const
+    {
 
-        // 1. Iterate through init_decl_list and save vars
+        std::string type = declaration_specifiers_->GetIdentifier();
+        // int cur_func_offset = context.GetCurFuncOffset();
+
+        int cur_func_var_size = context.GetFuncTotalVarSize();
+        for (auto init_decl : init_declarator_list_->GetNodes())
+        {
+            std::string var_id = init_decl->GetIdentifier();
+            cur_scope->AddVariable(var_id, type);
+            context.SetFuncTotalVarSize(cur_func_var_size + calculate_var_size(type));
+        }
+
+
+        // context.SetCurFuncOffset(cur_func_offset);
+
+        // // 2. Add variables to scope top
         // std::vector<std::string> var_ids;
         // for (auto init_decl : init_declarator_list_->GetNodes())
         // {
         //     var_ids.push_back(init_decl->GetIdentifier());
         // }
+        // scope->AddVariables(var_ids);
+
+        return nullptr;
+    };
+
+    void EmitRISC(std::ostream &stream, Context &context) const {
+        // std::cout<<"Em RISC for decl: \n";
+
+        // 1. Get appropriate context for declaration
+        for (auto init_decl : init_declarator_list_->GetNodes())
+        {
+            init_decl->EmitRISC(stream, context);
+        }
 
         // 2. Add variables to scope top
         // context->scope[0]->AddVariables(var_ids);
@@ -63,8 +87,7 @@ public:
         stream<< " ]";
         stream<<" }"<<std::endl;
     };
+
 };
-
-
 
 #endif

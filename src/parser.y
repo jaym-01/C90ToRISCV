@@ -92,7 +92,7 @@ function_definition
 compound_statement
 	: '{' '}' { $$ = new CompoundStatement(nullptr, nullptr); }
 	| '{' statement_list '}' { $$ = new CompoundStatement(nullptr, $2); }
-	| '{' declaration_list '}' { $$ = new CompoundStatement(nullptr, $2); }
+	| '{' declaration_list '}' { $$ = new CompoundStatement($2, nullptr); }
 	| '{' declaration_list statement_list '}'  { $$ = new CompoundStatement($2, $3);}
 	;
 

@@ -15,8 +15,27 @@ public:
         delete expression_;
     };
 
-    void EmitRISC(std::ostream &stream, Context &context) const override;
-    void Print(std::ostream &stream) const override;
+    void EmitRISC(std::ostream &stream, Context &context) const override
+    {
+        if (expression_ != nullptr)
+        {
+            expression_->EmitRISC(stream, context);
+        }
+        stream << "ret" << std::endl;
+    };
+
+    void Print(std::ostream &stream) const override
+    {
+        stream << "return_stmt{";
+        if (expression_ != nullptr)
+        {
+            stream << " ";
+            expression_->Print(stream);
+        }
+        stream << " }" << std::endl;
+        // stream << ";" << std::endl;
+
+    };
 };
 
 #endif

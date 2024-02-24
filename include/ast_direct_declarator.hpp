@@ -20,6 +20,10 @@ public:
         stream << ":" << std::endl;
     };
 
+    std::string GetIdentifier() const override {
+        return identifier_->GetIdentifier();
+    };
+
     void Print(std::ostream &stream) const {
         std::cout<<"direct_decl{ ";
         identifier_->Print(stream);
