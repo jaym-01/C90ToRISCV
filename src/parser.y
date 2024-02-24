@@ -267,12 +267,12 @@ unary_expression
 	;
 
 unary_operator
-	: '&' { $$ = new std::string("&"); }
-	| '*' { $$ = new std::string("*"); }
-	| '+' { $$ = new std::string("+"); }
-	| '-' { $$ = new std::string("-"); }
-	| '~' { $$ = new std::string("~"); }
-	| '!' { $$ = new std::string("!"); }
+	: '&' { $$ = new std::string("&"); } // Address of
+	| '*' { $$ = new std::string("*"); } // Dereference
+	| '+' { $$ = new std::string("+"); } // Unary plus
+	| '-' { $$ = new std::string("-"); } // Unary minus
+	| '~' { $$ = new std::string("~"); } // Bitwise NOT
+	| '!' { $$ = new std::string("!"); } // Logical NOT
 	;
 
 argument_expression_list

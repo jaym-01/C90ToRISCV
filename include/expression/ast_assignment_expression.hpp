@@ -66,7 +66,7 @@ public:
         unary_expression_->Print(stream);
         stream << " " << assignment_operator_ << " ";
         assignment_expression_->Print(stream);
-        stream << " }";
+        stream << " }"<<std::endl;
     };
 };
 

@@ -17,6 +17,7 @@ public:
     };
 
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest_reg) const override {
+
         if (dest_reg == "") {
             dest_reg = context.ReserveTempRegister();
         }
@@ -29,7 +30,8 @@ public:
             throw std::runtime_error(err_msg);
         }
 
-        stream << "lw " << dest_reg << ", " << var.offset << "(fp)" << std::endl;
+        load_var_to_reg(stream, var.type, var.offset, dest_reg);
+        // stream << "lw " << dest_reg << ", " << var.offset << "(fp)" << std::endl;
     };
 
     int GetNumBranches() const override{

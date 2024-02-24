@@ -8,3 +8,4 @@ bin/
 *.gcno
 coverage/
 *.d
+codespace_shortcuts.json

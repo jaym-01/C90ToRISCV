@@ -24,7 +24,9 @@ public:
     virtual void Print(std::ostream &stream) const = 0;
 
     // New
-    virtual std::string GetIdentifier() const {return "";};
+    virtual std::string GetIdentifier() const {
+        throw std::runtime_error("Error: GetIdentifier not implemented for this node");
+    };
     virtual ScopeContext* BuildContext(Context &context, ScopeContext* cur_scope) {};
 
     // For expressions

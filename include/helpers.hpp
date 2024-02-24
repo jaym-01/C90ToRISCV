@@ -1,6 +1,38 @@
 #ifndef HELPERS_HPP
 #define HELPERS_HPP
 
+
+inline void load_var_to_reg(std::ostream &stream, std::string var_type, int var_offset, std::string reg){
+    // stream << "lw " << reg << " " << offset << "($fp)" << std::endl;
+    if (var_type == "int") {
+        stream << "lw " << reg << ", " << var_offset << "(fp)" << std::endl;
+    }
+    else if (var_type == "char") {
+        stream << "lbu" << reg << ", " << var_offset << "(fp)" << std::endl;
+    }
+    // else if (var_type == "float") {
+    //     stream << "l.s " << reg << " " << var_offset << "($fp)" << std::endl;
+    // }
+    // else if (var_type == "double") {
+    //     stream << "l.d " << reg << " " << var_offset << "($fp)" << std::endl;
+    // }
+}
+
+inline void store_var_to_reg(std::ostream &stream, std::string var_type, int var_offset, std::string reg){
+    if (var_type == "int") {
+        stream << "sw " << reg << ", " << var_offset << "(fp)" << std::endl;
+    }
+    else if (var_type == "char") {
+        stream << "sb " << reg << ", " << var_offset << "(fp)" << std::endl;
+    }
+    // else if (var_type == "float") {
+    //     stream << "s.s " << reg << " " << var_offset << "($fp)" << std::endl;
+    // }
+    // else if (var_type == "double") {
+    //     stream << "s.d " << reg << " " << var_offset << "($fp)" << std::endl;
+    // }
+}
+
 inline int align_to_multiple_of_4(int offset)
 {
     int remainder = offset % 4;
