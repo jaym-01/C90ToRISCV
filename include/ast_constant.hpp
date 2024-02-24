@@ -15,7 +15,12 @@ public:
         stream << "li a0, " << value_ << std::endl;
     };
 
-    void EmitRISCWithDest(std::ostream &stream, Context &context, std::string dest_reg) const override {
+    void EmitRISCWithDest(std::ostream &stream, Context &context, std::string& dest_reg) const override {
+        if (dest_reg == "") {
+            dest_reg = context.ReserveTempRegister();
+        }
+
+
         stream << "li " << dest_reg << ", " << value_ << std::endl;
     };
 
@@ -23,6 +28,10 @@ public:
         stream << "iconst{";
         stream << value_;
         stream << "}";
+    };
+
+    int GetNumBranches() const override {
+        return 1;
     };
 };
 

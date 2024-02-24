@@ -23,7 +23,7 @@ public:
         delete initializer_;
     };
 
-    void EmitRISC(std::ostream &stream, Context &context) const {
+    void EmitRISC(std::ostream &stream, Context &context) const override {
         // Declarator, initializer
         // declarator_->EmitRISC(stream, context);
 
@@ -33,8 +33,9 @@ public:
         {
 
             // 1. Store result of initializer in register using available func registers
-            std::string dest_reg = context.ReserveTempRegister();
+            std::string dest_reg = "";
             initializer_->EmitRISCWithDest(stream, context, dest_reg);
+
 
             // 2. Store result in memory
 

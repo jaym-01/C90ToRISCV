@@ -178,6 +178,7 @@ public:
 
     // Free a register for temporary use
     void FreeTempRegister(std::string reg) {
+        // std::cout<<"Freeing register: "<<reg<<"\n";
         temp_registers_avail.push_back(reg);
         temp_registers_used.erase(std::remove(temp_registers_used.begin(), temp_registers_used.end(), reg), temp_registers_used.end());
     }

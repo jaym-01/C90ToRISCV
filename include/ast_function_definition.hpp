@@ -9,6 +9,7 @@ class FunctionDefinition : public Node
 private:
     Node *declaration_specifiers_;
     Node *declarator_;
+
     CompoundStatement *compound_statement_;
 
 private:
@@ -48,6 +49,7 @@ public:
         // TODO: add function args to arg_scope
         compound_statement_->BuildContext(context, arg_scope);
         context.InitRootScope(arg_scope);
+        arg_scope->PrintTree(0);
 
         // 3. Move stack pointer down
         int total_var_size = context.GetFuncTotalVarSize();

@@ -12,14 +12,14 @@ public:
     TypeSpecifier(std::string type) : type_(type){};
     ~TypeSpecifier(){};
 
-    std::string GetIdentifier() const { return type_; };
+    std::string GetIdentifier() const override { return type_; };
 
     void EmitRISC(std::ostream &stream, Context &context) const override {
         std::cout<<"Emitting risc for type_spec, "<<type_<<std::endl;
     };
 
-    void Print(std::ostream &stream) const {
-        std::cout<<"type_spec{"<<type_<<"}";
+    void Print(std::ostream &stream) const override {
+        std::cout<<"type_spec{"<<type_.substr(0, 3)<<"}";
     };
 };
 

@@ -16,15 +16,24 @@ public:
         stream << identifier_;
     };
 
-    void EmitRISCWithDest(std::ostream &stream, Context &context, std::string dest_reg) const override {
+    void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest_reg) const override {
+        if (dest_reg == "") {
+            dest_reg = context.ReserveTempRegister();
+        }
+
         ScopeContext* cur_scope = context.GetCurScope();
-        int var_offset = cur_scope->GetVarOffset(identifier_);
+        VariableContext var = cur_scope->GetVarFromId(identifier_);
 
-        // Load word into register first?
-        // std::string tmp_reg = context.ReserveTempRegister();
-        // stream << "sw " << tmp_reg << ", " << var_offset << std::endl;
+        if (var.offset > 0) {
+            std::string err_msg = "Variable " + identifier_ + " was not initialized";
+            throw std::runtime_error(err_msg);
+        }
 
-        stream << "lw " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+        stream << "lw " << dest_reg << ", " << var.offset << "(fp)" << std::endl;
+    };
+
+    int GetNumBranches() const override{
+        return 1;
     };
 
     void Print(std::ostream &stream) const override {

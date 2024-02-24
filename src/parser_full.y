@@ -421,7 +421,6 @@ compound_statement
 		// TODO: correct this
 		$$ = nullptr;
 	}
-
 	;
 
 declaration_list

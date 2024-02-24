@@ -23,10 +23,8 @@ public:
     void AddDeclarationList(NodeList* decl_list) { declaration_list_ = decl_list; }
     void AddStatementList(NodeList* stmt_list) { statement_list_ = stmt_list; }
 
-    ScopeContext* BuildContext(Context &context, ScopeContext* cur_scope) {
+    ScopeContext* BuildContext(Context &context, ScopeContext* cur_scope) override {
         std::cout<<"Building scope context for compound statement\n";
-
-        // 1. Create new Scope Context
 
         // For root compound_statement, cur_scope is same as func arg_scope
         if (declaration_list_ != nullptr)
@@ -35,6 +33,7 @@ public:
                 decl->BuildContext(context, cur_scope);
             }
         }
+
         if (statement_list_ != nullptr)
         {
             for (auto stmt : statement_list_->GetNodes()) {
@@ -61,14 +60,17 @@ public:
 
         if (declaration_list_ != nullptr) {
             for (auto decl : declaration_list_->GetNodes()) {
-
                 decl->EmitRISC(stream, context);
             }
         }
 
         if (statement_list_ != nullptr) {
             for (auto stmt : statement_list_->GetNodes()) {
-                stmt->EmitRISCWithDest(stream, context, "");
+                std::string dest_reg = "";
+                stmt->EmitRISCWithDest(stream, context, dest_reg);
+                if (dest_reg != "") {
+                    context.FreeTempRegister(dest_reg);
+                }
             }
         }
 

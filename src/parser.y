@@ -148,11 +148,16 @@ init_declarator
 
 /* parent of direct declarator (to include pointer syntax) */
 declarator
-	: direct_declarator { $$ = $1; }
+	: direct_declarator {
+		$$ = $1;
+	}
 	;
 
 direct_declarator
-	: IDENTIFIER { $$ = new Identifier(*$1); delete $1; }
+	: IDENTIFIER {
+		$$ = new Identifier(*$1);
+		delete $1;
+	}
 	| '(' declarator ')' { $$ = $2; }
 	| direct_declarator '(' ')' { $$ = new DirectDeclarator($1); }
 	;

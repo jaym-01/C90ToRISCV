@@ -25,19 +25,31 @@ public:
     };
 
     void EmitRISC(std::ostream &stream, Context &context) const {
-        std::cout<<"Emitting RIS for binary expression: ";
-        Print(std::cout);
-        std::cout<<std::endl;
+
     };
 
-    void EmitRISCWithDest(std::ostream &stream, Context &context, std::string dest_reg) const {
-        // std::cout<<"Emitting RIS for binary expression"<<std::endl;;
-        std::string reg1 = context.ReserveTempRegister();
-        std::string reg2 = context.ReserveTempRegister();
+    void EmitRISCWithDest(std::ostream &stream, Context &context, std::string& dest_reg) const {
+        std::cout<<"Emitting RISC for binary expression: ";
+        Print(std::cout);
+        std::cout<<std::endl;
+
+        std::string reg1 = "";
+        std::string reg2 = "";
 
         // TODO: What happens if you run out of temp registers
-        left_operand_->EmitRISCWithDest(stream, context, reg1);
-        right_operand_->EmitRISCWithDest(stream, context, reg2);
+        // Evaluate child with most branches first
+        if (left_operand_->GetNumBranches() > 1) {
+            left_operand_->EmitRISCWithDest(stream, context, reg1);
+            right_operand_->EmitRISCWithDest(stream, context, reg2);
+        } else {
+            right_operand_->EmitRISCWithDest(stream, context, reg2);
+            left_operand_->EmitRISCWithDest(stream, context, reg1);
+        }
+
+
+        if (dest_reg == "") {
+            dest_reg = context.ReserveTempRegister();
+        }
 
         if (b_operator_ == "+") {
             stream << "add " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
@@ -50,6 +62,12 @@ public:
         } else {
             throw std::runtime_error("Error: Invalid binary operator");
         }
+        context.FreeTempRegister(reg1);
+        context.FreeTempRegister(reg2);
+    };
+
+    int GetNumBranches() const override{
+        return 2;
     };
 
     void Print(std::ostream &stream) const

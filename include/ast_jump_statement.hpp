@@ -18,8 +18,11 @@ public:
 
     void EmitRISC(std::ostream &stream, Context &context) const override {};
 
-    void EmitRISCWithDest(std::ostream &stream, Context &context, std::string dest_reg) const override
+    void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest_reg) const override
     {
+        if (dest_reg == "") {
+            dest_reg = context.ReserveTempRegister();
+        }
 
         // Evaluate expression
         std::cout << "Emitting RISC for ";
@@ -31,6 +34,8 @@ public:
         {
             expression_->EmitRISCWithDest(stream, context, dest_reg);
         }
+
+        dest_reg = ""; // to prevent "freeing of a0"
 
         // Jump to return label
         stream << "j return" << std::endl;

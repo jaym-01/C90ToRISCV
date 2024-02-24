@@ -1,28 +1,8 @@
 #include <stdio.h>
-// int align_to_multiple_of_4(int offset)
-// {
-//     int remainder = offset % 4;
-//     if (remainder == 0)
-//     {
-//         return offset;
-//     }
-//     else
-//     {
-//         return offset + (4 - remainder);
-//     }
-// }
-
-// int test2(int x) {
-//     x = 5;
-
-//     printf("x in func = %d\n", x);
-// }
+int f(int x) {
+    int x = 5;
+}
 
 int main() {
-    // int x = 1;
-    // test2(x);
-    int x = 1;
-    int y = x = 5;
-    printf("x in main = %d\n", x);
-    printf("y in main = %d\n", y);
+    f(5);
 }

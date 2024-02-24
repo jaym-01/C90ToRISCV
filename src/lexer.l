@@ -22,7 +22,7 @@ IS  (u|U|l|L)*
 "/*"([^*]|(\*+[^*/]))*"*/"   {
   // printf("Block comment found:\n%s\n", yytext);
 }
-"// ".*\n   {
+"//".*\n   {
   // printf("%s\n", yytext);
   // return(COMMENT);
 }

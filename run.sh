@@ -1,8 +1,9 @@
+set -e
 test="test"
 
+# Compile to assembly
 # make bin/c_compiler
-# ./bin/c_compiler -S $test -o "bin/riscv_example.s"
-
+# ./bin/c_compiler -S "$test.c" -o "bin/riscv_example.s"
 
 # Compile and run test
 make bin/c_compiler
@@ -18,6 +19,10 @@ rm test
 # riscv64-unknown-elf-gcc -o "test" "bin/riscv_example.s" "test_driver.c"
 # spike pk "test"
 
+
+
+
+# EXTRA
 # set +e
 # spike pk "bin/riscv_example"
 
