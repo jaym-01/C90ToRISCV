@@ -149,7 +149,6 @@ public:
 
     ~Context() {
         delete f_context;
-        delete cur_scope;
     }
 
     std::string GetReturnRegister()
