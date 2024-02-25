@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 
     // Parse input and generate AST
     auto ast_root = Parse(command_line_arguments);
-    // ast_root->Print(std::cout);
+    ast_root->Print(std::cout);
 
     // return 0;
     if (ast_root == nullptr)

@@ -60,6 +60,21 @@ public:
         stream<<" }"<<std::endl;
     };
 
+    void GlobalVarEmitRISC(std::ostream &stream, Context &context) const {
+
+        std::string type = declaration_specifiers_->GetIdentifier();
+
+        for (auto init_decl : init_declarator_list_->GetNodes())
+        {
+            std::string id = init_decl->GetIdentifier();
+            VariableContext var_context = init_decl->InitVariableContext(type);
+            var_context.is_global = true;
+            context.global_scope->SetVarContext(id, var_context);
+
+            // 2. EmitRISC for init_declarator
+            init_decl->GlobalVarEmitRISC(stream, context);
+        }
+    };
 };
 
 #endif

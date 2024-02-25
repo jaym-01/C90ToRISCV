@@ -20,7 +20,6 @@ public:
             dest_reg = context.ReserveTempRegister();
         }
 
-
         stream << "li " << dest_reg << ", " << value_ << std::endl;
     };
 

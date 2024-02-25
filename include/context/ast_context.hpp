@@ -24,14 +24,25 @@ public:
         child_scopes = {};
     };
 
+    ScopeContext(ScopeContext* parent) {
+        var_map = {};
+        for (auto var : parent->var_map) {
+            var_map[var.first] = var.second;
+            var_map[var.first].is_inherited = true;
+        }
+        child_scopes = {};
+    };
+
     // Add a variable to the current scope
     // int AddVariable(std::string identifier, std::string type) {
     //     var_map[identifier] = { type: type, offset: 1 };
     // }
 
     void SetVarContext(std::string identifier, VariableContext context) {
-        if (var_map.find(identifier) != var_map.end())
+        if (var_map.find(identifier) != var_map.end() && var_map[identifier].is_inherited == false)
             throw std::runtime_error("Error: variable " + identifier + " already exists");
+        else if (var_map[identifier].is_inherited)
+            std::cout<<"Replacing outerscope variable: "<<identifier<<std::endl;
 
         var_map[identifier] = context;
     }
@@ -68,8 +79,9 @@ public:
             for (int i = 0; i < level; i++) {
                 std::cout<<"  ";
             }
-            std::cout<<var.first<<":{ type: "<<var.second.type<<", offset: "<<var.second.offset;
-            std::cout<<", array_size: "<<var.second.array_size<<", is_array: "<<var.second.is_array<<" }"<<std::endl;
+            std::cout<<var.first<<": ";
+            var.second.Print();
+            std::cout<<std::endl;
         }
 
         for (auto scope : child_scopes) {
@@ -105,6 +117,7 @@ public:
         saved_registers_avail = {"s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11"};
         saved_registers_used = {};
 
+
     }
 
     void SetRootScope(ScopeContext* scope) {
@@ -138,20 +151,36 @@ class Context
 {
 
 public:
+
+    // Root scope_context
     FunctionContext *f_context;
     std::map<std::string, FunctionContext *> id2function;
+
+
     std::vector<std::string> temp_registers_avail;
     std::vector<std::string> temp_registers_used;
     ScopeContext *cur_scope;
+    ScopeContext* global_scope;
 
     Context()
     {
         temp_registers_avail = {"t1", "t2", "t3", "t4", "t5", "t6"};
         temp_registers_used = {};
+        global_scope = new ScopeContext();
     }
 
     ~Context() {
         delete f_context;
+        delete global_scope;
+    }
+
+
+    void PrintAvailTempRegs() {
+        std::cout<<"Avail temp registers: ";
+        for (auto reg : temp_registers_avail) {
+            std::cout<<reg + " ";
+        }
+        std::cout<<std::endl;
     }
 
     std::string GetReturnRegister()

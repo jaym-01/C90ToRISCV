@@ -41,9 +41,15 @@ public:
         if (statement_list_ != nullptr) {
             for (auto stmt : statement_list_->GetNodes()) {
                 std::string dest_reg = "";
+
+                // context.PrintAvailTempRegs();
                 stmt->EmitRISCWithDest(stream, context, dest_reg);
                 if (dest_reg != "") {
                     context.FreeTempRegister(dest_reg);
+                }
+
+                if (context.temp_registers_avail.size() < 6) {
+                    std::runtime_error("Less than 6 registers left after statement. Check for leaks");
                 }
             }
         }
@@ -51,7 +57,7 @@ public:
 
     void Print(std::ostream &stream) const override
     {
-        stream<<"Compound statment\n";
+        // stream<<"comp_stmt: \n";
         if (declaration_list_ != nullptr) {
             declaration_list_->Print(stream);
         }

@@ -22,6 +22,7 @@
 // Declaration
 #include "declaration/ast_declaration.hpp"
 #include "declaration/ast_declaration_specifiers.hpp"
+#include "declaration/ast_global_variable.hpp"
 
 // Declarators
 #include "declaration/ast_init_declarator.hpp"

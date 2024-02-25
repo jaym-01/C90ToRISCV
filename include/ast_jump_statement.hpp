@@ -23,7 +23,7 @@ public:
 
         // Evaluate expression
         std::string ret_reg = context.GetReturnRegister();
-        std::cout << "Dest reg: " << ret_reg << ", Emitting RISC for ";
+        std::cout << "Emitting RISC for ";
         Print(std::cout);
 
         if (expression_ != nullptr)

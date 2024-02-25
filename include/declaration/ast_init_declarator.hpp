@@ -88,6 +88,40 @@ public:
     std::string GetIdentifier() const override {
         return declarator_->GetIdentifier();
     }
+
+    void GlobalVarEmitRISC(std::ostream &stream, Context &context) const override
+    {
+
+        ScopeContext *cur_scope = context.global_scope;
+        std::string id = declarator_->GetIdentifier();
+        VariableContext var_context = cur_scope->GetVarFromId(id);
+        stream << id << ":" << std::endl;
+
+        if (initializer_ != nullptr)
+        {
+            std::vector<Node *> initializers = initializer_->GetNodes();
+
+            // For each initializer:
+            for (int i = 0; i < initializers.size(); i++)
+            {
+                int eval = initializers[i]->EvalIntExpression();
+                if (var_context.type == "int") {
+                    stream << ".word " << eval << std::endl;
+                }
+
+                // std::string dest_reg = "";
+                // initializers[i]->EmitRISCWithDest(stream, context, dest_reg);
+                // stream << "sw " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+                // context.FreeTempRegister(dest_reg);
+
+                // // Go to next offset
+                // var_offset += type_size[var_context.type];
+            }
+        } else {
+            stream << ".zero " << type_size[var_context.type] << std::endl;
+        }
+        stream<<std::endl;
+    };
 };
 
 #endif

@@ -17,17 +17,17 @@
 //     }
 // }
 
-void FunctionDefinition::Print(std::ostream &stream) const
-{
-    declaration_specifiers_->Print(stream);
-    stream << " ";
+// void FunctionDefinition::Print(std::ostream &stream) const
+// {
+//     declaration_specifiers_->Print(stream);
+//     stream << " ";
 
-    declarator_->Print(stream);
-    stream << "() {" << std::endl;
+//     declarator_->Print(stream);
+//     stream << "() {" << std::endl;
 
-    if (compound_statement_ != nullptr)
-    {
-        compound_statement_->Print(stream);
-    }
-    stream << "}" << std::endl;
-}
+//     if (compound_statement_ != nullptr)
+//     {
+//         compound_statement_->Print(stream);
+//     }
+//     stream << "}" << std::endl;
+// }

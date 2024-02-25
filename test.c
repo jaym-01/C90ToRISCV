@@ -1,21 +1,17 @@
-int test1() {
-    // Failed
-    // int y;
-    // int x[8];
-    // y = 13;
-    // return y;
+int y[] = {1, 3, 5};
 
-    // Failed
-    int x[8];
-    x[0] = 23;
-    return x[0];
+int test1() {
+    y[1] = 5;
+    ++y[1];
+    y[1]++;
+    return ++y[1];
 }
 
 // // TEST 1: VARIABLES & DATA TYPES
 // int main() {
 
 //     // Test 1: Declaration
-//     int x;
+//     int x;x
 //     int y = 10;
 
 //     // Test 2: Assignment

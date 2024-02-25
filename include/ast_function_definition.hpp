@@ -45,7 +45,8 @@ public:
         context.InitFunctionContext(f_context);
 
         // 2. Build context for arguments
-        ScopeContext* arg_scope = new ScopeContext();
+        ScopeContext* arg_scope = new ScopeContext(context.global_scope);
+        arg_scope->PrintTree(0);
         // TODO: add arguments to arg_scope
         context.SetCurScope(arg_scope);
 
@@ -58,8 +59,9 @@ public:
 
 
         // 3. Pre function calling procedure
-        int total_frame_size = context.GetCurFuncOffset();
-        stream<<"addi sp, sp, "<<-total_frame_size<<std::endl; // TODO: if total frame_size > imm num of bits (12 bits)?
+        int cur_func_offset = context.GetCurFuncOffset();
+        int total_frame_size = -cur_func_offset;
+        stream << "addi sp, sp, " << -total_frame_size << std::endl; // TODO: if total frame_size > imm num of bits (12 bits)?
         stream<<"sw ra, "<<total_frame_size - 4<<"(sp)"<<std::endl;
         stream<<"sw fp, "<<total_frame_size - 8<<"(sp)"<<std::endl;
         stream << "addi fp, "<< "sp, " << total_frame_size<< std::endl;
@@ -76,7 +78,16 @@ public:
     };
 
 
-    void Print(std::ostream &stream) const override;
+    void Print(std::ostream &stream) const override {
+        std::cout<<"func_def: "<<std::endl;
+        declaration_specifiers_->Print(stream);
+        stream << " ";
+        declarator_->Print(stream);
+        std::cout<<std::endl;
+        std::cout<<"comp_stmt: "<<std::endl;
+        compound_statement_->Print(stream);
+
+    };
 };
 
 #endif

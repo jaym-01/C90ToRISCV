@@ -29,7 +29,6 @@ public:
         }
 
         expression_->EmitRISCWithDest(stream, context, dest_reg);
-
         // 2. Apply unary operator
         // Note: do nothing for '+' operator
         if (unary_operator_ == "++") {
@@ -55,7 +54,7 @@ public:
             VariableContext var = cur_scope->GetVarFromId(id);
 
 
-            set_var_value(expression_, context, stream, var, dest_reg);
+            write_var_value(expression_, context, stream, var, dest_reg);
         }
     };
 

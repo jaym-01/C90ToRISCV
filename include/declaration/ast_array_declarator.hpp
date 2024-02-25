@@ -75,9 +75,20 @@ public:
     VariableContext InitVariableContext(std::string type) override {
         if (size_expression_ != nullptr){
             int size = size_expression_->EvalIntExpression();
-            return VariableContext{type : type, offset : 1, array_size : size, is_array : true};
+            return {
+                .id=identifier_->GetIdentifier(),
+                .type=type,
+                .array_size=size,
+                .is_array=true,
+            };
         } else {
-            return VariableContext{type : type, offset : 1, array_size : -1, is_array : true};
+            // return VariableContext{type : type, offset : 1, array_size : -1, is_array : true};
+            return {
+                .id=identifier_->GetIdentifier(),
+                .type = type,
+                .array_size = -1,
+                .is_array = true,
+            };
         }
     };
 

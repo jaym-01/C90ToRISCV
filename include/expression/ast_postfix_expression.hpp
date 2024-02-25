@@ -47,7 +47,8 @@ public:
         }
 
         // Store temp reg back into var
-        set_var_value(expression_, context, stream, var, temp_reg);
+        write_var_value(expression_, context, stream, var, temp_reg);
+        context.FreeTempRegister(temp_reg);
     };
 
     void Print(std::ostream &stream) const

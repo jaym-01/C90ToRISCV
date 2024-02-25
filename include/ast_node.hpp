@@ -32,6 +32,9 @@ public:
     virtual VariableContext InitVariableContext(std::string type) {
         throw std::runtime_error("Error: InitVariableContext not implemented for this node");
     };
+    virtual void GlobalVarEmitRISC (std::ostream &stream, Context &context) const {
+        throw std::runtime_error("Error: GlobalVarEmitRISC not implemented for this node");
+    };
     // virtual ScopeContext* BuildContext(Context &context, ScopeContext* cur_scope) {}; // old
 
     // For expressions

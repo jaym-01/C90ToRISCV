@@ -45,27 +45,13 @@ public:
         // 2. Calculate var offset if not already done
         // TODO: optimize by doing graph coloring and assigning variables to saved regs?
         int var_offset;
-        if (var.offset > 0) {
+        if (!var.is_global && var.offset > 0) {
             var_offset = context.CalcVarOffsetAndUpdate(var);
             cur_scope->SetVarOffset(var_id, var_offset);
             var.offset = var_offset;
         }
 
-        // Store result in var
-
-        // Do this in side set_var_value function.
-        // std::string index_reg = "";
-        // if (var.is_array)  {
-        //     Node* index_expr = unary_expression_->GetIndexExpression();
-        //     index_expr->EmitRISCWithDest(stream, context, index_reg);
-        // }
-
-        // dest_reg: value to assign, index_reg: reg holding arr index
-
-        set_var_value(
-            unary_expression_,
-            context,
-            stream, var, dest_reg);
+        write_var_value(unary_expression_, context, stream, var, dest_reg);
     };
 
     void EmitRISC(std::ostream &stream, Context &context) const {

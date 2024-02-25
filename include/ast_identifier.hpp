@@ -25,14 +25,13 @@ public:
         ScopeContext* cur_scope = context.GetCurScope();
         VariableContext var = cur_scope->GetVarFromId(identifier_);
 
-        if (var.offset > 0) {
-            std::string err_msg = "Variable " + identifier_ + " was not initialized";
-            throw std::runtime_error(err_msg);
-        }
 
-        read_var_value(
-            nullptr, context,
-            stream, var, dest_reg);
+        // if (var.offset > 0) {
+        //     std::string err_msg = "Variable " + identifier_ + " was not initialized";
+        //     throw std::runtime_error(err_msg);
+        // }
+
+        read_var_value(nullptr, context, stream, var, dest_reg);
     };
 
     int GetNumBranches() const override{
@@ -40,7 +39,12 @@ public:
     };
 
     VariableContext InitVariableContext(std::string type) override {
-        return { type: type, offset: 1, array_size: 1, is_array: false};
+        return {
+            .id=identifier_,
+            .type=type,
+            .is_array=false,
+            .array_size=1,
+        };
     };
 
     void Print(std::ostream &stream) const override {

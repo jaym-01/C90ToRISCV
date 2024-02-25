@@ -25,23 +25,15 @@ public:
             dest_reg = context.ReserveTempRegister();
         }
 
-        std::cout << "Dest reg: " << dest_reg << ", Emitting RISC for ";
-        Print(std::cout);
-        std::cout << std::endl;
+        // std::cout << "Dest reg: " << dest_reg << ", Emitting RISC for ";
+        // Print(std::cout);
+        // std::cout << std::endl;
 
         ScopeContext *cur_scope = context.GetCurScope();
         std::string id = identifier_->GetIdentifier();
         VariableContext var_context = cur_scope->GetVarFromId(id);
 
-        if (var_context.offset > 0) {
-            std::string err_msg = "Variable " + id + " was not initialized";
-            throw std::runtime_error(err_msg);
-        }
-
-
-        read_var_value(
-            this, context,
-            stream, var_context, dest_reg);
+        read_var_value(this, context, stream, var_context, dest_reg);
     };
 
     Node* GetIndexExpression() const {

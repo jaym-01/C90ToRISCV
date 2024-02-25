@@ -36,7 +36,7 @@
 
 
 /* Declare the data type for each grammar rule */
-%type <node> translation_unit external_declaration function_definition primary_expression postfix_expression
+%type <node> external_declaration function_definition primary_expression postfix_expression
 %type <node> unary_expression cast_expression multiplicative_expression additive_expression shift_expression relational_expression
 %type <node> equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
 %type <node> conditional_expression assignment_expression constant_expression declaration declaration_specifiers
@@ -47,7 +47,7 @@
 
 /* Moved declaration_list, argument_expression_list, compound_statement to nodes */
 %type <nodes> statement_list declaration_list argument_expression_list init_declarator_list expression
-%type <nodes> initializer,initializer_list
+%type <nodes> initializer initializer_list translation_unit
 
 /* New */
 %type <compound_statement> compound_statement
@@ -67,23 +67,21 @@ ROOT
 
 /* Contains a series of external declarations (e.g. global functions & variables) */
 translation_unit
-	: external_declaration {
-		// Modify to hold a list of external declarations?
+	: external_declaration {$$ = new NodeList($1);}
+	| translation_unit external_declaration {
+		$1->PushBack($2);
 		$$ = $1;
 	}
-	| translation_unit external_declaration { }
 	;
 
 /* Top level external declarations can be function definitions OR global vars */
 external_declaration
 	: function_definition { $$ = $1; }
-	| declaration
+	| declaration { $$ = new GlobalVariable($1); }
 	;
 
 function_definition
 	: declaration_specifiers declarator compound_statement {
-		std::cout<<"Printing function contents:"<<std::endl;
-		$3->Print(std::cout);
 		$$ = new FunctionDefinition($1, $2, $3);
 	}
 	;
