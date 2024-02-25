@@ -12,8 +12,8 @@ struct VariableContext
     // std::string storage_class;
     std::string type;
     int offset;
-    bool is_array;
     int array_size;
+    bool is_array;
 };
 
 

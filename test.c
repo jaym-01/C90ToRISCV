@@ -2,8 +2,8 @@ int test1() {
     // int x = {1};
     // int x[] = {1, 2, 3};
 
-    int x;
-    x = 12;
+    // int x;
+    int x[3] = {1, 2, 3};
     return x;
 }
 
