@@ -30,6 +30,10 @@ public:
         stream << "}";
     };
 
+    int EvalIntExpression() const override {
+        return value_;
+    };
+
     int GetNumBranches() const override {
         return 1;
     };

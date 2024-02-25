@@ -7,15 +7,10 @@
 #ifndef AST_CONTEXT_HPP
 #define AST_CONTEXT_HPP
 
+#include "ast_variable_context.hpp"
 // An object of class Context is passed between AST nodes during compilation.
 // This can be used to pass around information about what's currently being
 // compiled (e.g. function scope and variable names).
-
-struct VariableContext {
-    // std::string storage_class;
-    std::string type;
-    int offset;
-};
 
 class ScopeContext {
 private:
@@ -30,8 +25,15 @@ public:
     };
 
     // Add a variable to the current scope
-    int AddVariable(std::string identifier, std::string type) {
-        var_map[identifier] = { type: type, offset: 1 };
+    // int AddVariable(std::string identifier, std::string type) {
+    //     var_map[identifier] = { type: type, offset: 1 };
+    // }
+
+    void SetVarContext(std::string identifier, VariableContext context) {
+        if (var_map.find(identifier) != var_map.end())
+            throw std::runtime_error("Error: variable " + identifier + " already exists");
+
+        var_map[identifier] = context;
     }
 
     void AddChildScope(ScopeContext* scope) {
@@ -66,7 +68,8 @@ public:
             for (int i = 0; i < level; i++) {
                 std::cout<<"  ";
             }
-            std::cout<<"Variable: "<<var.first<<" | Type: "<<var.second.type<<" | Offset: "<<var.second.offset<<std::endl;
+            std::cout<<var.first<<":{ type: "<<var.second.type<<", offset: "<<var.second.offset;
+            std::cout<<", array_size: "<<var.second.array_size<<", is_array: "<<var.second.is_array<<" }"<<std::endl;
         }
 
         for (auto scope : child_scopes) {

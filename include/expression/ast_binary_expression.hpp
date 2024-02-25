@@ -59,12 +59,29 @@ public:
             stream << "mul " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
         } else if (b_operator_ == "/") {
             stream << "div " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
-        } else {
-            throw std::runtime_error("Error: Invalid binary operator");
+        } else if (b_operator_ == "%") {
+            stream << "rem " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
         }
         context.FreeTempRegister(reg1);
         context.FreeTempRegister(reg2);
     };
+
+    int EvalIntExpression() const override {
+        int left = left_operand_->EvalIntExpression();
+        int right = right_operand_->EvalIntExpression();
+
+        if (b_operator_ == "+") {
+            return left + right;
+        } else if (b_operator_ == "-") {
+            return left - right;
+        } else if (b_operator_ == "*") {
+            return left * right;
+        } else if (b_operator_ == "/") {
+            return left / right;
+        } else {
+            throw std::runtime_error("Error: Invalid binary operator");
+        }
+    }
 
     int GetNumBranches() const override{
         return 2;

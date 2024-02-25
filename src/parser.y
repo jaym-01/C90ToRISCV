@@ -42,11 +42,12 @@
 %type <node> conditional_expression assignment_expression constant_expression declaration declaration_specifiers
 %type <node> init_declarator type_specifier struct_specifier struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list
 %type <node> struct_declarator enum_specifier enumerator_list enumerator declarator direct_declarator pointer parameter_list parameter_declaration
-%type <node> identifier_list type_name abstract_declarator direct_abstract_declarator initializer initializer_list statement labeled_statement
+%type <node> identifier_list type_name abstract_declarator direct_abstract_declarator statement labeled_statement // initializer initializer_list
 %type <node> expression_statement selection_statement iteration_statement jump_statement
 
 /* Moved declaration_list, argument_expression_list, compound_statement to nodes */
 %type <nodes> statement_list declaration_list argument_expression_list init_declarator_list expression
+%type <nodes> initializer,initializer_list
 
 /* New */
 %type <compound_statement> compound_statement
@@ -160,24 +161,25 @@ direct_declarator
 	}
 	| '(' declarator ')' { $$ = $2; }
 	| direct_declarator '(' ')' { $$ = new DirectDeclarator($1); }
+	| direct_declarator '[' constant_expression ']' { $$ = new ArrayDeclarator($1, $3);}
+	| direct_declarator '[' ']' { { $$ = new ArrayDeclarator($1, nullptr); } }
 	;
 
 /* Parent of initializer_list. Can be expression or initializer*/
+/* NOTE: int x = {1} is allowed in ANSI C...? */
 initializer
-	: assignment_expression { $$ = $1; }
-
-	| '{' initializer_list '}'
+	: assignment_expression { $$ = new NodeList($1); }
+	| '{' initializer_list '}' { $$ = $2; }
 	| '{' initializer_list ',' '}'
 	;
 
 /* Allows for array initialisers: e.g. { 5, 10, 12 }, without the { }*/
 initializer_list
-	: initializer
-	| initializer_list ',' initializer
+	: initializer { $$ = $1; }
+	| initializer_list ',' initializer { $1->PushBack($3); $$ = $1; }
 	;
 
 /* STATEMENT PARSING */
-
 statement_list
 	: statement { $$ = new NodeList($1); }
 	| statement_list statement { $1->PushBack($2); $$=$1; }
@@ -212,6 +214,10 @@ expression
 		$1->PushBack($3);
 		$$ = $1;
 	}
+	;
+
+constant_expression
+	: additive_expression { $$ = $1; } // TODO: Change to conditional expression later on
 	;
 
 assignment_expression

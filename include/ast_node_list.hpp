@@ -47,7 +47,7 @@ public:
             return;
         }
 
-        // For expr statements like x = 5, y = 6;
+        // For multi expr lines like x = 5, y = 6;
         for (auto node : nodes_) {
             if (node == nullptr){
                 continue;
@@ -64,6 +64,7 @@ public:
     };
 
     virtual void Print(std::ostream &stream) const override{
+        // stream<<"node_list{";
         for (auto node : nodes_)
         {
             if (node == nullptr)
@@ -72,8 +73,16 @@ public:
             }
             node->Print(stream);
         }
+        // stream << "}";
     };
 
+    int EvalIntExpression() const override {
+        if (nodes_.size() == 1) {
+            return nodes_[0]->EvalIntExpression();
+        } else {
+            throw std::runtime_error("Cannot evaluate int expression for multi_expression line");
+        }
+    };
     // New
     virtual void Extend(NodeList *nodes) {
         for (auto node : nodes->nodes_)

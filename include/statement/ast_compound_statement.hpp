@@ -75,6 +75,7 @@ public:
         }
 
         // Set context.cur_scope to be previous scope?
+        scope_context_->PrintTree(0);
         context.SetCurScope(temp);
     };
 

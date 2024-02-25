@@ -42,8 +42,16 @@ public:
         return 1;
     };
 
+    VariableContext InitVariableContext(std::string type) override {
+        return { type: type, offset: 1, array_size: 1, is_array: false};
+    };
+
     void Print(std::ostream &stream) const override {
         stream << "id{" << identifier_ << "}";
+    };
+
+    int EvalIntExpression() const override {
+        throw std::runtime_error("Cannot evaluate identifier as int expression");
     };
 
     std::string GetIdentifier() const override {

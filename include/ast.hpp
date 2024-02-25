@@ -14,12 +14,18 @@
 #include "ast_node.hpp"
 #include "ast_type_specifier.hpp"
 #include "ast_constant.hpp"
-#include "ast_context.hpp"
+
+// Context
+#include "./context/ast_context.hpp"
+#include "./context/ast_variable_context.hpp"
 
 // Declaration
 #include "declaration/ast_declaration.hpp"
 #include "declaration/ast_declaration_specifiers.hpp"
+
+// Declarators
 #include "declaration/ast_init_declarator.hpp"
+#include "declaration/ast_array_declarator.hpp"
 
 // Expression
 #include "expression/ast_postfix_expression.hpp"

@@ -1,6 +1,13 @@
 #ifndef HELPERS_HPP
 #define HELPERS_HPP
 
+#include "./context/ast_variable_context.hpp"
+
+inline std::map<std::string, int> type_size = {
+    {"int", 4},
+    {"char", 1},
+    {"float", 4},
+};
 
 inline void load_var_to_reg(std::ostream &stream, std::string var_type, int var_offset, std::string reg){
     // stream << "lw " << reg << " " << offset << "($fp)" << std::endl;
@@ -44,17 +51,21 @@ inline int align_to_multiple_of_4(int offset)
     }
 }
 
-inline int calculate_var_offset(int cur_offset, std::string type) {
+inline int calculate_var_offset(int cur_offset, VariableContext var_context) {
+    int size = type_size[var_context.type];
+    int offset = cur_offset - size * var_context.array_size;
+    std::string type = var_context.type;
+
     if (type == "int") {
-        return align_to_multiple_of_4(cur_offset - 4);
+        return align_to_multiple_of_4(offset);
     }
 
     else if (type == "char") {
-        return cur_offset - 1;
+        return offset;
     }
 
     else if (type == "float") {
-        return align_to_multiple_of_4(cur_offset - 4);
+        return align_to_multiple_of_4(offset);
     }
 
     else if (type == "double") {
@@ -62,25 +73,19 @@ inline int calculate_var_offset(int cur_offset, std::string type) {
     }
 
     else {
-        return align_to_multiple_of_4(cur_offset - 4);
+        return align_to_multiple_of_4(offset);
     }
 }
 
-inline int calculate_var_size(std::string type)
+
+inline int calculate_var_size(VariableContext var)
 {
-    if (type == "int")
-        return 4;
-
-    else if (type == "char")
-        return 4;
-
-    else if (type == "float")
-        return 4;
-
-    else if (type == "double")
-        return 8;
-
-    else return 4;
+    if (var.is_array) {
+        return type_size[var.type] * var.array_size;
+    }
+    else {
+        return type_size[var.type];
+    }
 }
 
 #endif

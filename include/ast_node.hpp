@@ -5,7 +5,7 @@
 #include <vector>
 #include <sstream>
 
-#include "ast_context.hpp"
+#include "./context/ast_context.hpp"
 
 class Node
 {
@@ -27,10 +27,20 @@ public:
     virtual std::string GetIdentifier() const {
         throw std::runtime_error("Error: GetIdentifier not implemented for this node");
     };
+
+    // For declarations
+    virtual VariableContext InitVariableContext(std::string type) {
+        throw std::runtime_error("Error: InitVariableContext not implemented for this node");
+    };
     virtual ScopeContext* BuildContext(Context &context, ScopeContext* cur_scope) {};
 
     // For expressions
     virtual int GetNumBranches() const { return 1; };
+
+    // For arrays
+    virtual int EvalIntExpression() const {
+        throw std::runtime_error("Error: EvalExpression not implemented for this node");
+    };
 
     virtual ~Node() {
         for (auto branch : branches_)

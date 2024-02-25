@@ -41,11 +41,13 @@ public:
 
         // 2b. Move cur func offset to new pos & set fp_offset for var in context
         // TODO: optimize by doing graph coloring and assigning variables to saved regs?
+
+        // TODO: Check if need changes after array implementation
         int var_offset;
         if (var.offset > 0) {
             // Create new func offset
             int cur_func_offset = context.GetCurFuncOffset();
-            var_offset = calculate_var_offset(cur_func_offset, var.type);
+            var_offset = calculate_var_offset(cur_func_offset, var);
             context.SetCurFuncOffset(var_offset);
             cur_scope->SetVarOffset(var_id, var_offset);
         } else {

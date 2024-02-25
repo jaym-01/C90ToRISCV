@@ -11,10 +11,10 @@ class InitDeclarator : public Node
 {
 private:
     Node *declarator_;
-    Node *initializer_;
+    NodeList *initializer_;
 
 public:
-    InitDeclarator(Node *declarator, Node *initializer) :
+    InitDeclarator(Node *declarator, NodeList *initializer) :
         declarator_(declarator), initializer_(initializer) {};
 
     ~InitDeclarator()
@@ -28,35 +28,49 @@ public:
         // declarator_->EmitRISC(stream, context);
 
         ScopeContext* cur_scope = context.GetCurScope();
-
+        std::string id = declarator_->GetIdentifier();
         if (initializer_ != nullptr)
         {
 
-            // 1. Store result of initializer in register using available func registers
-            std::string dest_reg = "";
-            initializer_->EmitRISCWithDest(stream, context, dest_reg);
+            // NEW:
 
-
-            // 2. Store result in memory
-
-            // 2a. Calculate fp offset for variable
-            std::string id = declarator_->GetIdentifier();
-            std::string type = cur_scope->GetVarType(id);
+            VariableContext var_context = cur_scope->GetVarFromId(id);
+            std::vector<Node*> initializers = initializer_->GetNodes();
             int cur_func_offset = context.GetCurFuncOffset();
-            int var_offset = calculate_var_offset(cur_func_offset, type);
 
-            // 2b. Move cur func offset to new pos & set offset in context
-            context.SetCurFuncOffset(var_offset);
+
+            int var_offset = calculate_var_offset(cur_func_offset, var_context);
             cur_scope->SetVarOffset(id, var_offset);
+            context.SetCurFuncOffset(var_offset);
 
-            // 2c. Print store instruction
-            stream<<"sw "<<dest_reg<<", "<<var_offset<<"(fp)"<<std::endl;
+            // For each initializer:
+            for (int i = 0; i < initializers.size(); i++) {
+                std::string dest_reg = "";
+                initializers[i]->EmitRISCWithDest(stream, context, dest_reg);
+                stream << "sw " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+                context.FreeTempRegister(dest_reg);
 
-            context.FreeTempRegister(dest_reg);
-            // 2. Store result in memory
-            // - Save offset for variable in context
-            // - Print store instruction (sw reg, offset (fp))
+                // Go to next offset
+                var_offset += type_size[var_context.type];
+            }
         }
+    };
+
+    VariableContext InitVariableContext(std::string type) override {
+
+        VariableContext var_context = declarator_->InitVariableContext(type);
+
+        if (!var_context.is_array && initializer_ != nullptr && initializer_->GetNodes().size() > 1)
+            throw std::runtime_error("Error: variable " + declarator_->GetIdentifier() + " is not an array but has multiple initializers");
+
+        if (var_context.is_array && var_context.array_size == -1) {
+            if (initializer_ == nullptr)
+                throw std::runtime_error("Error: array variable " + declarator_->GetIdentifier() + " has no size specified");
+
+            var_context.array_size = initializer_->GetNodes().size();
+        }
+
+        return var_context;
     };
 
     void Print(std::ostream &stream) const override {

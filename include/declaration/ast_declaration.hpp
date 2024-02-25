@@ -38,28 +38,18 @@ public:
 
             std::string var_id = init_decl->GetIdentifier();
             // TODO: If no identifier, invalid declaration
+            VariableContext var_context = init_decl->InitVariableContext(type);
+            cur_scope->SetVarContext(var_id, var_context);
 
-
-            cur_scope->AddVariable(var_id, type);
-            context.SetFuncTotalVarSize(cur_func_var_size + calculate_var_size(type));
+            context.SetFuncTotalVarSize(cur_func_var_size + calculate_var_size(var_context));
         }
-
-
-        // context.SetCurFuncOffset(cur_func_offset);
-
-        // // 2. Add variables to scope top
-        // std::vector<std::string> var_ids;
-        // for (auto init_decl : init_declarator_list_->GetNodes())
-        // {
-        //     var_ids.push_back(init_decl->GetIdentifier());
-        // }
-        // scope->AddVariables(var_ids);
 
         return nullptr;
     };
 
     void EmitRISC(std::ostream &stream, Context &context) const {
-        // std::cout<<"Em RISC for decl: \n";
+        std::cout<<"Em RISC for decl: ";
+        Print(std::cout);
 
         // 1. Get appropriate context for declaration
         for (auto init_decl : init_declarator_list_->GetNodes())

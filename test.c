@@ -1,9 +1,11 @@
 int test1() {
+    // int x = {1};
+    // int x[] = {1, 2, 3};
 
     int x = 3;
-    int y = 4;
-    x = 7, 4 + 5;
-    return x;
+    int z = (1 * (3 + 2));
+
+    return --x;
 }
 
 // // TEST 1: VARIABLES & DATA TYPES
