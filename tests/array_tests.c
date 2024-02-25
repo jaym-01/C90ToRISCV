@@ -15,3 +15,15 @@ int test1() {
     // Test array elem read
     return y;
 }
+
+// Test 2: Global variable arrays
+int y[] = {1, 3, 5};
+int test2() {
+
+    y[1] = 5;
+
+    ++y[1];
+    y[1]++;
+    return ++y[1];
+
+}

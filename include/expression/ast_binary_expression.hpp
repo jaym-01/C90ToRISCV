@@ -28,10 +28,78 @@ public:
 
     };
 
+    void EvaluateOperation(std::ostream &stream, std::string reg1, std::string reg2, std::string dest_reg) const {
+        if (b_operator_ == "+") {
+            stream << "add " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+        } else if (b_operator_ == "-"){
+            stream << "sub " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+        } else if (b_operator_ == "*") {
+            stream << "mul " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+        }
+        else if (b_operator_ == "/"){
+            stream << "div " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+        }
+        else if (b_operator_ == "%"){
+            stream << "rem " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+        }
+
+        // Bitwise operations
+        else if (b_operator_ == "<<"){
+            stream << "sll " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+        }
+        else if (b_operator_ == ">>") {
+            stream << "srl " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+        }
+
+        // Logical operations
+        else if (b_operator_ == "<") {
+            stream << "slt " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+        }
+        else if (b_operator_ == "<=") {
+            // Same as !(reg1 > reg2)
+            stream << "sgt " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
+        }
+        else if (b_operator_ == ">") {
+            stream << "sgt " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+        }
+        else if (b_operator_ == ">=") {
+            // Same as !(reg1 < reg2)
+            stream << "slt " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
+        }
+        else if (b_operator_ == "==") {
+            stream << "sub " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
+        }
+        else if (b_operator_ == "!=") {
+            stream << "sub " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+        }
+        else if (b_operator_ == "&") {
+            stream << "and " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+        }
+        else if (b_operator_ == "|") {
+            stream << "or " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+        }
+        else if (b_operator_ == "^") {
+            stream << "xor " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+        }
+
+         else if (b_operator_ == "&&" ) {
+            stream << "seqz " << reg1 << ", " << reg1 << std::endl;
+            stream << "seqz " << reg2 << ", " << reg2 << std::endl;
+            stream << "or " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
+        } else if (b_operator_ == "||" ) {
+            stream << "or " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            stream << "snez " << dest_reg << ", " << dest_reg << std::endl;
+        }
+    }
+
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string& dest_reg) const {
-        std::cout<<"Emitting RISC for binary expression: ";
-        Print(std::cout);
-        std::cout<<std::endl;
+        // std::cout<<"Emitting RISC for binary expression: ";
+        // Print(std::cout);
+        // std::cout<<std::endl;
 
         std::string reg1 = "";
         std::string reg2 = "";
@@ -51,19 +119,13 @@ public:
             dest_reg = context.ReserveTempRegister();
         }
 
-        if (b_operator_ == "+") {
-            stream << "add " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
-        } else if (b_operator_ == "-") {
-            stream << "sub " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
-        } else if (b_operator_ == "*") {
-            stream << "mul " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
-        } else if (b_operator_ == "/") {
-            stream << "div " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
-        } else if (b_operator_ == "%") {
-            stream << "rem " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
-        }
+        EvaluateOperation(stream, reg1, reg2, dest_reg);
+
         context.FreeTempRegister(reg1);
         context.FreeTempRegister(reg2);
+
+
+
     };
 
     int EvalIntExpression() const override {

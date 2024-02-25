@@ -39,6 +39,7 @@
 
 // Statements
 #include "statement/ast_compound_statement.hpp"
+#include "statement/ast_if_else_statement.hpp"
 
 extern Node *ParseAST(std::string file_name);
 

@@ -51,7 +51,8 @@ public:
         context.SetCurScope(arg_scope);
 
         std::stringstream compound_stream;
-        compound_statement_->EmitRISC(compound_stream, context);
+        std::string empty_reg = "";
+        compound_statement_->EmitRISCWithDest(compound_stream, context, empty_reg);
 
         context.f_context->SetRootScope(arg_scope);
         arg_scope->PrintTree(0);

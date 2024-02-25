@@ -15,9 +15,9 @@ protected:
 public:
     Node(){};
 
-    virtual void EmitRISC(std::ostream &stream, Context &context) const = 0;
-    // virtual void EmitRISCWithScopeContext(std::ostream &stream, Context &context, ScopeContext* cur_scope) const {};
-
+    virtual void EmitRISC(std::ostream &stream, Context &context) const {
+        throw std::runtime_error("Error: EmitRISC not implemented for this node");
+    };
     // Can either declare reg to save value, or wait for caller to declare
     virtual void EmitRISCWithDest(std::ostream &stream, Context &context, std::string& dest_reg) const {};
 

@@ -25,8 +25,9 @@ public:
     };
 
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string& dest_reg) const {
-        std::cout<<"Emitting RISC for ";
-        Print(std::cout);
+        // std::cout<<"Emitting RISC for ";
+        // Print(std::cout);
+        // std::cout<<std::endl;
 
         if (dest_reg == "") {
             dest_reg = context.ReserveTempRegister();
@@ -64,7 +65,7 @@ public:
         unary_expression_->Print(stream);
         stream << " " << assignment_operator_ << " ";
         assignment_expression_->Print(stream);
-        stream << " }"<<std::endl;
+        stream << " }";
     };
 };
 

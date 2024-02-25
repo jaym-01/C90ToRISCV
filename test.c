@@ -1,46 +1,17 @@
-int y[] = {1, 3, 5};
+
 
 int test1() {
-    y[1] = 5;
-    ++y[1];
-    y[1]++;
-    return ++y[1];
+    int x = 2;
+    int y = 2;
+
+    if (x < 3) {
+        int x = 5;
+        return x;
+    } else if (y < 3) {
+        x = 4;
+    } else {
+        x = 8;
+    }
+
+    return x;
 }
-
-// // TEST 1: VARIABLES & DATA TYPES
-// int main() {
-
-//     // Test 1: Declaration
-//     int x;x
-//     int y = 10;
-
-//     // Test 2: Assignment
-//     x = 5;
-
-//     // Test 3: Postfix operations
-//     x++;
-//     x--;
-//     x = y++;
-
-//     // Test 4: Unary operations
-//     x = -5;
-//     x = +5;
-//     x = ++y;
-//     x = --y;
-
-//     // // Test 4: Operations
-//     // x = 1 + 2;
-//     // x = 1 - 2;
-//     // x = 1 * 2;
-//     // x = 4 / 2;
-//     // x = 5 % 2;
-
-//     // // Test 5: Precedence
-//     // x = 1 + 2 - 3;
-//     // x = 1 + 2 * 3;
-//     // x = 1 % 2;
-//     // x = (1 + 2) * 3;
-
-
-//     return x;
-// }

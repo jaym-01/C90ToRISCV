@@ -161,6 +161,7 @@ public:
     std::vector<std::string> temp_registers_used;
     ScopeContext *cur_scope;
     ScopeContext* global_scope;
+    int label_id = 0;
 
     Context()
     {
@@ -174,6 +175,9 @@ public:
         delete global_scope;
     }
 
+    std::string GetNewLabel(std::string label) {
+        return label + "_" + std::to_string(label_id++);
+    }
 
     void PrintAvailTempRegs() {
         std::cout<<"Avail temp registers: ";
@@ -215,10 +219,16 @@ public:
     }
 
     // Free a register for temporary use
-    void FreeTempRegister(std::string reg) {
+    void FreeTempRegister(std::string &reg) {
+        if (reg == "") {
+            reg = "";
+            return;
+        }
         // std::cout<<"Freeing register: "<<reg<<"\n";
         temp_registers_avail.push_back(reg);
         temp_registers_used.erase(std::remove(temp_registers_used.begin(), temp_registers_used.end(), reg), temp_registers_used.end());
+        reg = "";
+        return;
     }
 
 

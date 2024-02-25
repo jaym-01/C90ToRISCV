@@ -15,7 +15,7 @@ spike pk "test"
 rm test
 
 # Run assembly test
-# riscv64-unknown-elf-gcc -march=rv32imfd -mabi=ilp32d -o "test" "bin/riscv_example.s" "test_driver.c"
+# # riscv64-unknown-elf-gcc -march=rv32imfd -mabi=ilp32d -o "test" "bin/riscv_example.s" "test_driver.c"
 # riscv64-unknown-elf-gcc -o "test" "bin/riscv_example.s" "test_driver.c"
 # spike pk "test"
 # rm test

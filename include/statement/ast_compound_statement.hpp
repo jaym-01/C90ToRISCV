@@ -23,7 +23,8 @@ public:
     void AddDeclarationList(NodeList* decl_list) { declaration_list_ = decl_list; }
     void AddStatementList(NodeList* stmt_list) { statement_list_ = stmt_list; }
 
-    void EmitRISC(std::ostream &stream, Context &context) const override {
+    void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest) const override {
+        // Carry over previous context here
 
         // Cur scope is set by parent function, used by child.
         ScopeContext* cur_scope = context.GetCurScope();
@@ -42,14 +43,14 @@ public:
             for (auto stmt : statement_list_->GetNodes()) {
                 std::string dest_reg = "";
 
-                // context.PrintAvailTempRegs();
                 stmt->EmitRISCWithDest(stream, context, dest_reg);
                 if (dest_reg != "") {
                     context.FreeTempRegister(dest_reg);
                 }
 
+                // context.PrintAvailTempRegs();
                 if (context.temp_registers_avail.size() < 6) {
-                    std::runtime_error("Less than 6 registers left after statement. Check for leaks");
+                    throw std::runtime_error("Less than 6 registers left after statement. Check for leaks");
                 }
             }
         }

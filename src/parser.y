@@ -186,7 +186,15 @@ statement_list
 /* Handle if statements, switch, while, for */
 statement
 	: expression_statement
+	| compound_statement
+	| selection_statement
 	| jump_statement { $$ = $1; }
+	;
+
+selection_statement
+	: IF '(' expression ')' statement { $$ = new IfElseStatement($3, $5, nullptr); }
+	| IF '(' expression ')' statement ELSE statement { $$ = new IfElseStatement($3, $5, $7); }
+	| SWITCH '(' expression ')' statement
 	;
 
 jump_statement
@@ -214,20 +222,6 @@ expression
 	}
 	;
 
-constant_expression
-	: additive_expression { $$ = $1; } // TODO: Change to conditional expression later on
-	;
-
-assignment_expression
-	: additive_expression /* : replace later with conditional_expression */
-	| unary_expression assignment_operator assignment_expression {
-
-		// Should unary_expression be replaced with primary_expression?
-		$$ = new AssignmentExpression($1, *$2, $3);
-		delete $2;
-	}
-	;
-
 assignment_operator
 	: '=' { $$ = new std::string("="); }
 	| MUL_ASSIGN
@@ -240,6 +234,73 @@ assignment_operator
 	| AND_ASSIGN
 	| XOR_ASSIGN
 	| OR_ASSIGN
+	;
+
+constant_expression
+	: conditional_expression { $$ = $1; } // TODO: Change to conditional expression later on
+	;
+
+assignment_expression
+	: conditional_expression /* : replace later with conditional_expression */
+	| unary_expression assignment_operator assignment_expression {
+
+		// Should unary_expression be replaced with primary_expression?
+		$$ = new AssignmentExpression($1, *$2, $3);
+		delete $2;
+	}
+	;
+
+conditional_expression
+	: logical_or_expression
+	/* | logical_or_expression '?' expression ':' conditional_expression // TODO */
+	;
+
+logical_or_expression
+	: logical_and_expression
+	| logical_or_expression OR_OP logical_and_expression { $$ = new BinaryExpression($1, "||", $3);}
+	;
+
+logical_and_expression
+	: inclusive_or_expression
+	| logical_and_expression AND_OP inclusive_or_expression { $$ = new BinaryExpression($1, "&&", $3);}
+	;
+
+inclusive_or_expression
+	: exclusive_or_expression
+	| inclusive_or_expression '|' exclusive_or_expression { $$ = new BinaryExpression($1, "|", $3);}
+	;
+
+exclusive_or_expression
+	: and_expression
+	| exclusive_or_expression '^' and_expression { $$ = new BinaryExpression($1, "^", $3);}
+	;
+
+
+and_expression
+	: equality_expression
+	| and_expression '&' equality_expression { $$ = new BinaryExpression($1, "&", $3);}
+	;
+
+
+equality_expression
+	: relational_expression
+	| equality_expression EQ_OP relational_expression { $$ = new BinaryExpression($1, "==", $3);}
+	| equality_expression NE_OP relational_expression { $$ = new BinaryExpression($1, "!=", $3);}
+	;
+
+relational_expression
+	: shift_expression
+	| relational_expression '<' shift_expression { $$ = new BinaryExpression($1, "<", $3);}
+	| relational_expression '>' shift_expression { $$ = new BinaryExpression($1, ">", $3);}
+	| relational_expression LE_OP shift_expression { $$ = new BinaryExpression($1, "<=", $3);}
+	| relational_expression GE_OP shift_expression { $$ = new BinaryExpression($1, ">=", $3);}
+	;
+
+/* Bit wise expressions */
+shift_expression
+	: additive_expression
+	| shift_expression LEFT_OP additive_expression { $$ = new BinaryExpression($1, "<<", $3);}
+	| shift_expression RIGHT_OP additive_expression { $$ = new BinaryExpression($1, ">>", $3);}
 	;
 
 /* Binary Expressions (Parent of cast expression / unary expression) */
