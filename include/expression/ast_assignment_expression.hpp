@@ -2,6 +2,7 @@
 #define AST_ASSIGNMENT_EXPRESSION_HPP
 
 #include "../ast_node.hpp"
+#include "helpers/var_helpers.hpp"
 
 class AssignmentExpression : public Node
 {
@@ -24,38 +25,47 @@ public:
     };
 
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string& dest_reg) const {
+        std::cout<<"Emitting RISC for ";
+        Print(std::cout);
 
-        // std::cout<<"Emitting RISC for ";
-        // Print(std::cout);
+        if (dest_reg == "") {
+            dest_reg = context.ReserveTempRegister();
+        }
 
         assignment_expression_->EmitRISCWithDest(stream, context, dest_reg);
-
         if (unary_expression_->GetIdentifier() == "") {
             throw std::runtime_error("Error: unary_expression_ in assignment_expression_ doesn't have an identifier");
         }
 
-        // 2a. Calculate var offset from fp for variable
+        // 1. Get var from context
         std::string var_id = unary_expression_->GetIdentifier();
         ScopeContext* cur_scope = context.GetCurScope();
-        VariableContext var = cur_scope->GetVarFromId(var_id); // get type & offset
+        VariableContext var = cur_scope->GetVarFromId(var_id);
 
-        // 2b. Move cur func offset to new pos & set fp_offset for var in context
+        // 2. Calculate var offset if not already done
         // TODO: optimize by doing graph coloring and assigning variables to saved regs?
-
-        // TODO: Check if need changes after array implementation
         int var_offset;
         if (var.offset > 0) {
-            // Create new func offset
-            int cur_func_offset = context.GetCurFuncOffset();
-            var_offset = calculate_var_offset(cur_func_offset, var);
-            context.SetCurFuncOffset(var_offset);
+            var_offset = context.CalcVarOffsetAndUpdate(var);
             cur_scope->SetVarOffset(var_id, var_offset);
-        } else {
-            var_offset = var.offset;
+            var.offset = var_offset;
         }
 
+        // Store result in var
 
-        stream << "sw " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+        // Do this in side set_var_value function.
+        // std::string index_reg = "";
+        // if (var.is_array)  {
+        //     Node* index_expr = unary_expression_->GetIndexExpression();
+        //     index_expr->EmitRISCWithDest(stream, context, index_reg);
+        // }
+
+        // dest_reg: value to assign, index_reg: reg holding arr index
+
+        set_var_value(
+            unary_expression_,
+            context,
+            stream, var, dest_reg);
     };
 
     void EmitRISC(std::ostream &stream, Context &context) const {
@@ -63,7 +73,7 @@ public:
 
     void Print(std::ostream &stream) const
     {
-        stream<<std::endl;
+        // stream<<std::endl;
         stream << "ass_expr{ ";
         unary_expression_->Print(stream);
         stream << " " << assignment_operator_ << " ";

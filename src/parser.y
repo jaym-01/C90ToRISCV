@@ -298,6 +298,10 @@ postfix_expression
 	| postfix_expression INC_OP { $$ = new PostfixExpression($1, "++"); }
 	| postfix_expression DEC_OP { $$ = new PostfixExpression($1, "--"); }
 	| postfix_expression '(' argument_expression_list ')' { $$ = new FunctionCall($1, $3); }
+	| postfix_expression '[' expression ']' {
+		Node* single_expr = $3->GetNodes()[0];
+		$$ = new ArrayAccess($1, single_expr);
+	}
 	/* To add the rest for arrays, functions & structs */
 	;
 

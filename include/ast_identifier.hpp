@@ -2,7 +2,7 @@
 #define AST_IDENTIFIER_HPP
 
 #include "ast_node.hpp"
-
+#include "helpers/var_helpers.hpp"
 class Identifier : public Node
 {
 private:
@@ -22,10 +22,6 @@ public:
             dest_reg = context.ReserveTempRegister();
         }
 
-        std::cout<<"Dest reg: "<<dest_reg<<", Emitting RISC for ";
-        Print(std::cout);
-        std::cout<<std::endl;
-
         ScopeContext* cur_scope = context.GetCurScope();
         VariableContext var = cur_scope->GetVarFromId(identifier_);
 
@@ -34,8 +30,9 @@ public:
             throw std::runtime_error(err_msg);
         }
 
-        load_var_to_reg(stream, var.type, var.offset, dest_reg);
-        // stream << "lw " << dest_reg << ", " << var.offset << "(fp)" << std::endl;
+        read_var_value(
+            nullptr, context,
+            stream, var, dest_reg);
     };
 
     int GetNumBranches() const override{

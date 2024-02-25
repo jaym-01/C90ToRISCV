@@ -1,7 +1,7 @@
 #ifndef HELPERS_HPP
 #define HELPERS_HPP
 
-#include "./context/ast_variable_context.hpp"
+#include "context/ast_variable_context.hpp"
 
 inline std::map<std::string, int> type_size = {
     {"int", 4},
@@ -9,36 +9,46 @@ inline std::map<std::string, int> type_size = {
     {"float", 4},
 };
 
-inline void load_var_to_reg(std::ostream &stream, std::string var_type, int var_offset, std::string reg){
-    // stream << "lw " << reg << " " << offset << "($fp)" << std::endl;
-    if (var_type == "int") {
-        stream << "lw " << reg << ", " << var_offset << "(fp)" << std::endl;
-    }
-    else if (var_type == "char") {
-        stream << "lbu" << reg << ", " << var_offset << "(fp)" << std::endl;
-    }
-    // else if (var_type == "float") {
-    //     stream << "l.s " << reg << " " << var_offset << "($fp)" << std::endl;
-    // }
-    // else if (var_type == "double") {
-    //     stream << "l.d " << reg << " " << var_offset << "($fp)" << std::endl;
-    // }
-}
+// inline void load_var_to_reg(std::ostream &stream, std::string var_type, int var_offset,
+//     std::string dest_reg, std::string addr_reg = "fp"){
 
-inline void store_var_to_reg(std::ostream &stream, std::string var_type, int var_offset, std::string reg){
-    if (var_type == "int") {
-        stream << "sw " << reg << ", " << var_offset << "(fp)" << std::endl;
-    }
-    else if (var_type == "char") {
-        stream << "sb " << reg << ", " << var_offset << "(fp)" << std::endl;
-    }
-    // else if (var_type == "float") {
-    //     stream << "s.s " << reg << " " << var_offset << "($fp)" << std::endl;
-    // }
-    // else if (var_type == "double") {
-    //     stream << "s.d " << reg << " " << var_offset << "($fp)" << std::endl;
-    // }
-}
+//     // stream << "lw " << reg << " " << offset << "($fp)" << std::endl;
+//     if (var_type == "int") {
+//         stream << "lw " << dest_reg << ", " << var_offset << "("<<addr_reg<<")" << std::endl;
+//     }
+//     else if (var_type == "char") {
+//         stream << "lbu" << dest_reg << ", " << var_offset << "("<<addr_reg<<")" << std::endl;
+//     }
+//     // else if (var_type == "float") {
+//     //     stream << "l.s " << reg << " " << var_offset << "($fp)" << std::endl;
+//     // }
+//     // else if (var_type == "double") {
+//     //     stream << "l.d " << reg << " " << var_offset << "($fp)" << std::endl;
+//     // }
+// }
+
+// inline void load_array_elem_to_reg(std::ostream &stream, VariableContext var,
+//     std::string index_reg, std::string dest_reg){
+//     int offset;
+
+//     std::map<std::string, int> type_to_shift_amt = {
+//         // can also do log2(type_size)
+//         {"int", 2},
+//         {"char", 0},
+//         {"float", 2},
+//     };
+
+//     // Set index offset amt in index reg
+//     stream << "slli " << index_reg << ", " << index_reg << ", "<<type_to_shift_amt[var.type]<< std::endl;
+//     // Add var offset to index reg
+//     stream << "addi " << index_reg << ", " << index_reg << "," << var.offset << std::endl;
+//     // Add total offset to fp
+//     stream << "add " << index_reg << ", " << index_reg << ", fp" << std::endl;
+
+//     load_var_to_reg(stream, var.type, 0, dest_reg, index_reg);
+// }
+
+
 
 inline int align_to_multiple_of_4(int offset)
 {

@@ -2,7 +2,7 @@
 #define AST_POSTFIX_EXPRESSION_HPP
 
 #include "../ast_node.hpp"
-
+#include "helpers/var_helpers.hpp"
 class PostfixExpression : public Node
 {
 private:
@@ -36,7 +36,7 @@ public:
 
         // Load var into temp reg
         std::string temp_reg = context.ReserveTempRegister();
-        load_var_to_reg(stream, var.type, var.offset, temp_reg);
+        stream<< "add " << temp_reg << ", " << dest_reg << ", x0" << std::endl;
 
         // Increment or decrement
         if (postfix_operator_ == "++") {
@@ -47,7 +47,7 @@ public:
         }
 
         // Store temp reg back into var
-        store_var_to_reg(stream, var.type, var.offset, temp_reg);
+        set_var_value(expression_, context, stream, var, temp_reg);
     };
 
     void Print(std::ostream &stream) const

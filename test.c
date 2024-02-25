@@ -1,11 +1,14 @@
 int test1() {
-    // int x = {1};
-    // int x[] = {1, 2, 3};
+    // Failed
+    // int y;
+    // int x[8];
+    // y = 13;
+    // return y;
 
-    // int x;
-    int x[3] = {1, 2, 3};
-    int y = ~(4 * 3);
-    return y;
+    // Failed
+    int x[8];
+    x[0] = 23;
+    return x[0];
 }
 
 // // TEST 1: VARIABLES & DATA TYPES

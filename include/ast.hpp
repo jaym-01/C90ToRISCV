@@ -25,13 +25,16 @@
 
 // Declarators
 #include "declaration/ast_init_declarator.hpp"
-#include "declaration/ast_array_declarator.hpp"
 
 // Expression
 #include "expression/ast_postfix_expression.hpp"
 #include "expression/ast_unary_expression.hpp"
 #include "expression/ast_binary_expression.hpp"
 #include "expression/ast_assignment_expression.hpp"
+
+// Arrays
+#include "declaration/ast_array_declarator.hpp"
+#include "expression/ast_array_access.hpp"
 
 // Statements
 #include "statement/ast_compound_statement.hpp"

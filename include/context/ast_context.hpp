@@ -210,6 +210,13 @@ public:
         f_context->SetLocalVarOffset(offset);
         return;
     }
+
+    int CalcVarOffsetAndUpdate(VariableContext var) {
+        int cur_func_offset = GetCurFuncOffset();
+        int var_offset = calculate_var_offset(cur_func_offset, var);
+        SetCurFuncOffset(var_offset);
+        return var_offset;
+    }
 };
 
 #endif

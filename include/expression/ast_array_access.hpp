@@ -1,0 +1,68 @@
+#ifndef AST_ARRAY_ACCESS_HPP
+#define AST_ARRAY_ACCESS_HPP
+
+#include "ast_node.hpp"
+#include "helpers/var_helpers.hpp"
+
+class ArrayAccess : public Node
+{
+private:
+    Node* identifier_;
+    Node* index_expression_;
+
+public:
+    ArrayAccess(Node* identifier, Node* index_expression) : identifier_(identifier), index_expression_(index_expression){};
+    ~ArrayAccess(){
+        delete identifier_;
+        delete index_expression_;
+    };
+
+    void EmitRISC(std::ostream &stream, Context &context) const override {};
+
+    void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest_reg) const override {
+
+        if (dest_reg == "") {
+            dest_reg = context.ReserveTempRegister();
+        }
+
+        std::cout << "Dest reg: " << dest_reg << ", Emitting RISC for ";
+        Print(std::cout);
+        std::cout << std::endl;
+
+        ScopeContext *cur_scope = context.GetCurScope();
+        std::string id = identifier_->GetIdentifier();
+        VariableContext var_context = cur_scope->GetVarFromId(id);
+
+        if (var_context.offset > 0) {
+            std::string err_msg = "Variable " + id + " was not initialized";
+            throw std::runtime_error(err_msg);
+        }
+
+
+        read_var_value(
+            this, context,
+            stream, var_context, dest_reg);
+    };
+
+    Node* GetIndexExpression() const {
+        return index_expression_;
+    };
+
+    int GetNumBranches() const override {
+        return 1;
+    };
+
+    void Print(std::ostream &stream) const override {
+        stream << "arr_acc{";
+        identifier_->Print(stream);
+        stream<< "[";
+        index_expression_->Print(stream);
+        stream<<"]}";
+    };
+
+    std::string GetIdentifier() const override {
+        return identifier_->GetIdentifier();
+    }
+};
+
+#endif

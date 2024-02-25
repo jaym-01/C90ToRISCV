@@ -2,6 +2,7 @@
 #define AST_UNARY_EXPRESSION_HPP
 
 #include "../ast_node.hpp"
+#include "helpers/var_helpers.hpp"
 
 class UnaryExpression : public Node
 {
@@ -52,7 +53,9 @@ public:
             std::string id = expression_->GetIdentifier();
             ScopeContext* cur_scope = context.GetCurScope();
             VariableContext var = cur_scope->GetVarFromId(id);
-            store_var_to_reg(stream, var.type, var.offset, dest_reg);
+
+
+            set_var_value(expression_, context, stream, var, dest_reg);
         }
     };
 

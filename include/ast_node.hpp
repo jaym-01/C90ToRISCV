@@ -41,6 +41,9 @@ public:
     virtual int EvalIntExpression() const {
         throw std::runtime_error("Error: EvalExpression not implemented for this node");
     };
+    virtual Node* GetIndexExpression() const {
+        throw std::runtime_error("Error: GetIndexExpression not implemented for this node");
+    };
 
     virtual ~Node() {
         for (auto branch : branches_)

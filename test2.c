@@ -2,6 +2,8 @@
 
 int main()
 {
-    int x = {1};
+    int x[] = {1};
+    x[0]++;
+
     printf("%d\n", x[0]);
 }
