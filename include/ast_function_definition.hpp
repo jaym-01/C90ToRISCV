@@ -45,25 +45,29 @@ public:
         context.InitFunctionContext(f_context);
 
         // 2. Build context for arguments
-        ScopeContext* arg_scope = new ScopeContext(); // root scope
-        // TODO: add function args to arg_scope
-        compound_statement_->BuildContext(context, arg_scope);
-        context.InitRootScope(arg_scope);
+        ScopeContext* arg_scope = new ScopeContext();
+        // TODO: add arguments to arg_scope
+        context.SetCurScope(arg_scope);
+
+        std::stringstream compound_stream;
+        compound_statement_->EmitRISC(compound_stream, context);
+
+        context.f_context->SetRootScope(arg_scope);
         arg_scope->PrintTree(0);
+        std::cout<<"Cur func offset: "<<context.GetCurFuncOffset()<<std::endl;
 
-        // 3. Move stack pointer down
-        int total_var_size = context.GetFuncTotalVarSize();
-        int total_frame_size = CalcFrameSize(total_var_size);
 
+        // 3. Pre function calling procedure
+        int total_frame_size = context.GetCurFuncOffset();
         stream<<"addi sp, sp, "<<-total_frame_size<<std::endl; // TODO: if total frame_size > imm num of bits (12 bits)?
         stream<<"sw ra, "<<total_frame_size - 4<<"(sp)"<<std::endl;
         stream<<"sw fp, "<<total_frame_size - 8<<"(sp)"<<std::endl;
         stream << "addi fp, "<< "sp, " << total_frame_size<< std::endl;
 
-        // 4. Emit RISC for compound statement
-        compound_statement_->EmitRISC(stream, context);
+        // 4. Compound statement RISC
+        stream << compound_stream.str();
 
-        // 5. Restore
+        // 5. Post function calling procedure
         stream << "return:" << std::endl;
         stream << "lw ra, " << total_frame_size - 4 << "(sp)" << std::endl;
         stream << "lw fp, " << total_frame_size - 8 << "(sp)" << std::endl;

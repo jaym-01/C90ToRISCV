@@ -24,47 +24,23 @@ public:
         delete init_declarator_list_;
     };
 
-    ScopeContext *BuildContext(Context &context, ScopeContext* cur_scope) override
-    {
-
-        // std::cout<<"Building scope context for declaration: ";
-        // Print(std::cout);
-        std::string type = declaration_specifiers_->GetIdentifier();
-        // int cur_func_offset = context.GetCurFuncOffset();
-
-        int cur_func_var_size = context.GetFuncTotalVarSize();
-        for (auto init_decl : init_declarator_list_->GetNodes())
-        {
-
-            std::string var_id = init_decl->GetIdentifier();
-            // TODO: If no identifier, invalid declaration
-            VariableContext var_context = init_decl->InitVariableContext(type);
-            cur_scope->SetVarContext(var_id, var_context);
-
-            context.SetFuncTotalVarSize(cur_func_var_size + calculate_var_size(var_context));
-        }
-
-        return nullptr;
-    };
-
     void EmitRISC(std::ostream &stream, Context &context) const {
-        std::cout<<"Em RISC for decl: ";
-        Print(std::cout);
+        // std::cout<<"Em RISC for decl: ";
+        // Print(std::cout);
 
-        // 1. Get appropriate context for declaration
+        ScopeContext* cur_scope = context.GetCurScope();
+        std::string type = declaration_specifiers_->GetIdentifier();
+
         for (auto init_decl : init_declarator_list_->GetNodes())
         {
+            // 1. Initialise variable in context var_map
+            std::string id = init_decl->GetIdentifier();
+            VariableContext var_context = init_decl->InitVariableContext(type);
+            cur_scope->SetVarContext(id, var_context);
+
+            // 2. EmitRISC for init_declarator
             init_decl->EmitRISC(stream, context);
         }
-
-        // 2. Add variables to scope top
-        // context->scope[0]->AddVariables(var_ids);
-
-        // 3. Emit RISC for each init_decl
-        // for (auto init_decl : init_declarator_list_->GetNodes())
-        // {
-        //     init_decl->EmitRISC(stream, context);
-        // }
     };
 
     void Print(std::ostream &stream) const {
@@ -87,3 +63,26 @@ public:
 };
 
 #endif
+
+
+// OLD
+// ScopeContext *BuildContext(Context &context, ScopeContext *cur_scope) override
+// {
+
+//     // std::cout<<"Building scope context for declaration: ";
+//     // Print(std::cout);
+//     std::string type = declaration_specifiers_->GetIdentifier();
+//     int cur_func_var_size = context.GetFuncTotalVarSize();
+//     for (auto init_decl : init_declarator_list_->GetNodes())
+//     {
+
+//         std::string var_id = init_decl->GetIdentifier();
+
+//         // TODO: If no identifier, invalid declaration
+//         VariableContext var_context = init_decl->InitVariableContext(type);
+//         cur_scope->SetVarContext(var_id, var_context);
+//         context.SetFuncTotalVarSize(cur_func_var_size + calculate_var_size(var_context));
+//     }
+
+//     return nullptr;
+// };

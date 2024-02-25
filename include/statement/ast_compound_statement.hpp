@@ -23,36 +23,10 @@ public:
     void AddDeclarationList(NodeList* decl_list) { declaration_list_ = decl_list; }
     void AddStatementList(NodeList* stmt_list) { statement_list_ = stmt_list; }
 
-    ScopeContext* BuildContext(Context &context, ScopeContext* cur_scope) override {
-        std::cout<<"Building scope context for compound statement\n";
-
-        // For root compound_statement, cur_scope is same as func arg_scope
-        if (declaration_list_ != nullptr)
-        {
-            for (auto decl : declaration_list_->GetNodes()) {
-                decl->BuildContext(context, cur_scope);
-            }
-        }
-
-        if (statement_list_ != nullptr)
-        {
-            for (auto stmt : statement_list_->GetNodes()) {
-                // Build context for compound statements
-                // If statement_list->HasCompoundStatement() then create a new scope
-                // Union returned statement with current scope
-            }
-        }
-
-        // Set scope_context_ of CompountStatement
-        scope_context_ = cur_scope;
-        return cur_scope;
-    }
-
     void EmitRISC(std::ostream &stream, Context &context) const override {
 
-        // Scope child: compound statement's scope:
-        ScopeContext* temp = context.GetCurScope();
-        context.SetCurScope(scope_context_);
+        // Cur scope is set by parent function, used by child.
+        ScopeContext* cur_scope = context.GetCurScope();
 
         // Set context.cur_scope to be compound statement's scope
         std::cout<<"---------"<<std::endl;
@@ -73,10 +47,6 @@ public:
                 }
             }
         }
-
-        // Set context.cur_scope to be previous scope?
-        scope_context_->PrintTree(0);
-        context.SetCurScope(temp);
     };
 
     void Print(std::ostream &stream) const override
@@ -92,3 +62,34 @@ public:
 };
 
 #endif
+
+
+
+// OLD
+// ScopeContext *BuildContext(Context &context, ScopeContext *cur_scope) override
+// {
+//     std::cout << "Building scope context for compound statement\n";
+
+//     // For root compound_statement, cur_scope is same as func arg_scope
+//     if (declaration_list_ != nullptr)
+//     {
+//         for (auto decl : declaration_list_->GetNodes())
+//         {
+//             decl->BuildContext(context, cur_scope);
+//         }
+//     }
+
+//     if (statement_list_ != nullptr)
+//     {
+//         for (auto stmt : statement_list_->GetNodes())
+//         {
+//             // Build context for compound statements
+//             // If statement_list->HasCompoundStatement() then create a new scope
+//             // Union returned statement with current scope
+//         }
+//     }
+
+//     // Set scope_context_ of CompountStatement
+//     scope_context_ = cur_scope;
+//     return cur_scope;
+// }

@@ -32,7 +32,7 @@ public:
     virtual VariableContext InitVariableContext(std::string type) {
         throw std::runtime_error("Error: InitVariableContext not implemented for this node");
     };
-    virtual ScopeContext* BuildContext(Context &context, ScopeContext* cur_scope) {};
+    // virtual ScopeContext* BuildContext(Context &context, ScopeContext* cur_scope) {}; // old
 
     // For expressions
     virtual int GetNumBranches() const { return 1; };
