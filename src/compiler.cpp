@@ -55,7 +55,11 @@ int main(int argc, char **argv)
 
     // Parse input and generate AST
     auto ast_root = Parse(command_line_arguments);
-    ast_root->Print(std::cout);
+
+    // std::cout << "---------------------------------------" << std::endl;
+    // std::cout << "printing parse tree: \n" << std::endl;
+    // ast_root->Print(std::cout);
+    // std::cout << "---------------------------------------" << std::endl;
 
     // return 0;
     if (ast_root == nullptr)
