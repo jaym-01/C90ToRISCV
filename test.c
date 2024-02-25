@@ -4,7 +4,8 @@ int test1() {
 
     // int x;
     int x[3] = {1, 2, 3};
-    return x;
+    int y = ~(4 * 3);
+    return y;
 }
 
 // // TEST 1: VARIABLES & DATA TYPES
