@@ -3,9 +3,9 @@ int test1() {
     // int x[] = {1, 2, 3};
 
     int x = 3;
-    int z = (1 * (3 + 2));
+    char a = 'a';
 
-    return --x;
+    return 0;
 }
 
 // // TEST 1: VARIABLES & DATA TYPES

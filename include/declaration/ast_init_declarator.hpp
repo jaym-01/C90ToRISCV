@@ -11,6 +11,7 @@ class InitDeclarator : public Node
 {
 private:
     Node *declarator_;
+    // value to initialize with
     NodeList *initializer_;
 
 public:
@@ -47,11 +48,14 @@ public:
             for (int i = 0; i < initializers.size(); i++) {
                 std::string dest_reg = "";
                 initializers[i]->EmitRISCWithDest(stream, context, dest_reg);
-                stream << "sw " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+                // depends on size of type
+                int t_size = type_size[var_context.type];
+                if(t_size == 1) stream << "sb " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+                else if(t_size == 4) stream << "sw " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
                 context.FreeTempRegister(dest_reg);
 
                 // Go to next offset
-                var_offset += type_size[var_context.type];
+                var_offset += t_size;
             }
         }
     };
