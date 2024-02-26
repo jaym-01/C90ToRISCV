@@ -92,7 +92,7 @@ compound_statement
 	: '{' '}' { $$ = new CompoundStatement(nullptr, nullptr); }
 	| '{' statement_list '}' { $$ = new CompoundStatement(nullptr, $2); }
 	| '{' declaration_list '}' { $$ = new CompoundStatement($2, nullptr); }
-	| '{' declaration_list statement_list '}'  { $$ = new CompoundStatement($2, $3);}
+	| '{' declaration_list statement_list '}'  { $$ = new CompoundStatement($2, $3); }
 	;
 
 
@@ -188,6 +188,7 @@ statement
 	: expression_statement
 	| compound_statement
 	| selection_statement
+	| iteration_statement
 	| jump_statement { $$ = $1; }
 	;
 
@@ -195,6 +196,12 @@ selection_statement
 	: IF '(' expression ')' statement { $$ = new IfElseStatement($3, $5, nullptr); }
 	| IF '(' expression ')' statement ELSE statement { $$ = new IfElseStatement($3, $5, $7); }
 	| SWITCH '(' expression ')' statement
+	;
+iteration_statement
+	: WHILE '(' expression ')' statement { $$ = new WhileStatement($3, $5); }
+	| DO statement WHILE '(' expression ')' ';' { $$ = new DoWhileStatement($2, $5);}
+	| FOR '(' expression_statement expression_statement ')' statement  { $$ = new ForStatement($3, $4, nullptr, $6); }
+	| FOR '(' expression_statement expression_statement expression ')' statement { $$ = new ForStatement($3, $4, $5, $7); }
 	;
 
 jump_statement
@@ -207,7 +214,7 @@ jump_statement
 	;
 
 expression_statement
-	: ';'
+	: ';' { $$ = new EmptyStatement();}
 	| expression ';'
 	;
 

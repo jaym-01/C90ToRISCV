@@ -45,6 +45,7 @@ public:
 
     void Print(std::ostream &stream) const {
 
+
         stream<<"\ndecl{ ";
         declaration_specifiers_->Print(stream);
         stream<<" ";

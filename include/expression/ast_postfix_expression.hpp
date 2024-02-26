@@ -53,8 +53,10 @@ public:
 
     void Print(std::ostream &stream) const
     {
+        std::cout<<"pf_expr{";
         expression_->Print(stream);
-        std::cout<<postfix_operator_ <<std::endl;
+        std::cout<<postfix_operator_;
+        std::cout<<"}";
     };
 };
 

@@ -2,13 +2,17 @@
 
 int test1() {
     int x = 3;
-    int y = 2;
 
-    if (x < 3) {
-        int z = 20;
-        return z;
-    } else if (y < 3) {
-        int x = 30;
+    // while (x < 10) {
+    //     x++;
+    // }
+
+    // do {
+    //     x++;
+    // } while (x < 14);
+    int i;
+    for (i = 0; i < 10; i++)  {
+        x = i;
     }
 
     return x;

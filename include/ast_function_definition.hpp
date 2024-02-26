@@ -84,7 +84,7 @@ public:
         stream << " ";
         declarator_->Print(stream);
         std::cout<<std::endl;
-        std::cout<<"\nfunc_comp_stmt: "<<std::endl;
+        // std::cout<<"\nfunc_comp_stmt: "<<std::endl;
         compound_statement_->Print(stream);
 
     };

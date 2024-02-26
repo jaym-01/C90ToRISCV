@@ -67,13 +67,12 @@ public:
         // stream<<"node_list{";
         for (auto node : nodes_)
         {
-            if (node == nullptr)
-            {
+            if (node == nullptr) {
                 continue;
             }
+
             node->Print(stream);
         }
-        // stream << "}";
     };
 
     int EvalIntExpression() const override {

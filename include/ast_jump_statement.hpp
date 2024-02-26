@@ -44,7 +44,6 @@ public:
             expression_->Print(stream);
         }
         stream << " }";
-        // stream << ";" << std::endl;
 
     };
 };
