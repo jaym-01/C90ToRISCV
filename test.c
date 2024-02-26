@@ -1,17 +1,18 @@
-int f(int n)
+int test1()
 {
-    if (n == 0) {
-        return 0;
+    int i;
+    int x[8];
+    int acc;
+    for (i = 8; i < 16; i++)
+    {
+        x[i - 8] = i;
     }
-    return n + f(n - 1);
-}
 
-int test1() {
-    int x = 3;
-    int y = f(3);
+    acc = 0;
 
-    int z = f(8);
-    int k = f(2);
-
-    return x + y + z + k;
+    for (i = 0; i < 8; i++)
+    {
+        acc = acc + x[i + 0];
+    }
+    return acc;
 }

@@ -66,6 +66,8 @@ public:
         // tmp->PrintTree(0);
 
         tmp->AddChildScope(new_scope);
+        tmp->MergeWithChild(new_scope);
+
         context.SetCurScope(tmp);
     };
 

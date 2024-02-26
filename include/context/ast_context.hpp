@@ -39,6 +39,15 @@ public:
     //     var_map[identifier] = { type: type, offset: 1 };
     // }
 
+    void MergeWithChild(ScopeContext* other) {
+        for (auto var : other->var_map) {
+            VariableContext context = var.second;
+            if (var_map.find(var.first) != var_map.end() && var.second.is_inherited) {
+                var_map[var.first] = var.second;
+            }
+        }
+    }
+
     void SetVarContext(std::string identifier, VariableContext context) {
         if (var_map.find(identifier) != var_map.end() && var_map[identifier].is_inherited == false)
             throw std::runtime_error("Error: variable " + identifier + " already exists");
