@@ -78,7 +78,9 @@ public:
         int max_func_arg_overflow = context.GetCurFuncMaxArgOverflow();
         int total_frame_size = -cur_func_offset + max_func_arg_overflow;
         stream << "addi sp, sp, " << -total_frame_size << std::endl; // TODO: if total frame_size > imm num of bits (12 bits)?
+        //at the top of the stack
         stream<<"sw ra, "<<total_frame_size - 4<<"(sp)"<<std::endl;
+        // in the word below
         stream<<"sw fp, "<<total_frame_size - 8<<"(sp)"<<std::endl;
         stream << "addi fp, "<< "sp, " << total_frame_size<< std::endl;
 

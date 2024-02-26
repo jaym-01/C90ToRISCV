@@ -2,8 +2,11 @@ int test1() {
     // int x = {1};
     // int x[] = {1, 2, 3};
 
-    int x = 3;
-    char a = 'a';
+    // int x = 3;
+    char a = 'a', b = 'b', c = 'c';
+    int x = 5;
+
+    // a = 'b';
 
     return 0;
 }

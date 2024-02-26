@@ -14,8 +14,6 @@
 // compiled (e.g. function scope and variable names).
 
 class ScopeContext {
-private:
-
 public:
     std::map<std::string, VariableContext> var_map;
     std::vector<ScopeContext*> child_scopes;
@@ -114,7 +112,7 @@ class FunctionContext {
 public:
     std::string identifier;
     int total_var_size; // num variables * 4 | 8?
-    int local_var_offset; // used when emitting RISC and storing variables to memory
+    int local_var_offset; // used when emitting RISC and storing variables to memory (relative to fp)
     ScopeContext* root_scope;
     std::vector<std::string> saved_registers_avail;
     std::vector<std::string> saved_registers_used;
@@ -130,6 +128,7 @@ public:
         identifier = id;
         // root_scope = nullptr;
         total_var_size = 0;
+        // initially 4 words down -> for the return address and the stack pointer
         local_var_offset = -16;
 
         saved_registers_avail = {"s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11"};
@@ -312,6 +311,15 @@ public:
 
     int GetCurFuncOffset() {
         return f_context->GetLocalVarOffset();
+    }
+
+    int GetStackOffset(){
+        int local_var_offset = GetCurFuncOffset();
+        int rem = (-local_var_offset)%4;
+        if(rem == 0){
+            return local_var_offset;
+        }
+        return local_var_offset + rem - 4;
     }
 
     void SetCurFuncOffset(int offset) {

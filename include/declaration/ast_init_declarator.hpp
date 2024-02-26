@@ -39,8 +39,9 @@ public:
             std::vector<Node*> initializers = initializer_->GetNodes();
             int cur_func_offset = context.GetCurFuncOffset();
 
-
+            // gets the offset relative to the fp
             int var_offset = calculate_var_offset(cur_func_offset, var_context);
+            // stores the offset for the variable so it can be accessed again
             cur_scope->SetVarOffset(id, var_offset);
             context.SetCurFuncOffset(var_offset);
 
