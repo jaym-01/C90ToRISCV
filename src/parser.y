@@ -205,7 +205,11 @@ iteration_statement
 	;
 
 jump_statement
-	: RETURN ';' {
+	: GOTO IDENTIFIER ';'
+	| CONTINUE ';' { $$ = new BreakContinueStatement ("continue");}
+	| BREAK ';' { $$ = new BreakContinueStatement("break");}
+
+	| RETURN ';' {
 		$$ = new ReturnStatement(nullptr);
 	}
 	| RETURN expression ';' {

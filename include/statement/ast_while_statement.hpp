@@ -26,6 +26,10 @@ public:
         std::string endwhile_label = context.GetNewLabel("endwhile_label");
         std::string startwhile_label = context.GetNewLabel("startwhile_label");
 
+        std::string prev_contloop_label = context.cur_contloop_label;
+        std::string prev_breakloop_label = context.cur_breakloop_label;
+        context.SetBreakContLabels(endwhile_label, startwhile_label);
+
         // 1. Evaluate condition
         stream << startwhile_label << ":" << std::endl;
 
@@ -42,6 +46,8 @@ public:
         context.FreeTempRegister(empty_reg);
 
         stream << endwhile_label << ":" << std::endl;
+
+        context.SetBreakContLabels(prev_breakloop_label, prev_contloop_label);
     };
 
     void Print(std::ostream &stream) const

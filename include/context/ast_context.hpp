@@ -165,6 +165,8 @@ public:
     ScopeContext *cur_scope;
     ScopeContext* global_scope;
     int label_id = 0;
+    std::string cur_contloop_label = "";
+    std::string cur_breakloop_label = "";
 
     Context()
     {
@@ -176,6 +178,11 @@ public:
     ~Context() {
         delete f_context;
         delete global_scope;
+    }
+
+    void SetBreakContLabels(std::string break_label, std::string cont_label) {
+        cur_breakloop_label = break_label;
+        cur_contloop_label = cont_label;
     }
 
     std::string GetNewLabel(std::string label) {

@@ -5,7 +5,8 @@ int test1() {
 
     do {
         x++;
-    } while (x < 10);
+        continue;
+    } while (x < 4);
 
     return x;
 }
