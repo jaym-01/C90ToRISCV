@@ -23,15 +23,10 @@ public:
     void AddDeclarationList(NodeList* decl_list) { declaration_list_ = decl_list; }
     void AddStatementList(NodeList* stmt_list) { statement_list_ = stmt_list; }
 
-    void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest) const override {
-        // Carry over previous context here
-
-        // Cur scope is set by parent function, used by child.
-        ScopeContext* cur_scope = context.GetCurScope();
-
+    void EmitRISCHelper(std::ostream &stream, Context &context, std::string &dest_reg) const {
         // Set context.cur_scope to be compound statement's scope
-        std::cout<<"---------"<<std::endl;
-        std::cout<<"Emitting RISC for compound statement\n";
+        // std::cout << "---------" << std::endl;
+        // std::cout << "Emitting RISC for compound statement\n";
 
         if (declaration_list_ != nullptr) {
             for (auto decl : declaration_list_->GetNodes()) {
@@ -54,6 +49,27 @@ public:
                 }
             }
         }
+    }
+
+    void EmitRISCWithExistingContext(std::ostream &stream, Context &context, std::string &dest) const {
+        // Carry over previous context here
+        EmitRISCHelper(stream, context, dest);
+    };
+
+    void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest) const override {
+        ScopeContext* cur_scope = context.GetCurScope();
+
+        // Create new scope for compound statement
+        ScopeContext* tmp = context.GetCurScope();
+        ScopeContext* new_scope = new ScopeContext(tmp);
+        context.SetCurScope(new_scope);
+
+        // std::cout<<"Creating new scope for compound statement\n";
+        EmitRISCHelper(stream, context, dest);
+        // tmp->PrintTree(0);
+
+        tmp->AddChildScope(new_scope);
+        context.SetCurScope(tmp);
     };
 
     void Print(std::ostream &stream) const override

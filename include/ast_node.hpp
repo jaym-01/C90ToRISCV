@@ -20,6 +20,10 @@ public:
     };
     // Can either declare reg to save value, or wait for caller to declare
     virtual void EmitRISCWithDest(std::ostream &stream, Context &context, std::string& dest_reg) const {};
+    // For compound statements
+    // virtual void EmitRISCWithExistingContext(std::ostream &stream, Context &context) const {
+    //     throw std::runtime_error("Error: EmitRISCWithExistingContext not implemented for this node");
+    // };
 
     virtual void Print(std::ostream &stream) const = 0;
 

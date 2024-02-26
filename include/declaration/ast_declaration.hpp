@@ -45,7 +45,7 @@ public:
 
     void Print(std::ostream &stream) const {
 
-        stream<<"decl{ ";
+        stream<<"\ndecl{ ";
         declaration_specifiers_->Print(stream);
         stream<<" ";
         NodeList *init_declarator_list = init_declarator_list_;
@@ -57,7 +57,7 @@ public:
                 stream<<", ";
         }
         stream<< " ]";
-        stream<<" }"<<std::endl;
+        stream<<" }";
     };
 
     void GlobalVarEmitRISC(std::ostream &stream, Context &context) const {

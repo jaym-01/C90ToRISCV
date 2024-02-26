@@ -41,8 +41,11 @@ public:
     void SetVarContext(std::string identifier, VariableContext context) {
         if (var_map.find(identifier) != var_map.end() && var_map[identifier].is_inherited == false)
             throw std::runtime_error("Error: variable " + identifier + " already exists");
-        else if (var_map[identifier].is_inherited)
-            std::cout<<"Replacing outerscope variable: "<<identifier<<std::endl;
+        else if (var_map[identifier].is_inherited) {
+            std::cout << "Replacing outerscope variable: " << identifier << std::endl;
+            context.offset = 1; // TODO: Check if this is correct
+            context.is_inherited = false;
+        }
 
         var_map[identifier] = context;
     }

@@ -32,6 +32,7 @@ public:
     // Context should be function scoped?
     void EmitRISC(std::ostream &stream, Context &context) const override
     {
+        std::cout<<"Emitting RISC for func def"<<std::endl;
         // Emit assembler directives.
         // TODO: these are just examples ones, make sure you understand
         // the concept of directives and correct them.
@@ -46,17 +47,15 @@ public:
 
         // 2. Build context for arguments
         ScopeContext* arg_scope = new ScopeContext(context.global_scope);
-        arg_scope->PrintTree(0);
         // TODO: add arguments to arg_scope
         context.SetCurScope(arg_scope);
 
         std::stringstream compound_stream;
         std::string empty_reg = "";
-        compound_statement_->EmitRISCWithDest(compound_stream, context, empty_reg);
+        compound_statement_->EmitRISCWithExistingContext(compound_stream, context, empty_reg);
 
         context.f_context->SetRootScope(arg_scope);
-        arg_scope->PrintTree(0);
-        std::cout<<"Cur func offset: "<<context.GetCurFuncOffset()<<std::endl;
+        // arg_scope->PrintTree(0);
 
 
         // 3. Pre function calling procedure
@@ -85,7 +84,7 @@ public:
         stream << " ";
         declarator_->Print(stream);
         std::cout<<std::endl;
-        std::cout<<"comp_stmt: "<<std::endl;
+        std::cout<<"\nfunc_comp_stmt: "<<std::endl;
         compound_statement_->Print(stream);
 
     };

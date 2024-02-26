@@ -55,16 +55,16 @@ public:
 
     void Print(std::ostream &stream) const
     {
-        std::cout << "if (";
+        std::cout << "\nif (";
         cond_expression_->Print(stream);
         std::cout << ")";
         std::cout << std::endl<< "{ ";
         if_statement_->Print(stream);
-        std::cout << " }"<<std::endl;
+        std::cout <<std::endl<<"} ";
         if (else_statement_ != nullptr) {
             std::cout << "else { ";
             else_statement_->Print(stream);
-            std::cout << " }"<<std::endl;
+            std::cout << std::endl<<"}"<<std::endl;
         }
     };
 };

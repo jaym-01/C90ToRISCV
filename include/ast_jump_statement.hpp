@@ -20,11 +20,11 @@ public:
 
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest_reg) const override
     {
+        // std::cout << "Emitting RISC for ";
+        // Print(std::cout);
 
         // Evaluate expression
         std::string ret_reg = context.GetReturnRegister();
-        std::cout << "Emitting RISC for ";
-        Print(std::cout);
 
         if (expression_ != nullptr)
         {
@@ -37,13 +37,13 @@ public:
 
     void Print(std::ostream &stream) const override
     {
-        stream << "return_stmt{";
+        stream << "\nreturn_stmt{";
         if (expression_ != nullptr)
         {
             stream << " ";
             expression_->Print(stream);
         }
-        stream << " }" << std::endl;
+        stream << " }";
         // stream << ";" << std::endl;
 
     };

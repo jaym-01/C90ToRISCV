@@ -6,9 +6,12 @@
 
 Node *Parse(CommandLineArguments &args)
 {
-    std::cout << "\nParsing: " << args.compile_source_path << std::endl<<std::endl;
+    std::cout<<"-----------------------"<<std::endl;
+    std::cout << "Parsing: " << args.compile_source_path << std::endl;
     auto root = ParseAST(args.compile_source_path);
-    std::cout << "\nAST parsing complete" << std::endl;
+    std::cout << "AST parsing complete" << std::endl;
+    std::cout<<"-----------------------"<<std::endl;
+    std::cout<<"PRINTING AST: "<<std::endl;
     return root;
 }
 
@@ -33,7 +36,7 @@ void Compile(Node *root, CommandLineArguments &args)
     // what's currently being compiled (e.g. function scope and variable names).
     Context ctx;
 
-    std::cout << "-----------------------" << std::endl;
+    std::cout << "\n\n-----------------------" << std::endl;
     std::cout << "Compiling parsed AST..." << std::endl;
     std::ofstream output(args.compile_output_path, std::ios::trunc);
     root->EmitRISC(output, ctx);

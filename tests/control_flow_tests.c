@@ -38,3 +38,25 @@ int test2()
 
     return x;
 }
+
+// Test if else with scoping
+int test3() {
+
+
+    int x = 3;
+    int y = 2;
+
+    if (x < 3)
+    {
+        int z = 20;
+        return z;
+        x = 5;
+    }
+    else if (y < 3)
+    {
+        int x = 30;
+    }
+
+    return x;
+
+}
