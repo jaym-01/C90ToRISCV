@@ -42,8 +42,8 @@ public:
         return {
             .id=identifier_,
             .type=type,
-            .is_array=false,
             .array_size=1,
+            .is_array=false,
         };
     };
 

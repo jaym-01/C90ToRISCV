@@ -7,5 +7,11 @@ int f(int n)
 }
 
 int test1() {
-    return f(2);
+    int x = 3;
+    int y = f(3);
+
+    int z = f(8);
+    int k = f(2);
+
+    return x + y + z + k;
 }

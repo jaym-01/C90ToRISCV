@@ -3,6 +3,7 @@
 #include <iostream>
 #include "vector"
 #include "helpers.hpp"
+#include <algorithm>
 
 #ifndef AST_CONTEXT_HPP
 #define AST_CONTEXT_HPP

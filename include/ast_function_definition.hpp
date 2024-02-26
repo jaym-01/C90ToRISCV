@@ -95,6 +95,8 @@ public:
         stream << "jr ra" << std::endl<<std::endl;
 
         // Delete f_context?
+        delete f_context;
+        context.f_context = nullptr;
     };
 
 
