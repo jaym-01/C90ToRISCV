@@ -22,6 +22,7 @@ public:
     };
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest) const override
     {
+        std::cout<<"Emitting RISC for if else statement: "<<std::endl;
         ScopeContext* scope = context.GetCurScope();
         std::string endif_label = context.GetNewLabel("endif_label");
         std::string else_label = else_statement_ != nullptr ? context.GetNewLabel("else_label") : "";
@@ -36,6 +37,7 @@ public:
         } else {
             stream<<"beq "<<cond_reg<<", zero, "<<endif_label<<std::endl;
         }
+        // std::cout<<"Cond reg: "<<cond_reg<<std::endl;
         context.FreeTempRegister(cond_reg);
 
         // 2. Emit if statement

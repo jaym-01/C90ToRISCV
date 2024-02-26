@@ -3,6 +3,8 @@
 
 #include "../ast_node.hpp"
 #include "../ast_node_list.hpp"
+
+// GLOBAL DEFINITION
 class GlobalVariable : public Node
 {
 private:

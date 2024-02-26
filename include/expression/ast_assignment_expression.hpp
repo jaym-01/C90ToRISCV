@@ -52,6 +52,7 @@ public:
             var.offset = var_offset;
         }
 
+        // Dest reg here holds the value to be stored in var
         write_var_value(unary_expression_, context, stream, var, dest_reg);
     };
 

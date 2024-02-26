@@ -41,13 +41,13 @@
 %type <node> equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
 %type <node> conditional_expression assignment_expression constant_expression declaration declaration_specifiers
 %type <node> init_declarator type_specifier struct_specifier struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list
-%type <node> struct_declarator enum_specifier enumerator_list enumerator declarator direct_declarator pointer parameter_list parameter_declaration
+%type <node> struct_declarator enum_specifier enumerator_list enumerator declarator direct_declarator pointer parameter_declaration
 %type <node> identifier_list type_name abstract_declarator direct_abstract_declarator statement labeled_statement // initializer initializer_list
 %type <node> expression_statement selection_statement iteration_statement jump_statement
 
 /* Moved declaration_list, argument_expression_list, compound_statement to nodes */
 %type <nodes> statement_list declaration_list argument_expression_list init_declarator_list expression
-%type <nodes> initializer initializer_list translation_unit
+%type <nodes> initializer initializer_list translation_unit parameter_list
 
 /* New */
 %type <compound_statement> compound_statement
@@ -81,9 +81,8 @@ external_declaration
 	;
 
 function_definition
-	: declaration_specifiers declarator compound_statement {
-		$$ = new FunctionDefinition($1, $2, $3);
-	}
+	: declaration_specifiers declarator declaration_list compound_statement
+	| declaration_specifiers declarator compound_statement { $$ = new FunctionDefinition($1, $2, nullptr, $3); }
 	;
 
 
@@ -107,9 +106,7 @@ declaration_list
 
 declaration
 	: declaration_specifiers ';'
-	| declaration_specifiers init_declarator_list ';' {
-		$$ = new Declaration($1, $2);
-	}
+	| declaration_specifiers init_declarator_list ';' { $$ = new Declaration($1, $2); }
 
 /* Parent of type_specifier and storage_class_specifier
 (includes e.g. int, static, int statc, static int) */
@@ -133,11 +130,7 @@ type_specifier
 /* Parent of init_declarator & initialiser (e.g. x = 5, y = 10) */
 init_declarator_list
 	: init_declarator { $$ = new NodeList($1); }
-	| init_declarator_list ',' init_declarator {
-		std::cout<<"Handling init declarator list..."<<std::endl;
-		$1->PushBack($3);
-		$$ = $1;
-	}
+	| init_declarator_list ',' init_declarator { $1->PushBack($3); $$ = $1; }
 	;
 
 init_declarator
@@ -147,9 +140,7 @@ init_declarator
 
 /* parent of direct declarator (to include pointer syntax) */
 declarator
-	: direct_declarator {
-		$$ = $1;
-	}
+	: direct_declarator { $$ = $1; }
 	;
 
 direct_declarator
@@ -158,9 +149,28 @@ direct_declarator
 		delete $1;
 	}
 	| '(' declarator ')' { $$ = $2; }
-	| direct_declarator '(' ')' { $$ = new DirectDeclarator($1); }
-	| direct_declarator '[' constant_expression ']' { $$ = new ArrayDeclarator($1, $3);}
+	| direct_declarator '[' constant_expression ']' { $$ = new ArrayDeclarator($1, $3);} // For arrays
 	| direct_declarator '[' ']' { { $$ = new ArrayDeclarator($1, nullptr); } }
+	| direct_declarator '(' ')' { $$ = new FunctionDeclarator($1, nullptr); } // For functions
+	| direct_declarator '(' parameter_list ')' { $$ = new FunctionDeclarator($1, $3); }
+	/* | direct_declarator '(' identifier_list ')' */
+	;
+
+/* function param list */
+parameter_list
+	: parameter_declaration { $$ = new NodeList($1); }
+	| parameter_list ',' parameter_declaration { $1->PushBack($3); $$ = $1; }
+	;
+
+parameter_declaration
+	: declaration_specifiers declarator { $$ = new ParamDeclaration($1, $2); }
+	| declaration_specifiers { $$ = new ParamDeclaration($1, nullptr); }
+	/* | declaration_specifiers abstract_declarator // TODO: Used to declare abstract arrs, funcs, etc.  */
+	;
+
+identifier_list
+	: IDENTIFIER // TODO: Used for K&R (Kernighan and Ritchie) style function dec
+	| identifier_list ',' IDENTIFIER
 	;
 
 /* Parent of initializer_list. Can be expression or initializer*/
@@ -208,13 +218,8 @@ jump_statement
 	: GOTO IDENTIFIER ';'
 	| CONTINUE ';' { $$ = new BreakContinueStatement ("continue");}
 	| BREAK ';' { $$ = new BreakContinueStatement("break");}
-
-	| RETURN ';' {
-		$$ = new ReturnStatement(nullptr);
-	}
-	| RETURN expression ';' {
-		$$ = new ReturnStatement($2);
-	}
+	| RETURN ';' { $$ = new ReturnStatement(nullptr); }
+	| RETURN expression ';' { $$ = new ReturnStatement($2); }
 	;
 
 expression_statement
@@ -357,21 +362,20 @@ unary_operator
 
 argument_expression_list
 	: assignment_expression { $$ = new NodeList($1); }
-	| argument_expression_list ',' assignment_expression {
-		$1->PushBack($3);
-		$$ = $1;
-	}
+	| argument_expression_list ',' assignment_expression { $1->PushBack($3); $$ = $1; }
 	;
 
 postfix_expression
 	: primary_expression
 	| postfix_expression INC_OP { $$ = new PostfixExpression($1, "++"); }
 	| postfix_expression DEC_OP { $$ = new PostfixExpression($1, "--"); }
-	| postfix_expression '(' argument_expression_list ')' { $$ = new FunctionCall($1, $3); }
 	| postfix_expression '[' expression ']' {
+		// Array access
 		Node* single_expr = $3->GetNodes()[0];
 		$$ = new ArrayAccess($1, single_expr);
 	}
+	| postfix_expression '(' ')' { $$ = new FunctionCall($1, nullptr); }
+	| postfix_expression '(' argument_expression_list ')' { $$ = new FunctionCall($1, $3); }
 	/* To add the rest for arrays, functions & structs */
 	;
 

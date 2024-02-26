@@ -64,9 +64,7 @@ external_declaration
 
 function_definition
 	: declaration_specifiers declarator declaration_list compound_statement
-	| declaration_specifiers declarator compound_statement {
-		$$ = new FunctionDefinition($1, $2, $3);
-	}
+	| declaration_specifiers declarator compound_statement { $$ = new FunctionDefinition($1, $2, $3); }
 	| declarator declaration_list compound_statement
 	| declarator compound_statement
 	;
@@ -328,7 +326,7 @@ direct_declarator
 	| '(' declarator ')'
 	| direct_declarator '[' constant_expression ']'
 	| direct_declarator '[' ']'
-	| direct_declarator '(' parameter_list ')'
+	| direct_declarator '(' parameter_list ')' { new FunctionDeclarator($1, $3); }
 	| direct_declarator '(' identifier_list ')'
 	| direct_declarator '(' ')' {
 		$$ = new DirectDeclarator($1);

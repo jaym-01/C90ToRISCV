@@ -23,15 +23,18 @@
 #include "declaration/ast_declaration.hpp"
 #include "declaration/ast_declaration_specifiers.hpp"
 #include "declaration/ast_global_variable.hpp"
+#include "declaration/ast_param_declaration.hpp"
 
 // Declarators
 #include "declaration/ast_init_declarator.hpp"
+#include "declaration/ast_function_declarator.hpp"
 
 // Expression
 #include "expression/ast_postfix_expression.hpp"
 #include "expression/ast_unary_expression.hpp"
 #include "expression/ast_binary_expression.hpp"
 #include "expression/ast_assignment_expression.hpp"
+#include "expression/ast_function_call.hpp"
 
 // Arrays
 #include "declaration/ast_array_declarator.hpp"

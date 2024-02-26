@@ -1,17 +1,15 @@
 #include <stdio.h>
 
-int test1() {
-    int x = 3;
-
-    do {
-        x++;
-        continue;
-    } while (x < 4);
-
-    return x;
+int test1(int n)
+{
+    if (n == 0)
+    {
+        return 0;
+    }
+    return n + test1(n - 1);
 }
 
 int main()
 {
-    printf("%d\n", test1());
+    printf("%d\n", test1(5));
 }

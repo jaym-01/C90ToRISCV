@@ -32,12 +32,20 @@ public:
         throw std::runtime_error("Error: GetIdentifier not implemented for this node");
     };
 
+    virtual std::string GetTypeSpecifier() const {
+        throw std::runtime_error("Error: GetTypeSpecifier not implemented for this node");
+    };
+
     // For declarations
     virtual VariableContext InitVariableContext(std::string type) {
         throw std::runtime_error("Error: InitVariableContext not implemented for this node");
     };
     virtual void GlobalVarEmitRISC (std::ostream &stream, Context &context) const {
         throw std::runtime_error("Error: GlobalVarEmitRISC not implemented for this node");
+    };
+    virtual DeclaratorType GetDeclaratorType() const {
+        // throw std::runtime_error("Error: GetDeclaratorType not implemented for this node");
+        return DeclaratorType::None;
     };
     // virtual ScopeContext* BuildContext(Context &context, ScopeContext* cur_scope) {}; // old
 

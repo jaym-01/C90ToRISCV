@@ -32,7 +32,8 @@ public:
         }
 
         // Jump to return label
-        stream << "j return" << std::endl;
+        // Create new label for return.
+        stream << "j "<<context.GetFuncReturnLabel()<< std::endl;
     };
 
     void Print(std::ostream &stream) const override

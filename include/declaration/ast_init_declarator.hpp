@@ -89,8 +89,15 @@ public:
         return declarator_->GetIdentifier();
     }
 
-    void GlobalVarEmitRISC(std::ostream &stream, Context &context) const override
-    {
+    void GlobalVarEmitRISC(std::ostream &stream, Context &context) const override {
+        std::cout<<"Emitting RISC for glo var: ";
+        Print(std::cout);
+        std::cout<<std::endl;
+
+        if (GetDeclaratorType() == DeclaratorType::Function) {
+            declarator_->GlobalVarEmitRISC(stream, context);
+            return;
+        }
 
         ScopeContext *cur_scope = context.global_scope;
         std::string id = declarator_->GetIdentifier();
@@ -121,6 +128,10 @@ public:
             stream << ".zero " << type_size[var_context.type] << std::endl;
         }
         stream<<std::endl;
+    };
+
+    DeclaratorType GetDeclaratorType() const override {
+        return declarator_->GetDeclaratorType();
     };
 };
 

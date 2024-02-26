@@ -96,6 +96,10 @@ public:
     {
         return identifier_->GetIdentifier();
     }
+
+    DeclaratorType GetDeclaratorType() const override{
+        return DeclaratorType::Array;
+    }
 };
 
 #endif

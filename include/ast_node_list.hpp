@@ -90,6 +90,13 @@ public:
         }
     };
 
+    virtual std::string GetTypeSpecifier() const override {
+        if (nodes_.size() == 1) {
+            return nodes_[0]->GetTypeSpecifier();
+        } else {
+            throw std::runtime_error("Cannot get type specifier twice...");
+        }
+    };
 
 };
 

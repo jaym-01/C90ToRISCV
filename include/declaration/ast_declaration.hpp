@@ -29,10 +29,17 @@ public:
         // Print(std::cout);
 
         ScopeContext* cur_scope = context.GetCurScope();
-        std::string type = declaration_specifiers_->GetIdentifier();
+        std::string type = declaration_specifiers_->GetTypeSpecifier();
 
         for (auto init_decl : init_declarator_list_->GetNodes())
         {
+            DeclaratorType declarator_type = init_decl->GetDeclaratorType();
+            if (declarator_type  == DeclaratorType::Function) {
+                init_decl->EmitRISC(stream, context);
+                context.id_to_func_def[init_decl->GetIdentifier()].return_type = type;
+                continue;
+            }
+
             // 1. Initialise variable in context var_map
             std::string id = init_decl->GetIdentifier();
             VariableContext var_context = init_decl->InitVariableContext(type);
@@ -63,10 +70,18 @@ public:
 
     void GlobalVarEmitRISC(std::ostream &stream, Context &context) const {
 
-        std::string type = declaration_specifiers_->GetIdentifier();
+
+        std::string type = declaration_specifiers_->GetTypeSpecifier();
 
         for (auto init_decl : init_declarator_list_->GetNodes())
         {
+            DeclaratorType declarator_type = init_decl->GetDeclaratorType();
+            if (declarator_type  == DeclaratorType::Function) {
+                init_decl->GlobalVarEmitRISC(stream, context);
+                context.id_to_func_def[init_decl->GetIdentifier()].return_type = type;
+                continue;
+            }
+
             std::string id = init_decl->GetIdentifier();
             VariableContext var_context = init_decl->InitVariableContext(type);
             var_context.is_global = true;

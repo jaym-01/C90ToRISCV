@@ -1,16 +1,11 @@
-
+int f(int n)
+{
+    if (n == 0) {
+        return 0;
+    }
+    return n + f(n - 1);
+}
 
 int test1() {
-    int x = 3;
-
-    do
-    {
-        break;
-        x++;
-        continue;
-
-        x--;
-    } while (x < 4);
-
-    return x;
+    return f(2);
 }

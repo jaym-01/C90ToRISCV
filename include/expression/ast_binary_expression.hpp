@@ -97,9 +97,9 @@ public:
     }
 
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string& dest_reg) const {
-        // std::cout<<"Emitting RISC for binary expression: ";
-        // Print(std::cout);
-        // std::cout<<std::endl;
+        std::cout<<"Emitting RISC for binary expression: ";
+        Print(std::cout);
+        std::cout<<std::endl;
 
         std::string reg1 = "";
         std::string reg2 = "";
@@ -107,9 +107,11 @@ public:
         // TODO: What happens if you run out of temp registers
         // Evaluate child with most branches first
         if (left_operand_->GetNumBranches() > 1) {
+            std::cout<<"Evaluating left operand first"<<std::endl;
             left_operand_->EmitRISCWithDest(stream, context, reg1);
             right_operand_->EmitRISCWithDest(stream, context, reg2);
         } else {
+            std::cout << "Evaluating right operand first" << std::endl;
             right_operand_->EmitRISCWithDest(stream, context, reg2);
             left_operand_->EmitRISCWithDest(stream, context, reg1);
         }
@@ -121,11 +123,13 @@ public:
 
         EvaluateOperation(stream, reg1, reg2, dest_reg);
 
+        // std::cout<<"Operand 1 stored in reg: "<<reg1<<std::endl;
+        // std::cout<<"Operand 2 stored in reg: "<<reg2<<std::endl;
+
         context.FreeTempRegister(reg1);
         context.FreeTempRegister(reg2);
 
-
-
+        // std::cout<<"Binary expression result in reg: "<<dest_reg<<std::endl;
     };
 
     int EvalIntExpression() const override {

@@ -59,6 +59,10 @@ public:
         return identifier_;
     }
 
+    DeclaratorType GetDeclaratorType() const override {
+        return DeclaratorType::Variable;
+    }
+
 };
 
 #endif

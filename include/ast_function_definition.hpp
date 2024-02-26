@@ -9,7 +9,7 @@ class FunctionDefinition : public Node
 private:
     Node *declaration_specifiers_;
     Node *declarator_;
-
+    NodeList* declaration_list_;
     CompoundStatement *compound_statement_;
 
 private:
@@ -21,65 +21,85 @@ private:
     }
 
 public:
-    FunctionDefinition(Node *declaration_specifiers, Node *declarator, CompoundStatement *compound_statement) : declaration_specifiers_(declaration_specifiers), declarator_(declarator), compound_statement_(compound_statement){};
+    FunctionDefinition(
+        Node *declaration_specifiers,
+        Node *declarator,
+        NodeList* declaration_list,
+        CompoundStatement *compound_statement
+    ) : declaration_specifiers_(declaration_specifiers),
+        declarator_(declarator),
+        declaration_list_(declaration_list),
+        compound_statement_(compound_statement){};
+
     ~FunctionDefinition()
     {
         delete declaration_specifiers_;
         delete declarator_;
         delete compound_statement_;
+        if (declaration_list_ != nullptr)
+            delete declaration_list_;
     };
 
     // Context should be function scoped?
     void EmitRISC(std::ostream &stream, Context &context) const override
     {
         std::cout<<"Emitting RISC for func def"<<std::endl;
-        // Emit assembler directives.
-        // TODO: these are just examples ones, make sure you understand
-        // the concept of directives and correct them.
+
+        // 1. Directives for function
+        std::string id = declarator_->GetIdentifier();
         stream << ".text" << std::endl;
-        stream << ".globl "<<declarator_->GetIdentifier()<< std::endl;
+        stream << ".globl " << id << std::endl;
+        stream << id << ": " << std::endl;
 
-        declarator_->EmitRISC(stream, context);
-
-        // 1. Initialise function context
-        FunctionContext* f_context = new FunctionContext(declarator_->GetIdentifier());
+        // 1. Initialise function context and root scope context
+        FunctionContext *f_context = new FunctionContext(id, context.GetNewLabel("return"));
         context.InitFunctionContext(f_context);
-
-        // 2. Build context for arguments
         ScopeContext* arg_scope = new ScopeContext(context.global_scope);
-        // TODO: add arguments to arg_scope
         context.SetCurScope(arg_scope);
+
+        // 2. Emit RISC for function declarator (build params)
+        std::stringstream declarator_stream;
+        declarator_->EmitRISC(declarator_stream, context);
+        context.id_to_func_def[id].return_type = declaration_specifiers_->GetTypeSpecifier(); // set return type of function
+
+        if (declaration_list_ != nullptr)
+            declaration_list_->Print(stream);
+
+        if (compound_statement_ == nullptr) return;
 
         std::stringstream compound_stream;
         std::string empty_reg = "";
         compound_statement_->EmitRISCWithExistingContext(compound_stream, context, empty_reg);
-
-        context.f_context->SetRootScope(arg_scope);
-        // arg_scope->PrintTree(0);
+        context.f_context->SetRootScope(arg_scope); // Needed for destructor?
 
 
         // 3. Pre function calling procedure
         int cur_func_offset = context.GetCurFuncOffset();
-        int total_frame_size = -cur_func_offset;
+        int max_func_arg_overflow = context.GetCurFuncMaxArgOverflow();
+        int total_frame_size = -cur_func_offset + max_func_arg_overflow;
         stream << "addi sp, sp, " << -total_frame_size << std::endl; // TODO: if total frame_size > imm num of bits (12 bits)?
         stream<<"sw ra, "<<total_frame_size - 4<<"(sp)"<<std::endl;
         stream<<"sw fp, "<<total_frame_size - 8<<"(sp)"<<std::endl;
         stream << "addi fp, "<< "sp, " << total_frame_size<< std::endl;
 
         // 4. Compound statement RISC
+        stream << declarator_stream.str();
         stream << compound_stream.str();
 
         // 5. Post function calling procedure
-        stream << "return:" << std::endl;
+        // Return label should be unique
+        stream << context.GetFuncReturnLabel()<<":"<< std::endl;
         stream << "lw ra, " << total_frame_size - 4 << "(sp)" << std::endl;
         stream << "lw fp, " << total_frame_size - 8 << "(sp)" << std::endl;
         stream << "addi sp, sp, " << total_frame_size << std::endl;
-        stream << "jr ra" << std::endl;
+        stream << "jr ra" << std::endl<<std::endl;
+
+        // Delete f_context?
     };
 
 
     void Print(std::ostream &stream) const override {
-        std::cout<<"func_def: "<<std::endl;
+        std::cout<<"\nfunc_def: "<<std::endl;
         declaration_specifiers_->Print(stream);
         stream << " ";
         declarator_->Print(stream);
