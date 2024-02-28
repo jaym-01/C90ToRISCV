@@ -74,7 +74,7 @@ public:
 
 
         // 3. Pre function calling procedure
-        int cur_func_offset = context.GetCurFuncOffset();
+        int cur_func_offset = context.GetStackOffset();
         int max_func_arg_overflow = context.GetCurFuncMaxArgOverflow();
         int total_frame_size = -cur_func_offset + max_func_arg_overflow;
         stream << "addi sp, sp, " << -total_frame_size << std::endl; // TODO: if total frame_size > imm num of bits (12 bits)?
@@ -96,6 +96,7 @@ public:
         stream << "addi sp, sp, " << total_frame_size << std::endl;
         stream << "jr ra" << std::endl<<std::endl;
 
+        std::cout << declarator_->GetIdentifier() << " has offset: " << total_frame_size << " | " << cur_func_offset << std::endl;
         // Delete f_context?
         delete f_context;
         context.f_context = nullptr;

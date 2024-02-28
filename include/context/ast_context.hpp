@@ -2,13 +2,14 @@
 #include <map>
 #include <iostream>
 #include "vector"
-#include "helpers.hpp"
+#include "helpers/helpers.hpp"
 #include <algorithm>
 
 #ifndef AST_CONTEXT_HPP
 #define AST_CONTEXT_HPP
 
 #include "ast_variable_context.hpp"
+#include "../helpers/memory_helpers.hpp"
 // An object of class Context is passed between AST nodes during compilation.
 // This can be used to pass around information about what's currently being
 // compiled (e.g. function scope and variable names).
@@ -309,17 +310,16 @@ public:
         id_to_func_def[id] = def;
     }
 
+    // TODO: remove this
     int GetCurFuncOffset() {
         return f_context->GetLocalVarOffset();
     }
 
     int GetStackOffset(){
         int local_var_offset = GetCurFuncOffset();
-        int rem = (-local_var_offset)%4;
-        if(rem == 0){
-            return local_var_offset;
-        }
-        return local_var_offset + rem - 4;
+        int new_offset = align_word(local_var_offset);
+
+        return new_offset;
     }
 
     void SetCurFuncOffset(int offset) {
@@ -359,7 +359,7 @@ public:
 
         int cur_func_offset = GetCurFuncOffset();
         for (auto reg : temp_registers_used) {
-            cur_func_offset = align_to_multiple_of_4(cur_func_offset - 4);
+            cur_func_offset = align_word(cur_func_offset - 4);
             stream << "sw " << reg << ", " << cur_func_offset << "(sp)" << std::endl;
 
             saved_regs.push_back({

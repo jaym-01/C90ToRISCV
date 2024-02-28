@@ -116,7 +116,7 @@ inline void local_var_to_reg(std::ostream &stream, VariableContext var, int offs
         stream << "lw " << dest_reg << ", " << offset << "(" << addr_reg << ")" << std::endl;
     }
     else if (var.type == "char"){
-        stream << "lbu" << dest_reg << ", " << offset << "(" << addr_reg << ")" << std::endl;
+        stream << "lbu " << dest_reg << ", " << offset << "(" << addr_reg << ")" << std::endl;
     }
 }
 

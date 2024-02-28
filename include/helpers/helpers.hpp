@@ -1,7 +1,8 @@
 #ifndef HELPERS_HPP
 #define HELPERS_HPP
 
-#include "context/ast_variable_context.hpp"
+#include "../context/ast_variable_context.hpp"
+#include "memory_helpers.hpp"
 
 enum DeclaratorType
 {
@@ -28,25 +29,25 @@ inline std::map<std::string, int> type_size = {
 //     }
 // }
 
-inline int align_to_multiple_of_4(int offset)
-{
-    int remainder = offset % 4;
-    if (remainder == 0)
-    {
-        return offset;
-    }
-    else
-    {
-        if (offset < 0)
-        {
-            return -(offset + (4 - remainder));
-        }
-        else
-        {
-            return offset + (4 - remainder);
-        }
-    }
-}
+// inline int align_to_multiple_of_4(int offset)
+// {
+//     int remainder = offset % 4;
+//     if (remainder == 0)
+//     {
+//         return offset;
+//     }
+//     else
+//     {
+//         if (offset < 0)
+//         {
+//             return -(offset + (4 - remainder));
+//         }
+//         else
+//         {
+//             return offset + (4 - remainder);
+//         }
+//     }
+// }
 
 inline int calculate_var_offset(int cur_offset, VariableContext var_context) {
     int size = type_size[var_context.type];
@@ -57,7 +58,7 @@ inline int calculate_var_offset(int cur_offset, VariableContext var_context) {
     std::string type = var_context.type;
 
     if (type == "int") {
-        return align_to_multiple_of_4(offset);
+        return align_word(offset);
     }
 
     else if (type == "char") {
@@ -65,7 +66,7 @@ inline int calculate_var_offset(int cur_offset, VariableContext var_context) {
     }
 
     else if (type == "float") {
-        return align_to_multiple_of_4(offset);
+        return align_word(offset);
     }
 
     else if (type == "double") {
@@ -73,7 +74,7 @@ inline int calculate_var_offset(int cur_offset, VariableContext var_context) {
     }
 
     else {
-        return align_to_multiple_of_4(offset);
+        return align_word(offset);
     }
 }
 
@@ -84,15 +85,15 @@ inline int calculate_arg_overflow(int &cur_offset, VariableContext var_context) 
     // First calculate aligned offset of last
     int aligned_offset;
     if (type == "int") {
-        aligned_offset = align_to_multiple_of_4(cur_offset);
+        aligned_offset = align_word(cur_offset);
     } else if (type == "char") {
         aligned_offset = cur_offset;
     } else if (type == "float") {
-        aligned_offset = align_to_multiple_of_4(cur_offset);
+        aligned_offset = align_word(cur_offset);
     } else if (type == "double") {
         // return cur_offset - 8;
     } else {
-        aligned_offset = align_to_multiple_of_4(cur_offset);
+        aligned_offset = align_word(cur_offset);
     }
 
     // New cur_offset = aligned_offset + size
