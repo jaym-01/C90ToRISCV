@@ -372,8 +372,9 @@ postfix_expression
 	| postfix_expression DEC_OP { $$ = new PostfixExpression($1, "--"); }
 	| postfix_expression '[' expression ']' {
 		// Array access
-		Node* single_expr = $3->GetNodes()[0];
-		$$ = new ArrayAccess($1, single_expr);
+		// Node* single_expr = $3->GetNodes()[0];
+		// $$ = new ArrayAccess($1, single_expr);
+		$$ = new ArrayAccess($1, $3);
 	}
 	| postfix_expression '(' ')' { $$ = new FunctionCall($1, nullptr); }
 	| postfix_expression '(' argument_expression_list ')' { $$ = new FunctionCall($1, $3); }

@@ -23,6 +23,7 @@ public:
     void EmitRISC(std::ostream &stream, Context &context) const {};
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest_reg) const
     {
+        // register where result of postfix expression is assigned to
         if (dest_reg == ""){
             dest_reg = context.ReserveTempRegister();
         }

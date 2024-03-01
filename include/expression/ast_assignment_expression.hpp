@@ -56,8 +56,8 @@ public:
         write_var_value(unary_expression_, context, stream, var, dest_reg);
     };
 
-    void EmitRISC(std::ostream &stream, Context &context) const {
-    };
+    // void EmitRISC(std::ostream &stream, Context &context) const {
+    // };
 
     void Print(std::ostream &stream) const
     {

@@ -61,15 +61,15 @@ public:
 
     void Print(std::ostream &stream) const override
     {
-        stream<< "arr_decl{";
+        stream<< "arr_decl{ ";
         identifier_->Print(stream);
 
-        stream<<'[';
+        stream<<" [ ";
         if (size_expression_ != nullptr){
             size_expression_->Print(stream);
         }
-        stream<<']';
-        stream<< "}";
+        stream<<" ]";
+        stream<< " }";
     };
 
     VariableContext InitVariableContext(std::string type) override {

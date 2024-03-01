@@ -75,10 +75,14 @@ public:
     {
         // stream<<"\ncomp_stmt: \n";
         if (declaration_list_ != nullptr) {
+            stream << std::endl << "decs:";
             declaration_list_->Print(stream);
+            stream << std::endl;
         }
         if (statement_list_ != nullptr) {
+            stream << std::endl << "stmts:" << std::endl;
             statement_list_->Print(stream);
+            stream << std::endl;
         }
     };
 };

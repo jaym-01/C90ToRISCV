@@ -28,7 +28,7 @@ public:
             dest_reg = context.ReserveTempRegister();
         }
 
-        expression_->EmitRISCWithDest(stream, context, dest_reg);
+        if(unary_operator_ != "&") expression_->EmitRISCWithDest(stream, context, dest_reg);
         // 2. Apply unary operator
         // Note: do nothing for '+' operator
         if (unary_operator_ == "++") {
@@ -45,6 +45,8 @@ public:
             stream << "xor " << dest_reg << ", " << dest_reg <<", "<<tmp_reg << std::endl;
         } else if (unary_operator_ == "!") {
             stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
+        } else if(unary_operator_ == "&"){
+            // TODO: get it to write the address of data into dest_reg
         }
 
         // Store result back to var if INC / DEC op
@@ -60,10 +62,10 @@ public:
 
     void Print(std::ostream &stream) const
     {
-        stream<<"u_expr{";
+        stream<<"u_expr{ ";
         stream << unary_operator_;
         expression_->Print(stream);
-        stream<<"}";
+        stream<<" }";
     };
 };
 

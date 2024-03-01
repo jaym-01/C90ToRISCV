@@ -8,10 +8,10 @@ class ArrayAccess : public Node
 {
 private:
     Node* identifier_;
-    Node* index_expression_;
+    NodeList* index_expression_;
 
 public:
-    ArrayAccess(Node* identifier, Node* index_expression) : identifier_(identifier), index_expression_(index_expression){};
+    ArrayAccess(Node* identifier, NodeList* index_expression) : identifier_(identifier), index_expression_(index_expression){};
     ~ArrayAccess(){
         delete identifier_;
         delete index_expression_;
@@ -37,7 +37,7 @@ public:
     };
 
     Node* GetIndexExpression() const {
-        return index_expression_;
+        return index_expression_->GetNodes()[0];
     };
 
     int GetNumBranches() const override {

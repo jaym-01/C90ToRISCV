@@ -1,5 +1,5 @@
 set -e
-test="test1"
+test="test6"
 
 # Compile to assembly
 # make bin/c_compiler
