@@ -124,6 +124,8 @@ public:
     std::string return_label;
     int max_func_overflow = 0; // When calling functions, might have to store some args in memory
 
+    std::string extern_declns;
+
     FunctionContext(std::string id, std::string _return_label) {
 
         identifier = id;
@@ -141,7 +143,7 @@ public:
     }
 
     //    // Get a free register for temporary use
-    // std::string ReserveTempRegister() {
+    // std::string ReserveRegister() {
     //     std::string reg = temp_registers_avail.back();
     //     temp_registers_avail.pop_back();
     //     temp_registers_used.push_back(reg);
@@ -149,7 +151,7 @@ public:
     // }
 
     // // Free a register for temporary use
-    // void FreeTempRegister(std::string &reg) {
+    // void FreeRegister(std::string &reg) {
     //     if (reg == "") {
     //         reg = "";
     //         return;
@@ -216,10 +218,14 @@ public:
     std::string cur_contloop_label = "";
     std::string cur_breakloop_label = "";
 
+    std::vector<std::string> fp_registers_avail;
+    std::vector<std::string> fp_registers_used;
+
     int label_id = 0;
     Context()
     {
         temp_registers_avail = {"t1", "t2", "t3", "t4", "t5", "t6"};
+        for(int i = 0; i < 32; i++) fp_registers_avail.push_back("f" + std::to_string(i));
         temp_registers_used = {};
         global_scope = new ScopeContext();
     }
@@ -270,24 +276,39 @@ public:
     }
 
     // Get a free register for temporary use
-    std::string ReserveTempRegister() {
-        std::string reg = temp_registers_avail.back();
+    std::string ReserveRegister(std::string type) {
+        std::vector<std::string> *avail, *used;
+        if(type == "float" || type == "double"){
+            avail = &fp_registers_avail;
+            used = &fp_registers_used;
+        } else{
+            avail = &temp_registers_avail;
+            used = &temp_registers_used;
+        }
+        std::string reg = avail->back();
 
         // std::cout<<"Reserving register: "<<reg<<std::endl;
-        temp_registers_avail.pop_back();
-        temp_registers_used.push_back(reg);
+        avail->pop_back();
+        used->push_back(reg);
         return reg;
     }
 
     // Free a register for temporary use
-    void FreeTempRegister(std::string &reg) {
+    void FreeRegister(std::string &reg) {
+        std::vector<std::string> *avail, *used;
         if (reg == "") {
             reg = "";
             return;
+        } else if(reg[0] == 'f'){
+            avail = &fp_registers_avail;
+            used = &fp_registers_used;
+        } else{
+            avail = &temp_registers_avail;
+            used = &temp_registers_used;
         }
         // std::cout<<"Freeing register: "<<reg<<"\n";
-        temp_registers_avail.push_back(reg);
-        temp_registers_used.erase(std::remove(temp_registers_used.begin(), temp_registers_used.end(), reg), temp_registers_used.end());
+        avail->push_back(reg);
+        used->erase(std::remove(used->begin(), used->end(), reg), used->end());
         reg = "";
         return;
     }

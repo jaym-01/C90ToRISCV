@@ -58,7 +58,7 @@ public:
             std::string regD = "";
             node->EmitRISCWithDest(stream, context, regD);
             if (regD != "") {
-                context.FreeTempRegister(regD);
+                context.FreeRegister(regD);
             }
         }
     };
@@ -73,6 +73,7 @@ public:
 
             node->Print(stream);
         }
+        // stream<<"}";
     };
 
     int EvalIntExpression() const override {

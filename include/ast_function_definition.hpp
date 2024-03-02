@@ -96,6 +96,8 @@ public:
         stream << "addi sp, sp, " << total_frame_size << std::endl;
         stream << "jr ra" << std::endl<<std::endl;
 
+        stream << f_context->extern_declns << std::endl;
+
         std::cout << declarator_->GetIdentifier() << " has offset: " << total_frame_size << " | " << cur_func_offset << std::endl;
         // Delete f_context?
         delete f_context;

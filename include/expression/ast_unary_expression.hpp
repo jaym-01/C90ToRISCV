@@ -22,10 +22,14 @@ public:
 
     void EmitRISC(std::ostream &stream, Context &context) const {};
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest_reg) const {
+        std::string id = expression_->GetIdentifier();
+        ScopeContext* cur_scope = context.GetCurScope();
+        VariableContext var = cur_scope->GetVarFromId(id);
+
 
         // 1. Evaluate
         if (dest_reg == ""){
-            dest_reg = context.ReserveTempRegister();
+            dest_reg = context.ReserveRegister(var.type);
         }
 
         if(unary_operator_ != "&") expression_->EmitRISCWithDest(stream, context, dest_reg);
@@ -40,7 +44,7 @@ public:
             // negate instruction, pseudo-ins for sub dest_reg, x0, dest_reg
             stream << "neg " << dest_reg << ", " << dest_reg << std::endl;
         } else if (unary_operator_ == "~") {
-            std::string tmp_reg = context.ReserveTempRegister();
+            std::string tmp_reg = context.ReserveRegister(var.type);
             stream << "li " << tmp_reg << ", -1" << std::endl; // Load 0xFFFFFFFF into temp_reg
             stream << "xor " << dest_reg << ", " << dest_reg <<", "<<tmp_reg << std::endl;
         } else if (unary_operator_ == "!") {
@@ -51,10 +55,6 @@ public:
 
         // Store result back to var if INC / DEC op
         if (unary_operator_ == "++" || unary_operator_ == "--") {
-            std::string id = expression_->GetIdentifier();
-            ScopeContext* cur_scope = context.GetCurScope();
-            VariableContext var = cur_scope->GetVarFromId(id);
-
 
             write_var_value(expression_, context, stream, var, dest_reg);
         }

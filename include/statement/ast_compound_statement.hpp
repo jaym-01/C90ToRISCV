@@ -38,13 +38,18 @@ public:
             for (auto stmt : statement_list_->GetNodes()) {
                 std::string dest_reg = "";
                 stmt->EmitRISCWithDest(stream, context, dest_reg);
-                context.FreeTempRegister(dest_reg);
+                context.FreeRegister(dest_reg);
 
                 // context.PrintAvailTempRegs();
-                if (context.temp_registers_avail.size() < 6) {
-                    throw std::runtime_error("Less than 6 registers left after statement. Check for leaks");
-                }
+
+                // if (context.temp_registers_avail.size() < 6 || context.fp_registers_avail.size() < 32) {
+                //     throw std::runtime_error("Less than 6 registers left after statement. Check for leaks");
+                // }
             }
+        }
+
+        if (context.temp_registers_avail.size() < 6 || context.fp_registers_avail.size() < 32) {
+            throw std::runtime_error("Less than 6 registers left after statement. Check for leaks");
         }
     }
 

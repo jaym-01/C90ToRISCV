@@ -36,13 +36,13 @@ public:
         // 2. Emit if statement
         std::string empty_reg = "";
         statement_->EmitRISCWithDest(stream, context, empty_reg);
-        context.FreeTempRegister(empty_reg);
+        context.FreeRegister(empty_reg);
 
         stream<< contwhile_label << ":" << std::endl;
         std::string cond_reg = "";
         cond_expression_->EmitRISCWithDest(stream, context, cond_reg);
         stream << "bne " << cond_reg << ", zero, " << startwhile_label << std::endl;
-        context.FreeTempRegister(cond_reg);
+        context.FreeRegister(cond_reg);
         // stream <<"j "<<endwhile_label<<std::endl;
         stream << endwhile_label << ":" << std::endl;
 

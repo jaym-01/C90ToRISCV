@@ -23,20 +23,21 @@ public:
     void EmitRISC(std::ostream &stream, Context &context) const {};
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest_reg) const
     {
-        // register where result of postfix expression is assigned to
-        if (dest_reg == ""){
-            dest_reg = context.ReserveTempRegister();
-        }
-
-        expression_->EmitRISCWithDest(stream, context, dest_reg);
-
+        // TODO: Check this
         // Increment id
         std::string id = expression_->GetIdentifier();
         ScopeContext* cur_scope = context.GetCurScope();
         VariableContext var = cur_scope->GetVarFromId(id);
 
+        // register where result of postfix expression is assigned to
+        if (dest_reg == ""){
+            dest_reg = context.ReserveRegister(var.type);
+        }
+
+        expression_->EmitRISCWithDest(stream, context, dest_reg);
+
         // Load var into temp reg
-        std::string temp_reg = context.ReserveTempRegister();
+        std::string temp_reg = context.ReserveRegister(var.type);
         stream<< "add " << temp_reg << ", " << dest_reg << ", x0" << std::endl;
 
         // Increment or decrement
@@ -49,7 +50,7 @@ public:
 
         // Store temp reg back into var
         write_var_value(expression_, context, stream, var, temp_reg);
-        context.FreeTempRegister(temp_reg);
+        context.FreeRegister(temp_reg);
     };
 
     void Print(std::ostream &stream) const

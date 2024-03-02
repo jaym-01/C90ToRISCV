@@ -1,5 +1,6 @@
 void test1(){
-    int x[4] = {1, 2, 4};
-    x[0] = 5;
-    return x[0];
+    int y = 5;
+    int x[10] = {1, 2, 4};
+    x[y+1] = 5;
+    return x[y+1];
 }

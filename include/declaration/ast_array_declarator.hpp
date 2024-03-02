@@ -52,7 +52,7 @@ public:
         //     // 2c. Print store instruction
         //     stream << "sw " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
 
-        //     context.FreeTempRegister(dest_reg);
+        //     context.FreeRegister(dest_reg);
         //     // 2. Store result in memory
         //     // - Save offset for variable in context
         //     // - Print store instruction (sw reg, offset (fp))

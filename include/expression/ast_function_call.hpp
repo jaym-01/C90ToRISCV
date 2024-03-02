@@ -56,7 +56,7 @@ public:
                 args[i]->EmitRISCWithDest(stream, context, temp_reg);
                 int aligned_offset = context.CalcOverflowOffsetAndUpdate(cur_sp_offset, params[i]);
                 stream << "sw " << temp_reg << ", " << aligned_offset << "(sp)" << std::endl;
-                context.FreeTempRegister(temp_reg);
+                context.FreeRegister(temp_reg);
             }
         }
 
@@ -67,7 +67,8 @@ public:
         context.RestoreRegistersFromMem(stream, saved_regs);
 
         if (dest == "") {
-            dest = context.ReserveTempRegister();
+            // TODO: Fix this
+            dest = context.ReserveRegister("int");
         }
 
         stream<<"add "<<dest<<", a0, "<<"zero"<<std::endl;

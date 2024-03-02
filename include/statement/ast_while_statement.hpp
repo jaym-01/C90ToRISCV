@@ -37,13 +37,13 @@ public:
         cond_expression_->EmitRISCWithDest(stream, context, cond_reg);
         // If condition is == 0, jump to endwhile label
         stream << "beq " << cond_reg << ", zero, " << endwhile_label << std::endl;
-        context.FreeTempRegister(cond_reg);
+        context.FreeRegister(cond_reg);
 
         // 2. Emit if statement
         std::string empty_reg = "";
         statement_->EmitRISCWithDest(stream, context, empty_reg);
         stream << "j " << startwhile_label << std::endl;
-        context.FreeTempRegister(empty_reg);
+        context.FreeRegister(empty_reg);
 
         stream << endwhile_label << ":" << std::endl;
 

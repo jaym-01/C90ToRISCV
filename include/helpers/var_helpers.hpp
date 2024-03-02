@@ -29,14 +29,14 @@ inline void global_arr_elem_to_reg(Context &context, VariableContext var, std::s
     // "lw dest_reg, 0(a5)"
 
     stream << "slli " << index_reg << ", " << index_reg << ", "<<type_to_shift_amt[var.type] << std::endl;
-    std::string addr_reg = context.ReserveTempRegister();
+    std::string addr_reg = context.ReserveRegister(var.type);
     if (var.type == "int") {
         stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
         stream << "addi " << addr_reg << ", " << addr_reg << ", %lo(" << id << ")" << std::endl;
         stream << "add " << addr_reg<< ", " << addr_reg << ", " << index_reg << std::endl;
         stream << "lw " << dest_reg << ", 0(" << addr_reg << ")" << std::endl;
     }
-    context.FreeTempRegister(addr_reg);
+    context.FreeRegister(addr_reg);
 }
 
 inline void read_global_var(
@@ -48,7 +48,7 @@ inline void read_global_var(
     if (var.is_array) {
         var_node->GetIndexExpression()->EmitRISCWithDest(stream, context, index_reg);
         global_arr_elem_to_reg(context, var, id, stream, dest_reg, index_reg);
-        context.FreeTempRegister(index_reg);
+        context.FreeRegister(index_reg);
     } else {
         global_var_to_reg(var, id, stream, dest_reg);
     }
@@ -57,14 +57,14 @@ inline void read_global_var(
 // GLOBAL VAR WRITE FUNCTIONS
 inline void reg_to_global_var(Context &context, VariableContext var, std::string id, std::ostream &stream,
     std::string val_reg) {
-    std::string addr_reg = context.ReserveTempRegister();
+    std::string addr_reg = context.ReserveRegister(var.type);
 
     if (var.type == "int") {
         stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
         stream << "sw " << val_reg << ", %lo(" << id << ")(" << addr_reg << ")" << std::endl;
     }
 
-    context.FreeTempRegister(addr_reg);
+    context.FreeRegister(addr_reg);
 }
 
 inline void reg_to_global_array_mem(Context &context, VariableContext var, std::string id,
@@ -75,7 +75,7 @@ inline void reg_to_global_array_mem(Context &context, VariableContext var, std::
     // "add a5, a5, index_reg"
     // "sw val_reg, 0(a5)"
     stream << "slli " << index_reg << ", " << index_reg << ", " << type_to_shift_amt[var.type] << std::endl;
-    std::string addr_reg = context.ReserveTempRegister();
+    std::string addr_reg = context.ReserveRegister(var.type);
     if (var.type == "int")
     {
         stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
@@ -84,7 +84,7 @@ inline void reg_to_global_array_mem(Context &context, VariableContext var, std::
         stream << "sw " << val_reg << ", 0(" << addr_reg << ")" << std::endl;
     }
 
-    context.FreeTempRegister(addr_reg);
+    context.FreeRegister(addr_reg);
 }
 
 inline void write_global_var(
@@ -100,7 +100,7 @@ inline void write_global_var(
     {
         var_node->GetIndexExpression()->EmitRISCWithDest(stream, context, index_reg);
         reg_to_global_array_mem(context, var, id, stream, val_reg, index_reg);
-        context.FreeTempRegister(index_reg);
+        context.FreeRegister(index_reg);
     } else
     {
         reg_to_global_var(context, var, id, stream, val_reg);
@@ -143,7 +143,7 @@ inline void read_local_var(
         stream << "addi " << index_reg << ", " << index_reg << "," << var.offset << std::endl;
         stream << "add " << index_reg << ", " << index_reg << ", fp" << std::endl;
         local_var_to_reg(stream, var, 0, dest_reg, index_reg);
-        context.FreeTempRegister(index_reg);
+        context.FreeRegister(index_reg);
     } else {
         local_var_to_reg(stream, var, var.offset, dest_reg, "fp");
     }
@@ -187,7 +187,7 @@ inline void write_local_var(
         stream << "add " << index_reg << ", " << index_reg << ", fp" << std::endl;
         reg_to_local_var(stream, var.type, 0, val_reg, index_reg);
 
-        context.FreeTempRegister(index_reg);
+        context.FreeRegister(index_reg);
     } else {
 
         // Save variable to memory

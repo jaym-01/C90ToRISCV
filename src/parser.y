@@ -170,7 +170,7 @@ parameter_declaration
 	;
 
 identifier_list
-	: IDENTIFIER // TODO: Used for K&R (Kernighan and Ritchie) style function dec
+	: IDENTIFIER
 	| identifier_list ',' IDENTIFIER
 	;
 
@@ -387,7 +387,7 @@ primary_expression
 		delete $1;
 	}
 	| INT_CONSTANT { $$ = new IntConstant($1); }
-	/* | FLOAT_CONSTANT { $$ = new FloatConstant($1); } */
+	| FLOAT_CONSTANT { $$ = new FloatDoubleConstant($1); }
 	| '(' expression ')' { $$ = $2; }
 	;
 

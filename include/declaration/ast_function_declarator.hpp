@@ -58,12 +58,13 @@ public:
             } else {
                 // Arg passed through stack
                 int offset = calculate_var_offset(cur_s0_offset, arg_context);
-                std::string temp_reg = context.ReserveTempRegister();
+                // TODO: Check this
+                std::string temp_reg = context.ReserveRegister(arg_context.type);
 
                 stream<<"lw "<<temp_reg<<", "<<offset<<"(fp)"<< std::endl;
                 stream << "sw " <<temp_reg<< ", " << var_offset << "(fp)" << std::endl;
 
-                context.FreeTempRegister(temp_reg);
+                context.FreeRegister(temp_reg);
             }
         }
 
@@ -73,7 +74,7 @@ public:
         });
     };
 
-    void GlobalVarEmitRISC(std::ostream &stream, Context &context) const override
+    void EmitRISCGlobalVar(std::ostream &stream, Context &context) const override
     {
         // Do nothing
         std::vector<VariableContext> arg_contexts = {};

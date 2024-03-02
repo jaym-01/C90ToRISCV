@@ -29,11 +29,7 @@ public:
         // Print(std::cout);
         // std::cout<<std::endl;
 
-        if (dest_reg == "") {
-            dest_reg = context.ReserveTempRegister();
-        }
-
-        assignment_expression_->EmitRISCWithDest(stream, context, dest_reg);
+        // TODO: Check this
         if (unary_expression_->GetIdentifier() == "") {
             throw std::runtime_error("Error: unary_expression_ in assignment_expression_ doesn't have an identifier");
         }
@@ -42,6 +38,12 @@ public:
         std::string var_id = unary_expression_->GetIdentifier();
         ScopeContext* cur_scope = context.GetCurScope();
         VariableContext var = cur_scope->GetVarFromId(var_id);
+
+        if (dest_reg == "") {
+            dest_reg = context.ReserveRegister(var.type);
+        }
+
+        assignment_expression_->EmitRISCWithDest(stream, context, dest_reg);
 
         // 2. Calculate var offset if not already done
         // TODO: optimize by doing graph coloring and assigning variables to saved regs?

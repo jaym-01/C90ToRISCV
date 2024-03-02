@@ -40,13 +40,19 @@ public:
     virtual VariableContext InitVariableContext(std::string type) {
         throw std::runtime_error("Error: InitVariableContext not implemented for this node");
     };
-    virtual void GlobalVarEmitRISC (std::ostream &stream, Context &context) const {
-        throw std::runtime_error("Error: GlobalVarEmitRISC not implemented for this node");
+    virtual void EmitRISCGlobalVar (std::ostream &stream, Context &context) const {
+        throw std::runtime_error("Error: EmitRISCGlobalVar not implemented for this node");
     };
     virtual DeclaratorType GetDeclaratorType() const {
         // throw std::runtime_error("Error: GetDeclaratorType not implemented for this node");
         return DeclaratorType::None;
     };
+
+    // needed for the FloatDouble constant
+    // as type of the constant is only know when the value is being used
+    virtual void DefineConstantType(std::string type) {
+        throw std::runtime_error("Error: DefineType not implemented for this node");
+    }
     // virtual ScopeContext* BuildContext(Context &context, ScopeContext* cur_scope) {}; // old
 
     // For expressions

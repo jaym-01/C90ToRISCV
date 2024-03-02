@@ -18,12 +18,12 @@ public:
 
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest_reg) const override {
 
-        if (dest_reg == "") {
-            dest_reg = context.ReserveTempRegister();
-        }
-
         ScopeContext* cur_scope = context.GetCurScope();
         VariableContext var = cur_scope->GetVarFromId(identifier_);
+
+        if (dest_reg == "") {
+            dest_reg = context.ReserveRegister(var.type);
+        }
 
 
         // if (var.offset > 0) {

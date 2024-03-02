@@ -41,6 +41,7 @@ public:
         cur_scope->SetVarOffset(id, var_offset);
         context.SetCurFuncOffset(var_offset);
 
+        int t_size = type_size[var_context.type];
         if (initializer_ != nullptr)
         {
 
@@ -50,12 +51,16 @@ public:
             // For each initializer:
             for (int i = 0; i < initializers.size(); i++) {
                 std::string dest_reg = "";
+                // AT THIS STAGE YOU HAVE VARIABLE CONTEXT -- NEED TO PASS IT THROUGH TO TELL IF DOUBLE OR FLOAT NEEDED
+                if(var_context.type == "float" || var_context.type == "double") initializers[i]->DefineConstantType(var_context.type);
+
                 initializers[i]->EmitRISCWithDest(stream, context, dest_reg);
-                // depends on size of type
-                int t_size = type_size[var_context.type];
-                if(t_size == 1) stream << "sb " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
-                else if(t_size == 4) stream << "sw " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
-                context.FreeTempRegister(dest_reg);
+
+                if(var_context.type == "char") stream << "sb " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+                else if(var_context.type == "int") stream << "sw " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+                else stream << "fsw " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+
+                context.FreeRegister(dest_reg);
 
                 // Go to next offset
                 var_offset += t_size;
@@ -96,13 +101,13 @@ public:
         return declarator_->GetIdentifier();
     }
 
-    void GlobalVarEmitRISC(std::ostream &stream, Context &context) const override {
+    void EmitRISCGlobalVar(std::ostream &stream, Context &context) const override {
         std::cout<<"Emitting RISC for glo var: ";
         Print(std::cout);
         std::cout<<std::endl;
 
         if (GetDeclaratorType() == DeclaratorType::Function) {
-            declarator_->GlobalVarEmitRISC(stream, context);
+            declarator_->EmitRISCGlobalVar(stream, context);
             return;
         }
 
@@ -126,7 +131,7 @@ public:
                 // std::string dest_reg = "";
                 // initializers[i]->EmitRISCWithDest(stream, context, dest_reg);
                 // stream << "sw " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
-                // context.FreeTempRegister(dest_reg);
+                // context.FreeRegister(dest_reg);
 
                 // // Go to next offset
                 // var_offset += type_size[var_context.type];

@@ -72,7 +72,7 @@ L?'(\\.|[^\\'])+'	{yylval.number_int = (int)yytext[1]; return(INT_CONSTANT);}
 {D}+"."{D}*({E})?{FS}?	{yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
 
 
-L?\"(\\.|[^\\"])*\"	{/* TODO process string literal */; return(STRING_LITERAL);}
+L?\"(\\.|[^\\"])*\"	{yylval.string = new std::string(yytext); return(STRING_LITERAL);}
 
 "..."      {return(ELLIPSIS);}
 ">>="			 {return(RIGHT_ASSIGN);}

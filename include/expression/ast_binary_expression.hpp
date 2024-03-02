@@ -117,8 +117,9 @@ public:
         }
 
 
+        // TODO: need to find type
         if (dest_reg == "") {
-            dest_reg = context.ReserveTempRegister();
+            dest_reg = context.ReserveRegister("int");
         }
 
         EvaluateOperation(stream, reg1, reg2, dest_reg);
@@ -126,8 +127,8 @@ public:
         // std::cout<<"Operand 1 stored in reg: "<<reg1<<std::endl;
         // std::cout<<"Operand 2 stored in reg: "<<reg2<<std::endl;
 
-        context.FreeTempRegister(reg1);
-        context.FreeTempRegister(reg2);
+        context.FreeRegister(reg1);
+        context.FreeRegister(reg2);
 
         // std::cout<<"Binary expression result in reg: "<<dest_reg<<std::endl;
     };

@@ -16,6 +16,7 @@ inline std::map<std::string, int> type_size = {
     {"int", 4},
     {"char", 1},
     {"float", 4},
+    {"double", 8}
 };
 
 // inline int align_to_multiple_of_4(int offset)

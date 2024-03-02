@@ -38,18 +38,18 @@ public:
             stream<<"beq "<<cond_reg<<", zero, "<<endif_label<<std::endl;
         }
         // std::cout<<"Cond reg: "<<cond_reg<<std::endl;
-        context.FreeTempRegister(cond_reg);
+        context.FreeRegister(cond_reg);
 
         // 2. Emit if statement
         std::string empty_reg = "";
         if_statement_->EmitRISCWithDest(stream, context, empty_reg);
         stream<<"j "<<endif_label<<std::endl;
-        context.FreeTempRegister(empty_reg);
+        context.FreeRegister(empty_reg);
 
         if (else_statement_ != nullptr) {
             stream<<else_label<<":"<<std::endl;
             else_statement_->EmitRISCWithDest(stream, context, empty_reg);
-            context.FreeTempRegister(empty_reg);
+            context.FreeRegister(empty_reg);
         }
 
         stream<<endif_label<<":"<<std::endl;

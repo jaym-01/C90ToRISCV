@@ -23,7 +23,7 @@ public:
         std::cout<<"Em RISC for ";
         Print(std::cout);
         stream<<".data"<<std::endl;
-        declaration_->GlobalVarEmitRISC(stream, context);
+        declaration_->EmitRISCGlobalVar(stream, context);
     };
 
     void Print(std::ostream &stream) const {

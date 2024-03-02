@@ -68,7 +68,7 @@ public:
         stream<<" }";
     };
 
-    void GlobalVarEmitRISC(std::ostream &stream, Context &context) const {
+    void EmitRISCGlobalVar(std::ostream &stream, Context &context) const {
 
 
         std::string type = declaration_specifiers_->GetTypeSpecifier();
@@ -77,7 +77,7 @@ public:
         {
             DeclaratorType declarator_type = init_decl->GetDeclaratorType();
             if (declarator_type  == DeclaratorType::Function) {
-                init_decl->GlobalVarEmitRISC(stream, context);
+                init_decl->EmitRISCGlobalVar(stream, context);
                 context.id_to_func_def[init_decl->GetIdentifier()].return_type = type;
                 continue;
             }
@@ -88,7 +88,7 @@ public:
             context.global_scope->SetVarContext(id, var_context);
 
             // 2. EmitRISC for init_declarator
-            init_decl->GlobalVarEmitRISC(stream, context);
+            init_decl->EmitRISCGlobalVar(stream, context);
         }
     };
 };

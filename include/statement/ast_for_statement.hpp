@@ -41,25 +41,25 @@ public:
 
         // 1. Perform initial expression
         initial_expression_->EmitRISCWithDest(stream, context, dest);
-        context.FreeTempRegister(dest);
+        context.FreeRegister(dest);
 
         stream<< startfor_label << ":" << std::endl;
 
 
         cond_expression_->EmitRISCWithDest(stream, context, temp_reg);
         stream << "beq " << temp_reg << ", zero, " << endfor_label << std::endl;
-        context.FreeTempRegister(temp_reg);
+        context.FreeRegister(temp_reg);
 
         // 2. Emit if statement
         statement_->EmitRISCWithDest(stream, context, temp_reg);
-        context.FreeTempRegister(temp_reg);
+        context.FreeRegister(temp_reg);
 
         // 3. Perform postloop expression
         stream<< contfor_label << ":" << std::endl;
         if (postloop_expression_ != nullptr)
         {
             postloop_expression_->EmitRISCWithDest(stream, context, temp_reg);
-            context.FreeTempRegister(temp_reg);
+            context.FreeRegister(temp_reg);
         }
         stream << "j " << startfor_label << std::endl;
 
