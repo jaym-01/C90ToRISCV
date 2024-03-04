@@ -24,7 +24,8 @@ public:
         // Print(std::cout);
 
         // get function context to find return type
-        std::string r_type = context.f_context->GetReturnType();
+        FunctionContext f_context = *context.f_context;
+        std::string r_type = f_context.GetReturnType();
 
         // Evaluate expression
         // TODO: extend this for double

@@ -20,7 +20,7 @@ public:
     };
 
     void Print(std::ostream &stream) const override {
-        std::cout<<"type_spec{"<<type_.substr(0, 3)<<"}";
+        std::cout<<"type_spec{"<<type_<<"}";
     };
 };
 

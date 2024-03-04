@@ -74,7 +74,7 @@ public:
 
     VariableContext InitVariableContext(std::string type) override {
         if (size_expression_ != nullptr){
-            int size = size_expression_->EvalIntExpression();
+            int size = size_expression_->EvalExpression(type);
             return {
                 .id=identifier_->GetIdentifier(),
                 .type=type,

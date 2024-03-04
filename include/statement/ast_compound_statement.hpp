@@ -37,7 +37,9 @@ public:
         if (statement_list_ != nullptr) {
             for (auto stmt : statement_list_->GetNodes()) {
                 std::string dest_reg = "";
+                // std::cout << "before" << std::endl;
                 stmt->EmitRISCWithDest(stream, context, dest_reg);
+                // std::cout << "outside" << std::endl;
                 context.FreeRegister(dest_reg);
 
                 // context.PrintAvailTempRegs();
@@ -48,7 +50,7 @@ public:
             }
         }
 
-        if (context.temp_registers_avail.size() < 6 || context.fp_registers_avail.size() < 32) {
+        if (context.temp_registers_avail.size() < 6 || context.fp_registers_avail.size() < 12) {
             throw std::runtime_error("Less than 6 registers left after statement. Check for leaks");
         }
     }

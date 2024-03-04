@@ -24,13 +24,15 @@ public:
         stream << "li " << dest_reg << ", " << value_ << std::endl;
     };
 
+    void DefineConstantType(std::string type) override {}
+
     void Print(std::ostream &stream) const override {
         stream << "iconst{";
         stream << value_;
         stream << "}";
     };
 
-    int EvalIntExpression() const override {
+    int EvalExpression(std::string type) const override {
         return value_;
     };
 
@@ -74,7 +76,12 @@ public:
     }
 
     void DefineConstantType(std::string type) override {
-        type_ = type    ;
+        type_ = type;
+    }
+
+    int EvalExpression(std::string type) const override {
+        if(type == "float") return GetFloatVal();
+        // TODO: add double condition
     }
 
     int GetFloatVal() const {
@@ -92,7 +99,7 @@ public:
     }
 
     void Print(std::ostream &stream) const{
-        stream << "fconst{" << value_ << "}";
+        stream << "fdconst{" << value_ << "}";
     };
 };
 

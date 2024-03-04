@@ -15,11 +15,20 @@ inline std::map<std::string, int> type_to_shift_amt = {
 
 
 // GLOBAL VAR READ FUNCTIONS
-inline void global_var_to_reg(VariableContext var, std::string id, std::ostream &stream, std::string dest_reg) {
-    if (var.type == "int") {
-        stream << "lui " << dest_reg << ", %hi(" << id << ")" << std::endl;
-        stream << "lw " << dest_reg << ", %lo(" << id << ")(" << dest_reg << ")" << std::endl;
-    }
+inline void global_var_to_reg(Context &context, VariableContext var, std::string id, std::ostream &stream, std::string dest_reg) {
+    std::string ins;
+
+    std::string addr_reg = context.ReserveRegister("int");
+
+    if (var.type == "int") ins = "lw";
+    else if(var.type == "float") ins ="flw";
+    else if(var.type == "double") ins = "fld";
+    else if(var.type == "char") ins = "lbu";
+
+    stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
+    stream << ins << " " << dest_reg << ", %lo(" << id << ")(" << addr_reg << ")" << std::endl;
+
+    context.FreeRegister(addr_reg);
 }
 
 inline void global_arr_elem_to_reg(Context &context, VariableContext var, std::string id, std::ostream &stream, std::string dest_reg, std::string index_reg) {
@@ -50,7 +59,7 @@ inline void read_global_var(
         global_arr_elem_to_reg(context, var, id, stream, dest_reg, index_reg);
         context.FreeRegister(index_reg);
     } else {
-        global_var_to_reg(var, id, stream, dest_reg);
+        global_var_to_reg(context, var, id, stream, dest_reg);
     }
 }
 
@@ -109,15 +118,16 @@ inline void write_global_var(
 
 
 // LOCAL VAR READ WRITE FUNCTIONS
-inline void local_var_to_reg(std::ostream &stream, VariableContext var, int offset,
-        std::string dest_reg, std::string addr_reg = "fp") {
+inline void local_var_to_reg(std::ostream &stream, VariableContext var, int offset, std::string dest_reg, std::string addr_reg = "fp") {
+    std::string ins;
 
-    if (var.type == "int") {
-        stream << "lw " << dest_reg << ", " << offset << "(" << addr_reg << ")" << std::endl;
-    }
-    else if (var.type == "char"){
-        stream << "lbu " << dest_reg << ", " << offset << "(" << addr_reg << ")" << std::endl;
-    }
+    if (var.type == "int") ins = "lw";
+    else if (var.type == "char") ins = "lbu";
+    else if(var.type == "float") ins = "flw";
+    else if(var.type == "double") ins = "fld";
+    else throw std::runtime_error("invalid type loaded from memory");
+
+    stream << ins << " " << dest_reg << ", " << offset << "(" << addr_reg << ")" << std::endl;
 }
 
 inline void read_local_var(

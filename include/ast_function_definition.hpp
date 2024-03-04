@@ -52,7 +52,7 @@ public:
         stream << id << ": " << std::endl;
 
         // 1. Initialise function context and root scope context
-        FunctionContext *f_context = new FunctionContext(id, context.GetNewLabel("return"));
+        FunctionContext *f_context = new FunctionContext(id, context.GetNewLabel("return"), declaration_specifiers_->GetTypeSpecifier());
         context.InitFunctionContext(f_context);
         ScopeContext* arg_scope = new ScopeContext(context.global_scope);
         context.SetCurScope(arg_scope);
@@ -71,6 +71,7 @@ public:
         std::string empty_reg = "";
         compound_statement_->EmitRISCWithExistingContext(compound_stream, context, empty_reg);
         context.f_context->SetRootScope(arg_scope); // Needed for destructor?
+
 
 
         // 3. Pre function calling procedure

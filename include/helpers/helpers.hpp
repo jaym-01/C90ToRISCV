@@ -3,6 +3,7 @@
 
 #include "../context/ast_variable_context.hpp"
 #include "memory_helpers.hpp"
+#include <cstring>
 
 enum DeclaratorType
 {
@@ -18,6 +19,32 @@ inline std::map<std::string, int> type_size = {
     {"float", 4},
     {"double", 8}
 };
+
+// used for calculating the actual value
+template <typename T>
+int CalcVal(int left, int right, std::string b_op){
+    T x, y, res;
+    int out;
+    std::memcpy(&x, &left, sizeof(T));
+    std::memcpy(&y, &right, sizeof(T));
+
+    std::cout << "left : " << left << std::endl << "right: " << right << std::endl;
+
+    std::cout << "here" << std::endl;
+    if (b_op == "+") {
+        res = x + y;
+    } else if (b_op == "-") {
+        res = x - y;
+    } else if (b_op == "*") {
+        res = x * y;
+    } else if (b_op == "/") {
+        res = x / y;
+    } else {
+        throw std::runtime_error("Error: Invalid binary operator");
+    }
+    std::memcpy(&out, &res, sizeof(int));
+    return out;
+}
 
 // inline int align_to_multiple_of_4(int offset)
 // {
@@ -71,7 +98,7 @@ inline int calculate_var_offset(int cur_offset, VariableContext var_context) {
     }
 
     else if (type == "double") {
-        // return cur_offset - 8;
+        return align_word(offset);
     }
 
     else {

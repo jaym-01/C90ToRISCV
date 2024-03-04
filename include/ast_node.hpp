@@ -51,7 +51,8 @@ public:
     // needed for the FloatDouble constant
     // as type of the constant is only know when the value is being used
     virtual void DefineConstantType(std::string type) {
-        throw std::runtime_error("Error: DefineType not implemented for this node");
+        // TODO: FIX THIS - IT IS CAUSING TESTS TO FAIL
+        throw std::runtime_error("Error: DefineConstantType not implemented for this node");
     }
     // virtual ScopeContext* BuildContext(Context &context, ScopeContext* cur_scope) {}; // old
 
@@ -59,7 +60,7 @@ public:
     virtual int GetNumBranches() const { return 1; };
 
     // For arrays
-    virtual int EvalIntExpression() const {
+    virtual int EvalExpression(std::string type) const {
         throw std::runtime_error("Error: EvalExpression not implemented for this node");
     };
     virtual Node* GetIndexExpression() const {

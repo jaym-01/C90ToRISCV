@@ -51,7 +51,7 @@ public:
         stream << "id{" << identifier_ << "}";
     };
 
-    int EvalIntExpression() const override {
+    int EvalExpression(std::string type) const override {
         throw std::runtime_error("Cannot evaluate identifier as int expression");
     };
 
@@ -62,6 +62,8 @@ public:
     DeclaratorType GetDeclaratorType() const override {
         return DeclaratorType::Variable;
     }
+
+    void DefineConstantType(std::string type) override {}
 
 };
 

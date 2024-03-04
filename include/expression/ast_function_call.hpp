@@ -48,14 +48,26 @@ public:
         for (int i = 0; i < args.size(); i++)
         {
             if (i <= 7) {
-                std::string dest_reg = "a" + std::to_string(i);
+                std::string dest_reg = "";
+                if(params[i].type == "float" || params[i].type == "double") dest_reg = "f";
+                dest_reg += "a" + std::to_string(i);
+                args[i]->DefineConstantType(params[i].type);
                 args[i]->EmitRISCWithDest(stream, context, dest_reg);
 
             } else {
                 std::string temp_reg = "";
+                args[i]->DefineConstantType(params[i].type);
                 args[i]->EmitRISCWithDest(stream, context, temp_reg);
+                // increase the stack size for the param
                 int aligned_offset = context.CalcOverflowOffsetAndUpdate(cur_sp_offset, params[i]);
-                stream << "sw " << temp_reg << ", " << aligned_offset << "(sp)" << std::endl;
+
+                std::string ins;
+                if(params[i].type == "int") ins = "sw";
+                else if(params[i].type == "char") ins = "sb";
+                else if(params[i].type == "float") ins = "fsw";
+                else if(params[i].type == "double") ins = "fsd";
+                // function arguements below the current stack
+                stream << ins << " " << temp_reg << ", " << aligned_offset << "(sp)" << std::endl;
                 context.FreeRegister(temp_reg);
             }
         }
@@ -66,12 +78,16 @@ public:
         EmitCallFunction(stream);
         context.RestoreRegistersFromMem(stream, saved_regs);
 
+        // do you need to store the result in a register if a register has not been passed through?
+        // ^ shows that the return value is not needed?
         if (dest == "") {
-            // TODO: Fix this
-            dest = context.ReserveRegister("int");
+            dest = context.ReserveRegister(func_def.return_type);
         }
 
+        // return value of the function stored in reg
         stream<<"add "<<dest<<", a0, "<<"zero"<<std::endl;
+
+        // TODO: load in a1 if double is used
     };
 
     void Print(std::ostream &stream) const
@@ -82,6 +98,8 @@ public:
             argument_expression_list_->Print(stream);
         std::cout << ")";
     };
+
+    void DefineConstantType(std::string type) override {}
 
     int GetNumBranches() const override { return 1; };
 };

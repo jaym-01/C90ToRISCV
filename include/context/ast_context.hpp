@@ -125,8 +125,9 @@ public:
     int max_func_overflow = 0; // When calling functions, might have to store some args in memory
 
     std::string extern_declns;
+    std::string return_type_;
 
-    FunctionContext(std::string id, std::string _return_label) {
+    FunctionContext(std::string id, std::string _return_label, std::string return_type) {
 
         identifier = id;
         // root_scope = nullptr;
@@ -140,6 +141,11 @@ public:
         return_label = _return_label;
         // arg_registers_avail = {"a7", "a6", "a5", "a4", "a3", "a2", "a1", "a0"};
         // arg_registers_used = {};
+        return_type_ = return_type;
+    }
+
+    std::string GetReturnType() const {
+        return return_type_;
     }
 
     //    // Get a free register for temporary use
@@ -225,7 +231,7 @@ public:
     Context()
     {
         temp_registers_avail = {"t1", "t2", "t3", "t4", "t5", "t6"};
-        for(int i = 0; i < 32; i++) fp_registers_avail.push_back("f" + std::to_string(i));
+        for(int i = 0; i < 12; i++) fp_registers_avail.push_back("ft" + std::to_string(i));
         temp_registers_used = {};
         global_scope = new ScopeContext();
     }
@@ -252,9 +258,12 @@ public:
         std::cout<<std::endl;
     }
 
-    std::string GetReturnRegister()
+    std::string GetReturnRegister(std::string type)
     {
-        return "a0";
+        if(type == "int" || type == "char") return "a0";
+        else if(type == "float"){
+            return "fa0";
+        }
     }
 
     ScopeContext *GetCurScope()
@@ -352,6 +361,8 @@ public:
         return f_context->max_func_overflow;
     }
 
+    // finds how much memory to allocate to new variable
+    // allocates space on the stack
     int CalcVarOffsetAndUpdate(VariableContext var) {
         int cur_func_offset = GetCurFuncOffset();
         int var_offset = calculate_var_offset(cur_func_offset, var);

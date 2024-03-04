@@ -24,11 +24,17 @@ public:
         return nodes_;
     };
 
+    void DefineConstantType(std::string type) override {
+        for(auto node : nodes_) {
+            if(node != nullptr) node->DefineConstantType(type);
+        }
+    }
+
     void PushBack(Node *item) {
         nodes_.push_back(item);
     };
 
-    virtual void EmitRISC(std::ostream &stream, Context &context) const override{
+    void EmitRISC(std::ostream &stream, Context &context) const override{
         for (auto node : nodes_)
         {
             if (node == nullptr)
@@ -39,11 +45,12 @@ public:
         }
     };
 
-    virtual void EmitRISCWithDest(std::ostream &stream, Context &context, std::string& dest_reg) const override {
-
+    void EmitRISCWithDest(std::ostream &stream, Context &context, std::string& dest_reg) const override {
+        // std::cout << "here nl" << std::endl;
         // For single expr statements
         if (nodes_.size() == 1) {
             nodes_[0]->EmitRISCWithDest(stream, context, dest_reg);
+            // std::cout << "here nl out" << std::endl;
             return;
         }
 
@@ -64,7 +71,7 @@ public:
     };
 
     virtual void Print(std::ostream &stream) const override{
-        // stream<<"node_list{";
+        stream<<"node_list{";
         for (auto node : nodes_)
         {
             if (node == nullptr) {
@@ -73,12 +80,12 @@ public:
 
             node->Print(stream);
         }
-        // stream<<"}";
+        stream<<"}";
     };
 
-    int EvalIntExpression() const override {
+    int EvalExpression(std::string type) const override {
         if (nodes_.size() == 1) {
-            return nodes_[0]->EvalIntExpression();
+            return nodes_[0]->EvalExpression(type);
         } else {
             throw std::runtime_error("Cannot evaluate int expression for multi_expression line");
         }

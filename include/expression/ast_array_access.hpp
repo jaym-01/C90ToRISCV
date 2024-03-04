@@ -40,6 +40,8 @@ public:
         return index_expression_->GetNodes()[0];
     };
 
+    void DefineConstantType(std::string type) override {}
+
     int GetNumBranches() const override {
         return 1;
     };

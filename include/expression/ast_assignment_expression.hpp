@@ -43,6 +43,7 @@ public:
             dest_reg = context.ReserveRegister(var.type);
         }
 
+        assignment_expression_->DefineConstantType(var.type);
         assignment_expression_->EmitRISCWithDest(stream, context, dest_reg);
 
         // 2. Calculate var offset if not already done

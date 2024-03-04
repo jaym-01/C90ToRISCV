@@ -42,7 +42,9 @@ public:
         for (int i = 0; i < params.size(); i++)
         {
             std::string id = params[i]->GetIdentifier();
+            // type is defined further down, don't need to specify it here
             VariableContext arg_context = params[i]->InitVariableContext("");
+            // allocates stack memory to param
             int var_offset = context.CalcVarOffsetAndUpdate(arg_context);
 
             // Set off set and save to var map
@@ -53,16 +55,46 @@ public:
             // Need to call after frame size is calculated
             if (i <= 7) {
                 // Arg passed through register
-                std::string arg_reg = "a" + std::to_string(i); // e.g. a0
-                stream << "sw " << arg_reg << ", " << var_offset << "(fp)" << std::endl;
+                std::string arg_reg = "";
+                if(arg_context.type == "float" || arg_context.type == "double") arg_reg = "f";
+                arg_reg += "a" + std::to_string(i);
+
+                std::string ins;
+                if(arg_context.type == "int") ins = "sw";
+                else if(arg_context.type == "char") ins = "sb";
+                else if(arg_context.type == "float") ins = "fsw";
+                else if(arg_context.type == "double") ins = "fsd";
+                stream << ins << " " << arg_reg << ", " << var_offset << "(fp)" << std::endl;
             } else {
                 // Arg passed through stack
+                // always at the bottom of the previous stack
                 int offset = calculate_var_offset(cur_s0_offset, arg_context);
-                // TODO: Check this
+
                 std::string temp_reg = context.ReserveRegister(arg_context.type);
 
-                stream<<"lw "<<temp_reg<<", "<<offset<<"(fp)"<< std::endl;
-                stream << "sw " <<temp_reg<< ", " << var_offset << "(fp)" << std::endl;
+                // TODO: CHECK THIS
+                // should offset be -offset to make it positive?
+                // to access above the current stack?
+                std::string l_ins, s_ins;
+                if(arg_context.type == "int"){
+                    l_ins = "lw";
+                    s_ins = "sw";
+                }
+                else if(arg_context.type == "char"){
+                    l_ins = "lbu";
+                    s_ins = "sbu";
+                }
+                // TODO: Check this
+                else if(arg_context.type == "float"){
+                    l_ins = "flw";
+                    s_ins = "fsw";
+                }
+                else if(arg_context.type == "double"){
+                    l_ins = "fld";
+                    s_ins = "fsd";
+                }
+                stream << l_ins  <<" "<<temp_reg<<", "<<offset<<"(fp)"<< std::endl;
+                stream << s_ins << " " <<temp_reg<< ", " << var_offset << "(fp)" << std::endl;
 
                 context.FreeRegister(temp_reg);
             }

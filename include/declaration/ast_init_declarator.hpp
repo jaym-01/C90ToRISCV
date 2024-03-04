@@ -52,7 +52,7 @@ public:
             for (int i = 0; i < initializers.size(); i++) {
                 std::string dest_reg = "";
                 // AT THIS STAGE YOU HAVE VARIABLE CONTEXT -- NEED TO PASS IT THROUGH TO TELL IF DOUBLE OR FLOAT NEEDED
-                if(var_context.type == "float" || var_context.type == "double") initializers[i]->DefineConstantType(var_context.type);
+                initializers[i]->DefineConstantType(var_context.type);
 
                 initializers[i]->EmitRISCWithDest(stream, context, dest_reg);
 
@@ -123,10 +123,11 @@ public:
             // For each initializer:
             for (int i = 0; i < initializers.size(); i++)
             {
-                int eval = initializers[i]->EvalIntExpression();
-                if (var_context.type == "int") {
-                    stream << ".word " << eval << std::endl;
-                }
+                int eval = initializers[i]->EvalExpression(var_context.type);
+                if(var_context.type == "char") stream << ".byte ";
+                else stream << ".word ";
+
+                stream << eval << std::endl;
 
                 // std::string dest_reg = "";
                 // initializers[i]->EmitRISCWithDest(stream, context, dest_reg);
