@@ -3,6 +3,7 @@
 #define AST_INIT_DECLARATOR_HPP
 
 #include "../ast_node.hpp"
+#include "../helpers/memory_helpers.hpp"
 
 // Declarator can either be a direct declarator or a pointer declarator
 // Direct declarator can either be an identifier or a function declarator
@@ -56,9 +57,10 @@ public:
 
                 initializers[i]->EmitRISCWithDest(stream, context, dest_reg);
 
-                if(var_context.type == "char") stream << "sb " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
-                else if(var_context.type == "int") stream << "sw " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
-                else stream << "fsw " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+                // if(var_context.type == "char") stream << "sb " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+                // else if(var_context.type == "int") stream << "sw " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+                // else stream << "fsw";
+                stream << get_mem_write(var_context.type) << " " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
 
                 context.FreeRegister(dest_reg);
 

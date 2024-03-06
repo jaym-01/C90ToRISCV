@@ -4,6 +4,7 @@
 
 #include "../ast_node.hpp"
 #include "../ast_node_list.hpp"
+#include "../helpers/memory_helpers.hpp"
 
 // Declarator can either be a direct declarator or a pointer declarator
 // Direct declarator can either be an identifier or a function declarator
@@ -37,8 +38,9 @@ public:
         ScopeContext* cur_scope = context.GetCurScope();
 
         // These are the registers that the caller will use to pass arguments to the callee
-        int cur_s0_offset = 0;
+        int cur_s0_offset = 0, cur_a_reg = 0, cur_fp_reg = 0;
         std::vector<VariableContext> arg_contexts = {};
+        std::string ins;
         for (int i = 0; i < params.size(); i++)
         {
             std::string id = params[i]->GetIdentifier();
@@ -53,18 +55,19 @@ public:
             cur_scope->SetVarContext(id, arg_context);
 
             // Need to call after frame size is calculated
-            if (i <= 7) {
+            if ((arg_context.type == "int" || arg_context.type == "char") && cur_a_reg <= 7) {
                 // Arg passed through register
-                std::string arg_reg = "";
-                if(arg_context.type == "float" || arg_context.type == "double") arg_reg = "f";
-                arg_reg += "a" + std::to_string(i);
-
-                std::string ins;
                 if(arg_context.type == "int") ins = "sw";
                 else if(arg_context.type == "char") ins = "sb";
-                else if(arg_context.type == "float") ins = "fsw";
+                stream << ins << " a" << std::to_string(cur_a_reg) << ", " << var_offset << "(fp)" << std::endl;
+                cur_a_reg++;
+
+            } else if((arg_context.type == "float" || arg_context.type == "double") && cur_fp_reg <= 7){
+                if(arg_context.type == "float") ins = "fsw";
                 else if(arg_context.type == "double") ins = "fsd";
-                stream << ins << " " << arg_reg << ", " << var_offset << "(fp)" << std::endl;
+                stream << ins << " fa" << std::to_string(cur_fp_reg) << ", " << var_offset << "(fp)" << std::endl;
+                cur_fp_reg++;
+
             } else {
                 // Arg passed through stack
                 // always at the bottom of the previous stack
@@ -75,24 +78,24 @@ public:
                 // TODO: CHECK THIS
                 // should offset be -offset to make it positive?
                 // to access above the current stack?
-                std::string l_ins, s_ins;
-                if(arg_context.type == "int"){
-                    l_ins = "lw";
-                    s_ins = "sw";
-                }
-                else if(arg_context.type == "char"){
-                    l_ins = "lbu";
-                    s_ins = "sbu";
-                }
-                // TODO: Check this
-                else if(arg_context.type == "float"){
-                    l_ins = "flw";
-                    s_ins = "fsw";
-                }
-                else if(arg_context.type == "double"){
-                    l_ins = "fld";
-                    s_ins = "fsd";
-                }
+                std::string l_ins = get_mem_read(arg_context.type), s_ins = get_mem_write(arg_context.type);
+                // if(arg_context.type == "int"){
+                //     l_ins = "lw";
+                //     s_ins = "sw";
+                // }
+                // else if(arg_context.type == "char"){
+                //     l_ins = "lbu";
+                //     s_ins = "sbu";
+                // }
+                // // TODO: Check this
+                // else if(arg_context.type == "float"){
+                //     l_ins = "flw";
+                //     s_ins = "fsw";
+                // }
+                // else if(arg_context.type == "double"){
+                //     l_ins = "fld";
+                //     s_ins = "fsd";
+                // }
                 stream << l_ins  <<" "<<temp_reg<<", "<<offset<<"(fp)"<< std::endl;
                 stream << s_ins << " " <<temp_reg<< ", " << var_offset << "(fp)" << std::endl;
 

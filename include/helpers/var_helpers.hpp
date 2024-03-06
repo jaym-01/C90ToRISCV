@@ -5,6 +5,7 @@
 #include "context/ast_variable_context.hpp"
 #include "ast_node.hpp"
 #include "context/ast_context.hpp"
+#include "memory_helpers.hpp"
 
 inline std::map<std::string, int> type_to_shift_amt = {
     // can also do log2(type_size)
@@ -20,13 +21,13 @@ inline void global_var_to_reg(Context &context, VariableContext var, std::string
 
     std::string addr_reg = context.ReserveRegister("int");
 
-    if (var.type == "int") ins = "lw";
-    else if(var.type == "float") ins ="flw";
-    else if(var.type == "double") ins = "fld";
-    else if(var.type == "char") ins = "lbu";
+    // if (var.type == "int") ins = "lw";
+    // else if(var.type == "float") ins ="flw";
+    // else if(var.type == "double") ins = "fld";
+    // else if(var.type == "char") ins = "lbu";
 
     stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
-    stream << ins << " " << dest_reg << ", %lo(" << id << ")(" << addr_reg << ")" << std::endl;
+    stream << get_mem_read(var.type) << " " << dest_reg << ", %lo(" << id << ")(" << addr_reg << ")" << std::endl;
 
     context.FreeRegister(addr_reg);
 }
@@ -119,15 +120,7 @@ inline void write_global_var(
 
 // LOCAL VAR READ WRITE FUNCTIONS
 inline void local_var_to_reg(std::ostream &stream, VariableContext var, int offset, std::string dest_reg, std::string addr_reg = "fp") {
-    std::string ins;
-
-    if (var.type == "int") ins = "lw";
-    else if (var.type == "char") ins = "lbu";
-    else if(var.type == "float") ins = "flw";
-    else if(var.type == "double") ins = "fld";
-    else throw std::runtime_error("invalid type loaded from memory");
-
-    stream << ins << " " << dest_reg << ", " << offset << "(" << addr_reg << ")" << std::endl;
+    stream << get_mem_read(var.type) << " " << dest_reg << ", " << offset << "(" << addr_reg << ")" << std::endl;
 }
 
 inline void read_local_var(
@@ -159,23 +152,12 @@ inline void read_local_var(
     }
 }
 
-inline void reg_to_local_var(
-    std::ostream &stream, std::string var_type, int var_offset,
-    std::string val_reg, std::string addr_reg = "fp") {
-    if (var_type == "int") {
-        stream << "sw " << val_reg << ", " << var_offset << "(" << addr_reg << ")" << std::endl;
-    }
-    else if (var_type == "char")
-    {
-        stream << "sb " << val_reg << ", " << var_offset << "(" << addr_reg << ")" << std::endl;
-    }
+inline void reg_to_local_var(std::ostream &stream, std::string var_type, int var_offset, std::string val_reg, std::string addr_reg = "fp") {
+    stream << get_mem_write(var_type) << " " << val_reg << ", " << var_offset << "(" << addr_reg << ")" << std::endl;
 }
 
-inline void write_local_var(
-    Node *var_node,
-    Context &context,
-    std::ostream &stream, VariableContext var,
-    std::string val_reg) {
+inline void write_local_var(Node *var_node, Context &context, std::ostream &stream, VariableContext var, std::string val_reg) {
+    // std::cout << "in local var write" << std::endl;
 
     int offset;
     std::map<std::string, int> type_to_shift_amt = {

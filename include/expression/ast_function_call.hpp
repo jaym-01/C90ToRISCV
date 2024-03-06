@@ -4,6 +4,7 @@
 
 #include "../ast_node.hpp"
 #include "../ast_node_list.hpp"
+#include "../helpers/memory_helpers.hpp"
 
 class FunctionCall : public Node
 {
@@ -41,19 +42,25 @@ public:
 
         // If function has args
         std::vector<Node*> args = argument_expression_list_->GetNodes();
-        int cur_sp_offset = 0;
+        int cur_sp_offset = 0, cur_a_reg = 0, cur_fp_reg = 0;
         FuncDefinition func_def = context.GetFuncDef(id);
 
         std::vector<VariableContext> params = func_def.params;
+        std::string type, dest_reg;
         for (int i = 0; i < args.size(); i++)
         {
-            if (i <= 7) {
-                std::string dest_reg = "";
-                if(params[i].type == "float" || params[i].type == "double") dest_reg = "f";
-                dest_reg += "a" + std::to_string(i);
+            type = params[i].type;
+            if ((type == "int" || type == "char") && cur_a_reg <= 7) {
+                dest_reg = "a" + std::to_string(cur_a_reg);
                 args[i]->DefineConstantType(params[i].type);
                 args[i]->EmitRISCWithDest(stream, context, dest_reg);
+                cur_a_reg++;
 
+            } else if((type == "float" || type == "double") && cur_fp_reg <= 7){
+                dest_reg = "fa" + std::to_string(cur_fp_reg);
+                args[i]->DefineConstantType(params[i].type);
+                args[i]->EmitRISCWithDest(stream, context, dest_reg);
+                cur_fp_reg++;
             } else {
                 std::string temp_reg = "";
                 args[i]->DefineConstantType(params[i].type);
@@ -61,13 +68,13 @@ public:
                 // increase the stack size for the param
                 int aligned_offset = context.CalcOverflowOffsetAndUpdate(cur_sp_offset, params[i]);
 
-                std::string ins;
-                if(params[i].type == "int") ins = "sw";
-                else if(params[i].type == "char") ins = "sb";
-                else if(params[i].type == "float") ins = "fsw";
-                else if(params[i].type == "double") ins = "fsd";
+                // std::string ins;
+                // if(params[i].type == "int") ins = "sw";
+                // else if(params[i].type == "char") ins = "sb";
+                // else if(params[i].type == "float") ins = "fsw";
+                // else if(params[i].type == "double") ins = "fsd";
                 // function arguements below the current stack
-                stream << ins << " " << temp_reg << ", " << aligned_offset << "(sp)" << std::endl;
+                stream << get_mem_write(type) << " " << temp_reg << ", " << aligned_offset << "(sp)" << std::endl;
                 context.FreeRegister(temp_reg);
             }
         }

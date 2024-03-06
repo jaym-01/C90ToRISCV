@@ -36,16 +36,17 @@ public:
 
         expression_->EmitRISCWithDest(stream, context, dest_reg);
 
-        // Load var into temp reg
         std::string temp_reg = context.ReserveRegister(var.type);
-        stream<< "add " << temp_reg << ", " << dest_reg << ", x0" << std::endl;
+        // TODO: Check if this is wrong?
+        // Load var into temp reg
+        // stream<< "add " << temp_reg << ", " << dest_reg << ", x0" << std::endl;
 
         // Increment or decrement
         if (postfix_operator_ == "++") {
-            stream << "addi " << temp_reg << ", " << temp_reg << ", 1" << std::endl;
+            stream << "addi " << temp_reg << ", " << dest_reg << ", 1" << std::endl;
         }
         else if (postfix_operator_ == "--"){
-            stream << "addi " << temp_reg << ", " << temp_reg << ", -1" << std::endl;
+            stream << "addi " << temp_reg << ", " << dest_reg << ", -1" << std::endl;
         }
 
         // Store temp reg back into var
