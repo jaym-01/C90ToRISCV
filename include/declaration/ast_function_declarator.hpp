@@ -57,15 +57,15 @@ public:
             // Need to call after frame size is calculated
             if ((arg_context.type == "int" || arg_context.type == "char") && cur_a_reg <= 7) {
                 // Arg passed through register
-                if(arg_context.type == "int") ins = "sw";
-                else if(arg_context.type == "char") ins = "sb";
-                stream << ins << " a" << std::to_string(cur_a_reg) << ", " << var_offset << "(fp)" << std::endl;
+                // if(arg_context.type == "int") ins = "sw";
+                // else if(arg_context.type == "char") ins = "sb";
+                stream << get_mem_write(arg_context.type) << " a" << std::to_string(cur_a_reg) << ", " << var_offset << "(fp)" << std::endl;
                 cur_a_reg++;
 
             } else if((arg_context.type == "float" || arg_context.type == "double") && cur_fp_reg <= 7){
-                if(arg_context.type == "float") ins = "fsw";
-                else if(arg_context.type == "double") ins = "fsd";
-                stream << ins << " fa" << std::to_string(cur_fp_reg) << ", " << var_offset << "(fp)" << std::endl;
+                // if(arg_context.type == "float") ins = "fsw";
+                // else if(arg_context.type == "double") ins = "fsd";
+                stream << get_mem_write(arg_context.type) << " fa" << std::to_string(cur_fp_reg) << ", " << var_offset << "(fp)" << std::endl;
                 cur_fp_reg++;
 
             } else {
@@ -78,7 +78,7 @@ public:
                 // TODO: CHECK THIS
                 // should offset be -offset to make it positive?
                 // to access above the current stack?
-                std::string l_ins = get_mem_read(arg_context.type), s_ins = get_mem_write(arg_context.type);
+                // std::string l_ins, s_ins;
                 // if(arg_context.type == "int"){
                 //     l_ins = "lw";
                 //     s_ins = "sw";
@@ -96,8 +96,8 @@ public:
                 //     l_ins = "fld";
                 //     s_ins = "fsd";
                 // }
-                stream << l_ins  <<" "<<temp_reg<<", "<<offset<<"(fp)"<< std::endl;
-                stream << s_ins << " " <<temp_reg<< ", " << var_offset << "(fp)" << std::endl;
+                stream << get_mem_read(arg_context.type)  <<" "<<temp_reg<<", "<<offset<<"(fp)"<< std::endl;
+                stream << get_mem_write(arg_context.type) << " " <<temp_reg<< ", " << var_offset << "(fp)" << std::endl;
 
                 context.FreeRegister(temp_reg);
             }

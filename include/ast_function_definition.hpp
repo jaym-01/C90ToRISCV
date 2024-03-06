@@ -56,7 +56,6 @@ public:
         context.InitFunctionContext(f_context);
         ScopeContext* arg_scope = new ScopeContext(context.global_scope);
         context.SetCurScope(arg_scope);
-
         // 2. Emit RISC for function declarator (build params)
         std::stringstream declarator_stream;
         declarator_->EmitRISC(declarator_stream, context);

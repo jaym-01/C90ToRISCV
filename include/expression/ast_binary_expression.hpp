@@ -4,6 +4,7 @@
 #include "../ast_node.hpp"
 #include "helpers/helpers.hpp"
 #include <string>
+#include <vector>
 
 class BinaryExpression : public Node
 {
@@ -148,11 +149,9 @@ public:
         // std::cout<<"Binary expression result in reg: "<<dest_reg<<std::endl;
     };
 
-    int EvalExpression(std::string type) const override {
-        int left = left_operand_->EvalExpression(type);
-        int right = right_operand_->EvalExpression(type);
-
-
+    std::vector<int> EvalExpression(std::string type) const override {
+        std::vector<int> left = left_operand_->EvalExpression(type);
+        std::vector<int> right = right_operand_->EvalExpression(type);
 
         // if (b_operator_ == "+") {
         //     return left + right;
@@ -166,11 +165,10 @@ public:
         //     throw std::runtime_error("Error: Invalid binary operator");
         // }
 
-        // TODO: fix support for doubles
         if(type == "int") return CalcVal<int>(left, right, b_operator_);
         else if(type == "float") return CalcVal<float>(left, right, b_operator_);
         else if(type == "double") return CalcVal<double>(left, right, b_operator_);
-        else if(type == "char") return (int)((signed char)(left + right));
+        else if(type == "char") return {(int)((signed char)(left[0] + right[0]))};
         else throw std::runtime_error("An invalid type is trying to be evaluated");
     }
 

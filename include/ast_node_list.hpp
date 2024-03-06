@@ -2,6 +2,7 @@
 #define AST_NODE_LIST_HPP
 
 #include "ast_node.hpp"
+#include  <vector>
 
 class NodeList : public Node
 {
@@ -50,7 +51,7 @@ public:
         // For single expr statements
         if (nodes_.size() == 1) {
             nodes_[0]->EmitRISCWithDest(stream, context, dest_reg);
-            // std::cout << "here nl out" << std::endl;
+            std::cout << "here nl out" << std::endl;
             return;
         }
 
@@ -83,7 +84,7 @@ public:
         stream<<"}";
     };
 
-    int EvalExpression(std::string type) const override {
+    std::vector<int> EvalExpression(std::string type) const override {
         if (nodes_.size() == 1) {
             return nodes_[0]->EvalExpression(type);
         } else {

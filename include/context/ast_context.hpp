@@ -261,9 +261,10 @@ public:
     std::string GetReturnRegister(std::string type)
     {
         if(type == "int" || type == "char") return "a0";
-        else if(type == "float"){
+        else if(type == "float" || type == "double"){
             return "fa0";
         }
+        else throw new std::runtime_error("Undefined return type");
     }
 
     ScopeContext *GetCurScope()

@@ -74,11 +74,12 @@ public:
 
     VariableContext InitVariableContext(std::string type) override {
         if (size_expression_ != nullptr){
-            int size = size_expression_->EvalExpression(type);
+            std::vector<int> size = size_expression_->EvalExpression(type);
+            if(size.size() > 1) throw std::runtime_error("Array size is not an int");
             return {
                 .id=identifier_->GetIdentifier(),
                 .type=type,
-                .array_size=size,
+                .array_size=size[0],
                 .is_array=true,
             };
         } else {

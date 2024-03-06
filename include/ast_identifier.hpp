@@ -3,6 +3,7 @@
 
 #include "ast_node.hpp"
 #include "helpers/var_helpers.hpp"
+#include <vector>
 class Identifier : public Node
 {
 private:
@@ -51,7 +52,7 @@ public:
         stream << "id{" << identifier_ << "}";
     };
 
-    int EvalExpression(std::string type) const override {
+    std::vector<int> EvalExpression(std::string type) const override {
         throw std::runtime_error("Cannot evaluate identifier as int expression");
     };
 

@@ -35,14 +35,26 @@
 //     return 5;
 // }
 
+// double f(double x, double y){
+//     double z = 2;
+//     return x + y + z;
+// }
 
-float f(float x, int n)
-{
-    float acc=1.0f;
-    int i=0;
-    while(i<n){
-        i++;
-        acc=acc*x;
-    }
-    return acc;
+// double x = 1.2;
+// double y = 1.2;
+
+// int test(){
+//     int test = 5;
+//     int tmp = test + 2;
+//     return tmp;
+// }
+
+double g = 10;
+
+int test(){
+    // char x = 'a';
+    int test = 10 + 10;
+    // test = test + 10;
+    // double x = test + 200;
+    return test;
 }

@@ -60,7 +60,7 @@ public:
     virtual int GetNumBranches() const { return 1; };
 
     // For arrays
-    virtual int EvalExpression(std::string type) const {
+    virtual std::vector<int> EvalExpression(std::string type) const {
         throw std::runtime_error("Error: EvalExpression not implemented for this node");
     };
     virtual Node* GetIndexExpression() const {

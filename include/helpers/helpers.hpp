@@ -4,6 +4,7 @@
 #include "../context/ast_variable_context.hpp"
 #include "memory_helpers.hpp"
 #include <cstring>
+#include <vector>
 
 enum DeclaratorType
 {
@@ -22,15 +23,19 @@ inline std::map<std::string, int> type_size = {
 
 // used for calculating the actual value
 template <typename T>
-int CalcVal(int left, int right, std::string b_op){
+std::vector<int> CalcVal(std::vector<int> left, std::vector<int> right, std::string b_op){
+    int n = left.size();
+    int l[n], r[n];
+    for(int i = 0; i < left.size(); i++){
+        l[i] = left[i];
+        r[i] = right[i];
+    }
+
     T x, y, res;
-    int out;
-    std::memcpy(&x, &left, sizeof(T));
-    std::memcpy(&y, &right, sizeof(T));
+    int* tmp_out = new int[n];
+    std::memcpy(&x, &l, sizeof(T));
+    std::memcpy(&y, &r, sizeof(T));
 
-    std::cout << "left : " << left << std::endl << "right: " << right << std::endl;
-
-    std::cout << "here" << std::endl;
     if (b_op == "+") {
         res = x + y;
     } else if (b_op == "-") {
@@ -42,7 +47,12 @@ int CalcVal(int left, int right, std::string b_op){
     } else {
         throw std::runtime_error("Error: Invalid binary operator");
     }
-    std::memcpy(&out, &res, sizeof(int));
+
+    std::vector<int> out;
+    std::memcpy(tmp_out, &res, sizeof(T));
+    for(int i = 0; i < n; i++) out.push_back(tmp_out[i]);
+    delete[] tmp_out;
+
     return out;
 }
 

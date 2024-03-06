@@ -57,9 +57,6 @@ public:
 
                 initializers[i]->EmitRISCWithDest(stream, context, dest_reg);
 
-                // if(var_context.type == "char") stream << "sb " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
-                // else if(var_context.type == "int") stream << "sw " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
-                // else stream << "fsw";
                 stream << get_mem_write(var_context.type) << " " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
 
                 context.FreeRegister(dest_reg);
@@ -125,11 +122,14 @@ public:
             // For each initializer:
             for (int i = 0; i < initializers.size(); i++)
             {
-                int eval = initializers[i]->EvalExpression(var_context.type);
-                if(var_context.type == "char") stream << ".byte ";
-                else stream << ".word ";
+                initializers[i]->DefineConstantType(var_context.type);
+                std::vector<int> eval = initializers[i]->EvalExpression(var_context.type);
 
-                stream << eval << std::endl;
+                for(int constant : eval){
+                    if(var_context.type == "char") stream << ".byte ";
+                    else stream << ".word ";
+                    stream << constant << std::endl;
+                }
 
                 // std::string dest_reg = "";
                 // initializers[i]->EmitRISCWithDest(stream, context, dest_reg);
