@@ -51,6 +51,12 @@ public:
             stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
         } else if(unary_operator_ == "&"){
             // TODO: get it to write the address of data into dest_reg
+            std::string var_name = expression_->GetIdentifier();
+            ScopeContext* cur_scope = context.GetCurScope();
+            VariableContext var = cur_scope->GetVarFromId(var_name);
+
+            // TODO: handle global case
+            stream << "addi " << dest_reg << ", fp, " << var.offset << std::endl;
         }
 
         // Store result back to var if INC / DEC op
@@ -58,6 +64,10 @@ public:
 
             write_var_value(expression_, context, stream, var, dest_reg);
         }
+    };
+
+    void DefineConstantType(std::string type) override {
+        expression_->DefineConstantType(type);
     };
 
     void Print(std::ostream &stream) const

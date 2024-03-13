@@ -144,6 +144,7 @@ init_declarator
 /* parent of direct declarator (to include pointer syntax) */
 declarator
 	: direct_declarator { $$ = $1; }
+	| pointer direct_declarator
 	;
 
 direct_declarator
@@ -188,6 +189,36 @@ initializer
 initializer_list
 	: initializer { $$ = $1; }
 	| initializer_list ',' initializer { $1->PushBack($3); $$ = $1; }
+	;
+
+pointer
+	: '*'
+	| '*' pointer
+	;
+
+
+abstract_declarator
+	: pointer
+	| direct_abstract_declarator
+	| pointer direct_abstract_declarator
+	;
+
+abstract_declarator
+	: pointer
+	| direct_abstract_declarator
+	| pointer direct_abstract_declarator
+	;
+
+direct_abstract_declarator
+	: '(' abstract_declarator ')'
+	| '[' ']'
+	| '[' constant_expression ']'
+	| direct_abstract_declarator '[' ']'
+	| direct_abstract_declarator '[' constant_expression ']'
+	| '(' ')'
+	| '(' parameter_list ')'
+	| direct_abstract_declarator '(' ')'
+	| direct_abstract_declarator '(' parameter_list ')'
 	;
 
 /* STATEMENT PARSING */
