@@ -277,7 +277,7 @@ assignment_expression
 
 conditional_expression
 	: logical_or_expression
-	/* | logical_or_expression '?' expression ':' conditional_expression // TODO */
+	| logical_or_expression '?' expression ':' conditional_expression { $$ = new TernaryOperator($1, $3, $5);}
 	;
 
 logical_or_expression

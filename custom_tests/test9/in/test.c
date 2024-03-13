@@ -1,7 +1,7 @@
 int test(){
     int y, x = 5;
     switch(x){
-        x = 10;
+        // x = 10;
         case 5:
         default:
             x = 200;

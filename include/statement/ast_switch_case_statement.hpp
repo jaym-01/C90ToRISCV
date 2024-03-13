@@ -127,6 +127,7 @@ public:
     void Print(std::ostream &stream) const override{
         stream << "case( ";
         if(expression_ != nullptr) expression_->Print(stream);
+        else stream << "default";
         stream << " ) { " << std::endl;
         statement_->Print(stream);
         stream << "}" << std::endl;

@@ -35,6 +35,7 @@
 #include "expression/ast_binary_expression.hpp"
 #include "expression/ast_assignment_expression.hpp"
 #include "expression/ast_function_call.hpp"
+#include "expression/ast_ternary_operator.hpp"
 
 // Arrays
 #include "declaration/ast_array_declarator.hpp"
