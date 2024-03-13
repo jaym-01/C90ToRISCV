@@ -48,6 +48,7 @@
 #include "statement/ast_do_while_statement.hpp"
 #include "statement/ast_for_statement.hpp"
 #include "statement/ast_break_continue_statement.hpp"
+#include "statement/ast_switch_case_statement.hpp"
 
 extern Node *ParseAST(std::string file_name);
 

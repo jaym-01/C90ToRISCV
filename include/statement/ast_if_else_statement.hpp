@@ -31,7 +31,7 @@ public:
         std::string cond_reg = "";
         cond_expression_->EmitRISCWithDest(stream, context, cond_reg);
 
-        // If condition is == 0, jump to endif label
+        // If condition is == 0, jump to else/endif label
         if (else_statement_ != nullptr) {
             stream <<"beq "<< cond_reg<<", zero, "<<else_label << std::endl;
         } else {

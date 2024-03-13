@@ -50,7 +50,7 @@ public:
             std::vector<Node*> initializers = initializer_->GetNodes();
 
             // For each initializer:
-            for (int i = 0; i < initializers.size(); i++) {
+            for (std::size_t i = 0; i < initializers.size(); i++) {
                 std::string dest_reg = "";
                 // AT THIS STAGE YOU HAVE VARIABLE CONTEXT -- NEED TO PASS IT THROUGH TO TELL IF DOUBLE OR FLOAT NEEDED
                 initializers[i]->DefineConstantType(var_context.type);
@@ -120,7 +120,7 @@ public:
             std::vector<Node *> initializers = initializer_->GetNodes();
 
             // For each initializer:
-            for (int i = 0; i < initializers.size(); i++)
+            for (std::size_t i = 0; i < initializers.size(); i++)
             {
                 initializers[i]->DefineConstantType(var_context.type);
                 std::vector<int> eval = initializers[i]->EvalExpression(var_context.type);

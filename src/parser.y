@@ -115,7 +115,8 @@ declaration_specifiers
 	: type_specifier
 	/* | storage_class_specifier { $$ = new DeclarationSpecifiers(nullptr, $1); } */
 	/* | storage_class_specifier declaration_specifiers { $2->AddStorageClassSpecifier($1); $$ = $2;} */
-	/* | type_specifier declaration_specifiers { $2->AddTypeSpecifier($1); $$ = $2; } */
+	// | type_specifier declaration_specifiers { $2->AddTypeSpecifier($1); $$ = $2; }
+	| type_specifier declaration_specifiers
 	;
 
 type_specifier
@@ -126,6 +127,7 @@ type_specifier
 	| FLOAT 	{	$$ = new TypeSpecifier("float");	}
 	| DOUBLE	{	$$ = new TypeSpecifier("double");	}
 	| VOID 		{	$$ = new TypeSpecifier("void");		}
+	| UNSIGNED  {   $$ = new TypeSpecifier("unsigned"); }
 	;
 
 /* Parent of init_declarator & initialiser (e.g. x = 5, y = 10) */
@@ -197,6 +199,7 @@ statement_list
 /* Handle if statements, switch, while, for */
 statement
 	: expression_statement
+	| labeled_statement
 	| compound_statement
 	| selection_statement
 	| iteration_statement
@@ -206,7 +209,7 @@ statement
 selection_statement
 	: IF '(' expression ')' statement { $$ = new IfElseStatement($3, $5, nullptr); }
 	| IF '(' expression ')' statement ELSE statement { $$ = new IfElseStatement($3, $5, $7); }
-	| SWITCH '(' expression ')' statement
+	| SWITCH '(' expression ')' statement { $$ = new SwitchStatement($3, $5); }
 	;
 iteration_statement
 	: WHILE '(' expression ')' statement { $$ = new WhileStatement($3, $5); }
@@ -222,6 +225,11 @@ jump_statement
 	| RETURN ';' { $$ = new ReturnStatement(nullptr); }
 	| RETURN expression ';' { $$ = new ReturnStatement($2); }
 	;
+
+labeled_statement
+	: IDENTIFIER ':' statement
+	| CASE constant_expression ':' statement { $$ = new CaseStatement($2, $4); }
+	| DEFAULT ':' statement { $$ = new CaseStatement(nullptr, $3); }
 
 expression_statement
 	: ';' { $$ = new EmptyStatement();}

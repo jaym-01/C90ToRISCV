@@ -38,10 +38,7 @@ public:
     void EmitRISC(std::ostream &stream, Context &context) const override{
         for (auto node : nodes_)
         {
-            if (node == nullptr)
-            {
-                continue;
-            }
+            if (node == nullptr) continue;
             node->EmitRISC(stream, context);
         }
     };
@@ -51,7 +48,6 @@ public:
         // For single expr statements
         if (nodes_.size() == 1) {
             nodes_[0]->EmitRISCWithDest(stream, context, dest_reg);
-            std::cout << "here nl out" << std::endl;
             return;
         }
 
@@ -72,7 +68,7 @@ public:
     };
 
     virtual void Print(std::ostream &stream) const override{
-        stream<<"node_list{";
+        stream<<"node_list[";
         for (auto node : nodes_)
         {
             if (node == nullptr) {
@@ -80,8 +76,9 @@ public:
             }
 
             node->Print(stream);
+            if(node != nodes_.back())stream<<", ";
         }
-        stream<<"}";
+        stream<<"]";
     };
 
     std::vector<int> EvalExpression(std::string type) const override {

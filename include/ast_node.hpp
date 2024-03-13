@@ -44,7 +44,7 @@ public:
         throw std::runtime_error("Error: EmitRISCGlobalVar not implemented for this node");
     };
     virtual DeclaratorType GetDeclaratorType() const {
-        // throw std::runtime_error("Error: GetDeclaratorType not implemented for this node");
+        throw std::runtime_error("Error: GetDeclaratorType not implemented for this node");
         return DeclaratorType::None;
     };
 
@@ -66,6 +66,12 @@ public:
     virtual Node* GetIndexExpression() const {
         throw std::runtime_error("Error: GetIndexExpression not implemented for this node");
     };
+
+    // onyl used in switch case
+    virtual void PassRegister(std::string &reg) {
+        // throw std::runtime_error("Error: PassRegister not implemented for this node");
+    };
+    virtual void EmitCases(std::ostream &stream, Context &context) {}
 
     virtual ~Node() {
         for (auto branch : branches_)

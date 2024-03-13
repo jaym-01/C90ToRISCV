@@ -47,7 +47,7 @@ public:
 
         std::vector<VariableContext> params = func_def.params;
         std::string type, dest_reg;
-        for (int i = 0; i < args.size(); i++)
+        for (std::size_t i = 0; i < args.size(); i++)
         {
             type = params[i].type;
             if ((type == "int" || type == "char") && cur_a_reg <= 7) {

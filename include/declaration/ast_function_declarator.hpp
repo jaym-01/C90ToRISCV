@@ -41,7 +41,7 @@ public:
         int cur_s0_offset = 0, cur_a_reg = 0, cur_fp_reg = 0;
         std::vector<VariableContext> arg_contexts = {};
         std::string ins;
-        for (int i = 0; i < params.size(); i++)
+        for (std::size_t i = 0; i < params.size(); i++)
         {
             std::string id = params[i]->GetIdentifier();
             // type is defined further down, don't need to specify it here
@@ -120,7 +120,7 @@ public:
         }
 
         std::vector<Node*> params = param_list_->GetNodes();
-        for (int i = 0; i < params.size(); i++)
+        for (std::size_t i = 0; i < params.size(); i++)
         {
             std::string id = params[i]->GetIdentifier();
             VariableContext arg_context = params[i]->InitVariableContext(""); // TODO make it work for just type specifier

@@ -72,7 +72,7 @@ int main(int argc, char **argv)
     // PrettyPrint(ast_root, command_line_arguments);
     Compile(ast_root, command_line_arguments);
 
-    // // Clean up afterwards.
-    // delete ast_root;
+    // Clean up afterwards.
+    delete ast_root;
     return 0;
 }

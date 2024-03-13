@@ -26,7 +26,7 @@ template <typename T>
 std::vector<int> CalcVal(std::vector<int> left, std::vector<int> right, std::string b_op){
     int n = left.size();
     int l[n], r[n];
-    for(int i = 0; i < left.size(); i++){
+    for(std::size_t i = 0; i < left.size(); i++){
         l[i] = left[i];
         r[i] = right[i];
     }

@@ -10,6 +10,7 @@ private:
     NodeList* declaration_list_;
     NodeList* statement_list_;
     ScopeContext* scope_context_;
+    bool is_switch_case_ = false;
 
 public:
     CompoundStatement(NodeList* decl_list, NodeList* stmt_list) :
@@ -20,6 +21,28 @@ public:
         delete statement_list_;
     }
 
+    void EmitRISC(std::ostream &stream, Context &context) const override {
+        // implemented for switch case
+
+        // only emit risc for statements
+        if (statement_list_ != nullptr) {
+            for (auto stmt : statement_list_->GetNodes()) {
+                stmt->EmitRISC(stream, context);
+            }
+        }
+    };
+
+    // void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest) const override {
+    //     // implemented for switch case
+
+    //     // only emit risc for statements
+    //     if (statement_list_ != nullptr) {
+    //         for (auto stmt : statement_list_->GetNodes()) {
+    //             stmt->EmitRISCWithDest(stream, context, dest);
+    //         }
+    //     }
+    // };
+
     void AddDeclarationList(NodeList* decl_list) { declaration_list_ = decl_list; }
     void AddStatementList(NodeList* stmt_list) { statement_list_ = stmt_list; }
 
@@ -28,7 +51,7 @@ public:
         // std::cout << "---------" << std::endl;
         // std::cout << "Emitting RISC for compound statement\n";
 
-        if (declaration_list_ != nullptr) {
+        if (declaration_list_ != nullptr && !is_switch_case_) {
             for (auto decl : declaration_list_->GetNodes()) {
                 decl->EmitRISC(stream, context);
             }
@@ -37,13 +60,13 @@ public:
         if (statement_list_ != nullptr) {
             for (auto stmt : statement_list_->GetNodes()) {
                 std::string dest_reg = "";
-                // std::cout << "before" << std::endl;
                 stmt->EmitRISCWithDest(stream, context, dest_reg);
-                // std::cout << "outside" << std::endl;
                 context.FreeRegister(dest_reg);
 
                 // context.PrintAvailTempRegs();
 
+                // in switch case - need to reserve regitser between different compound statements
+                // this is check is not possible
                 // if (context.temp_registers_avail.size() < 6 || context.fp_registers_avail.size() < 32) {
                 //     throw std::runtime_error("Less than 6 registers left after statement. Check for leaks");
                 // }
@@ -61,7 +84,7 @@ public:
     };
 
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest) const override {
-        ScopeContext* cur_scope = context.GetCurScope();
+        // ScopeContext* cur_scope = context.GetCurScope();
 
         // Create new scope for compound statement
         ScopeContext* tmp = context.GetCurScope();
@@ -92,6 +115,36 @@ public:
             stream << std::endl;
         }
     };
+
+    // for switch case
+    void EmitCases(std::ostream &stream, Context &context) override {
+        // emits the case statement
+        if (statement_list_ != nullptr) {
+            for (auto stmt : statement_list_->GetNodes()) {
+                if(stmt != nullptr) stmt->EmitCases(stream, context);
+            }
+        }
+
+        is_switch_case_ = true;
+    };
+    void PassRegister(std::string &reg) override {
+        // Pass register to children
+        if (statement_list_ != nullptr) {
+            for (auto stmt : statement_list_->GetNodes()) {
+                if(stmt != nullptr) stmt->PassRegister(reg);
+            }
+        }
+    };
+
+    // void DefineLabel(Context &context) override {
+    //     // Define label for each statement
+    //     if (statement_list_ != nullptr) {
+    //         for (auto stmt : statement_list_->GetNodes()) {
+    //             stmt->DefineLabel(context);
+    //         }
+    //     }
+    // };
+
 };
 
 #endif
