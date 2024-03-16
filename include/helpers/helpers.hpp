@@ -16,6 +16,7 @@ enum DeclaratorType
 
 inline std::map<std::string, int> type_size = {
     {"int", 4},
+    {"unsigned", 4},
     {"char", 1},
     {"float", 4},
     {"double", 8}

@@ -10,9 +10,10 @@
 inline std::map<std::string, int> type_to_shift_amt = {
     // can also do log2(type_size)
     {"int", 2},
+    {"unsigned", 2},
     {"char", 0},
     {"float", 2},
-    // TODO: check if double is right?]?
+    // TODO: check if double is right?
     {"double", 3},
 };
 
@@ -194,12 +195,13 @@ inline void write_local_var(Node *var_node, Context &context, std::ostream &stre
     // std::cout << "in local var write" << std::endl;
 
     int offset;
-    std::map<std::string, int> type_to_shift_amt = {
-        // can also do log2(type_size)
-        {"int", 2},
-        {"char", 0},
-        {"float", 2},
-    };
+    // std::map<std::string, int> type_to_shift_amt = {
+    //     // can also do log2(type_size)
+    //     {"int", 2},
+    //     {"char", 0},
+    //     {"float", 2},
+    //     {""}
+    // };
 
     if (var.is_array)
     {

@@ -60,7 +60,7 @@ public:
                 stream << "sw a" << std::to_string(cur_a_reg) << ", " << var_offset << "(fp)" <<  std::endl;
                 cur_a_reg++;
 
-            } else if ((arg_context.type == "int" || arg_context.type == "char") && cur_a_reg <= 7 && !arg_context.is_array) {
+            } else if ((arg_context.type == "int" || arg_context.type == "char" || arg_context.type == "unsigned") && cur_a_reg <= 7 && !arg_context.is_array) {
                 // Arg passed through register
                 // if(arg_context.type == "int") ins = "sw";
                 // else if(arg_context.type == "char") ins = "sb";

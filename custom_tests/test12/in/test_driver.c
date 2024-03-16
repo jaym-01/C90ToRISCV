@@ -1,9 +1,10 @@
 #include <stdio.h>
 
-int test();
+unsigned test(unsigned new_val[]);
 
 int main() {
-    printf("Test 1: %d\n", test());
+    unsigned vals[] = {-1, 2, 3};
+    printf("Test 1: %u\n", test(vals));
 
     return 0;
 }

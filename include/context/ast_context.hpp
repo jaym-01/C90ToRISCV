@@ -263,7 +263,7 @@ public:
 
     std::string GetReturnRegister(std::string type)
     {
-        if(type == "int" || type == "char") return "a0";
+        if(type == "int" || type == "char" || type == "unsigned") return "a0";
         else if(type == "float" || type == "double"){
             return "fa0";
         }

@@ -63,7 +63,7 @@ public:
                     context.FreeRegister(dest_reg);
                 }
 
-            } else if ((type == "int" || type == "char") && cur_a_reg <= 7 && !params[i].is_array) {
+            } else if ((type == "int" || type == "char" || type == "unsigned") && cur_a_reg <= 7 && !params[i].is_array) {
                 dest_reg = "a" + std::to_string(cur_a_reg);
                 args[i]->DefineConstantType(params[i].type);
                 args[i]->EmitRISCWithDest(stream, context, dest_reg);

@@ -166,6 +166,7 @@ public:
         // }
 
         if(type == "int") return CalcVal<int>(left, right, b_operator_);
+        else if(type == "unsigned") return CalcVal<unsigned>(left, right, b_operator_);
         else if(type == "float") return CalcVal<float>(left, right, b_operator_);
         else if(type == "double") return CalcVal<double>(left, right, b_operator_);
         else if(type == "char") return {(int)((signed char)(left[0] + right[0]))};

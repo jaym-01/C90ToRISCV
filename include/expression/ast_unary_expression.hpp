@@ -3,6 +3,8 @@
 
 #include "../ast_node.hpp"
 #include "helpers/var_helpers.hpp"
+#include "helpers/helpers.hpp"
+#include "../ast_constant.hpp"
 #include <string>
 
 class UnaryExpression : public Node
@@ -90,6 +92,19 @@ public:
         expression_->Print(stream);
         stream<<" }";
     };
+
+    std::vector<int> EvalExpression(std::string type) const override{
+        IntConstant *zero_c = new IntConstant(0);
+        zero_c->DefineConstantType(type);
+        std::vector<int> left = zero_c->EvalExpression(type), right = expression_->EvalExpression(type);
+
+        if(type == "int") return CalcVal<int>(left, right, unary_operator_);
+        else if(type == "unsigned") return CalcVal<unsigned>(left, right, unary_operator_);
+        else if(type == "float") return CalcVal<float>(left, right, unary_operator_);
+        else if(type == "double") return CalcVal<double>(left, right, unary_operator_);
+        else if(type == "char") return {(int)((signed char)(left[0] + right[0]))};
+        else throw std::runtime_error("An invalid type is trying to be evaluated");
+    }
 };
 
 #endif
