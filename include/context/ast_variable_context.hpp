@@ -17,6 +17,8 @@ struct VariableContext
     bool is_inherited = false;
     bool is_global = false;
     bool is_param = false;
+    bool is_enum = false;
+    int enum_val = 0;
     int offset = 1;
 
 

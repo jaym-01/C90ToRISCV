@@ -26,13 +26,17 @@ public:
             dest_reg = context.ReserveRegister(var.type);
         }
 
+        if(var.is_enum){
+            stream << "li " << dest_reg << ", " << var.enum_val << std::endl;
+        } else{
+            read_var_value(nullptr, context, stream, var, dest_reg);
+        }
+
 
         // if (var.offset > 0) {
         //     std::string err_msg = "Variable " + identifier_ + " was not initialized";
         //     throw std::runtime_error(err_msg);
         // }
-
-        read_var_value(nullptr, context, stream, var, dest_reg);
     };
 
     int GetNumBranches() const override{

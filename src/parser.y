@@ -42,12 +42,12 @@
 %type <node> equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
 %type <node> conditional_expression assignment_expression constant_expression declaration declaration_specifiers
 %type <node> init_declarator type_specifier struct_specifier struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list
-%type <node> struct_declarator enum_specifier enumerator_list enumerator declarator direct_declarator pointer parameter_declaration
+%type <node> struct_declarator enum_specifier enumerator declarator direct_declarator pointer parameter_declaration
 %type <node> identifier_list type_name abstract_declarator direct_abstract_declarator statement labeled_statement // initializer initializer_list
 %type <node> expression_statement selection_statement iteration_statement jump_statement
 
 /* Moved declaration_list, argument_expression_list, compound_statement to nodes */
-%type <nodes> statement_list declaration_list argument_expression_list init_declarator_list expression
+%type <nodes> statement_list declaration_list argument_expression_list init_declarator_list expression enumerator_list
 %type <nodes> initializer initializer_list translation_unit parameter_list
 
 /* New */
@@ -106,18 +106,19 @@ declaration_list
 	;
 
 declaration
-	: declaration_specifiers ';'
+	: declaration_specifiers ';' { $$ = $1; }
 	| declaration_specifiers init_declarator_list ';' { $$ = new Declaration($1, $2); }
 
 /* Parent of type_specifier and storage_class_specifier
 (includes e.g. int, static, int statc, static int) */
 declaration_specifiers
-	: type_specifier
+	: type_specifier { $$ = $1; }
 	/* | storage_class_specifier { $$ = new DeclarationSpecifiers(nullptr, $1); } */
 	/* | storage_class_specifier declaration_specifiers { $2->AddStorageClassSpecifier($1); $$ = $2;} */
 	// | type_specifier declaration_specifiers { $2->AddTypeSpecifier($1); $$ = $2; }
 	| type_specifier declaration_specifiers
 	;
+
 
 type_specifier
 	: CHAR 		{ 	$$ = new TypeSpecifier("char");		}
@@ -128,6 +129,56 @@ type_specifier
 	| DOUBLE	{	$$ = new TypeSpecifier("double");	}
 	| VOID 		{	$$ = new TypeSpecifier("void");		}
 	| UNSIGNED  {   $$ = new TypeSpecifier("unsigned"); }
+	| enum_specifier { $$ = $1; }
+	| struct_specifier
+	| TYPE_NAME
+	;
+
+enum_specifier
+	: ENUM '{' enumerator_list '}' { $$ = new EnumSpecifier("", $3); }
+	| ENUM IDENTIFIER '{' enumerator_list '}' { $$ = new EnumSpecifier(*$2, $4); delete $2; }
+	| ENUM IDENTIFIER { $$ = new EnumSpecifier(*$2, nullptr); delete $2; }
+	;
+
+enumerator_list
+	: enumerator { $$ = new NodeList($1); }
+	| enumerator_list ',' enumerator { $1->PushBack($3); $$ = $1; }
+	;
+
+enumerator
+	: IDENTIFIER { $$ = new EnumValue(*$1, nullptr); delete $1; }
+	| IDENTIFIER '=' constant_expression { $$ = new EnumValue(*$1, $3); delete $1; }
+	;
+
+struct_specifier
+	: STRUCT IDENTIFIER '{' struct_declaration_list '}'
+	| STRUCT '{' struct_declaration_list '}'
+	| STRUCT IDENTIFIER
+	;
+
+struct_declaration_list
+	: struct_declaration
+	| struct_declaration_list struct_declaration
+	;
+
+struct_declaration
+	: specifier_qualifier_list struct_declarator_list ';'
+	;
+
+specifier_qualifier_list
+	: type_specifier specifier_qualifier_list
+	| type_specifier
+	;
+
+struct_declarator_list
+	: struct_declarator
+	| struct_declarator_list ',' struct_declarator
+	;
+
+struct_declarator
+	: declarator
+	| ':' constant_expression
+	| declarator ':' constant_expression
 	;
 
 /* Parent of init_declarator & initialiser (e.g. x = 5, y = 10) */

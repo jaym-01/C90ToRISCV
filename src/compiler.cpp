@@ -59,7 +59,7 @@ int main(int argc, char **argv)
     std::cout << "---------------------------------------" << std::endl;
     std::cout << "printing parse tree: \n" << std::endl;
     ast_root->Print(std::cout);
-    std::cout << "---------------------------------------" << std::endl;
+    std::cout << std::endl << "---------------------------------------" << std::endl;
 
     // return 0;
     if (ast_root == nullptr)

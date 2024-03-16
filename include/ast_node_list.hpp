@@ -16,7 +16,7 @@ public:
     {
         for (auto node : nodes_)
         {
-            delete node;
+            if(node != nullptr) delete node;
         }
     }
 
@@ -67,7 +67,7 @@ public:
         }
     };
 
-    virtual void Print(std::ostream &stream) const override{
+    void Print(std::ostream &stream) const override{
         stream<<"node_list[";
         for (auto node : nodes_)
         {
