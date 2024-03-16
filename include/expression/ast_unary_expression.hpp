@@ -30,10 +30,13 @@ public:
         VariableContext var;
         std::string type;
         if(id != ""){
-            // -(function call) is valid
-            ScopeContext* cur_scope = context.GetCurScope();
-            VariableContext var = cur_scope->GetVarFromId(id);
-            type = var.type;
+            if(context.id_to_func_def.find(id) == context.id_to_func_def.end()) {
+                ScopeContext* cur_scope = context.GetCurScope();
+                VariableContext var = cur_scope->GetVarFromId(id);
+                type = var.type;
+            } else{
+                type = context.id_to_func_def[id].return_type;
+            }
         } else{
             type = type_;
         }
