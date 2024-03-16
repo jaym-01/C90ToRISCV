@@ -16,6 +16,7 @@ struct VariableContext
     bool is_array;
     bool is_inherited = false;
     bool is_global = false;
+    bool is_param = false;
     int offset = 1;
 
 

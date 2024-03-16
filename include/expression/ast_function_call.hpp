@@ -50,13 +50,26 @@ public:
         for (std::size_t i = 0; i < args.size(); i++)
         {
             type = params[i].type;
-            if ((type == "int" || type == "char") && cur_a_reg <= 7) {
+            if(params[i].is_array){
+                // load the memory address of the array into a register
+                // store it in memory if not enough 'a' registers
+                if(cur_a_reg <= 7) dest_reg = "a" + std::to_string(cur_a_reg);
+                else dest_reg = context.ReserveRegister("int");
+                stream << "addi " << dest_reg << ",fp," << params[i].offset << std::endl;
+                if(cur_a_reg <= 7) cur_a_reg++;
+                else {
+                    // stores the address of the array in memory
+                    stream << "sw " << dest_reg << ", " << context.CalcOverflowOffsetAndUpdate(cur_sp_offset, params[i]) << "(sp)" << std::endl;
+                    context.FreeRegister(dest_reg);
+                }
+
+            } else if ((type == "int" || type == "char") && cur_a_reg <= 7 && !params[i].is_array) {
                 dest_reg = "a" + std::to_string(cur_a_reg);
                 args[i]->DefineConstantType(params[i].type);
                 args[i]->EmitRISCWithDest(stream, context, dest_reg);
                 cur_a_reg++;
 
-            } else if((type == "float" || type == "double") && cur_fp_reg <= 7){
+            } else if((type == "float" || type == "double") && cur_fp_reg <= 7 && !params[i].is_array){
                 dest_reg = "fa" + std::to_string(cur_fp_reg);
                 args[i]->DefineConstantType(params[i].type);
                 args[i]->EmitRISCWithDest(stream, context, dest_reg);

@@ -88,48 +88,33 @@ std::vector<int> CalcVal(std::vector<int> left, std::vector<int> right, std::str
 // }
 
 inline int calculate_var_offset(int cur_offset, VariableContext var_context) {
-    int size = type_size[var_context.type];
+    std::string type = var_context.type;
+    // always an int as it passes the address
+    if(var_context.is_param && var_context.is_array) type = "int";
+    int size = type_size[type];
     int offset;
 
-    offset = cur_offset - size * var_context.array_size;
+    // if param - store address if array so array size must be 1
+    offset = cur_offset - size * (var_context.is_param? 1: var_context.array_size);
 
-    std::string type = var_context.type;
-
-    if (type == "int") {
-        return align_word(offset);
-    }
-
-    else if (type == "char") {
+    if (type == "char") {
         return offset;
-    }
-
-    else if (type == "float") {
-        return align_word(offset);
-    }
-
-    else if (type == "double") {
-        return align_word(offset);
-    }
-
-    else {
+    } else {
         return align_word(offset);
     }
 }
 
 inline int calculate_arg_overflow(int &cur_offset, VariableContext var_context) {
-    int size = type_size[var_context.type] * var_context.array_size;
-    std::string type = var_context.type;
+    // int size = type_size[var_context.type] * var_context.array_size;
+    int size = type_size[var_context.type];
 
     // First calculate aligned offset of last
     int aligned_offset;
-    if (type == "int") {
+    // ensures it aligns words for char arrays too
+    if (var_context.is_array) {
         aligned_offset = align_word(cur_offset);
-    } else if (type == "char") {
+    } else if (var_context.type == "char") {
         aligned_offset = cur_offset;
-    } else if (type == "float") {
-        aligned_offset = align_word(cur_offset);
-    } else if (type == "double") {
-        // return cur_offset - 8;
     } else {
         aligned_offset = align_word(cur_offset);
     }

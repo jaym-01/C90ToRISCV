@@ -144,7 +144,7 @@ init_declarator
 /* parent of direct declarator (to include pointer syntax) */
 declarator
 	: direct_declarator { $$ = $1; }
-	| pointer direct_declarator
+	/*| pointer direct_declarator { $$ = new PointerDeclarator($1, $2);}*/
 	;
 
 direct_declarator

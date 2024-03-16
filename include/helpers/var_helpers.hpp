@@ -12,6 +12,8 @@ inline std::map<std::string, int> type_to_shift_amt = {
     {"int", 2},
     {"char", 0},
     {"float", 2},
+    // TODO: check if double is right?]?
+    {"double", 3},
 };
 
 
@@ -38,14 +40,17 @@ inline void global_arr_elem_to_reg(Context &context, VariableContext var, std::s
     // "add a5, a5, index_reg"
     // "lw dest_reg, 0(a5)"
 
+    std::string addr_reg = context.ReserveRegister("int");
+
     stream << "slli " << index_reg << ", " << index_reg << ", "<<type_to_shift_amt[var.type] << std::endl;
-    std::string addr_reg = context.ReserveRegister(var.type);
-    if (var.type == "int") {
-        stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
-        stream << "addi " << addr_reg << ", " << addr_reg << ", %lo(" << id << ")" << std::endl;
-        stream << "add " << addr_reg<< ", " << addr_reg << ", " << index_reg << std::endl;
-        stream << "lw " << dest_reg << ", 0(" << addr_reg << ")" << std::endl;
-    }
+    stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
+    stream << "addi " << addr_reg << ", " << addr_reg << ", %lo(" << id << ")" << std::endl;
+
+    // adds the index offset
+    stream << "add " << addr_reg<< ", " << addr_reg << ", " << index_reg << std::endl;
+
+    stream << get_mem_read(var.type) << " " << dest_reg << ", 0(" << addr_reg << ")" << std::endl;
+
     context.FreeRegister(addr_reg);
 }
 
@@ -65,14 +70,11 @@ inline void read_global_var(
 }
 
 // GLOBAL VAR WRITE FUNCTIONS
-inline void reg_to_global_var(Context &context, VariableContext var, std::string id, std::ostream &stream,
-    std::string val_reg) {
-    std::string addr_reg = context.ReserveRegister(var.type);
+inline void reg_to_global_var(Context &context, VariableContext var, std::string id, std::ostream &stream, std::string val_reg) {
+    std::string addr_reg = context.ReserveRegister("int");
 
-    if (var.type == "int") {
-        stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
-        stream << "sw " << val_reg << ", %lo(" << id << ")(" << addr_reg << ")" << std::endl;
-    }
+    stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
+    stream << get_mem_write(var.type) << " " << val_reg << ", %lo(" << id << ")(" << addr_reg << ")" << std::endl;
 
     context.FreeRegister(addr_reg);
 }
@@ -84,15 +86,15 @@ inline void reg_to_global_array_mem(Context &context, VariableContext var, std::
     // "addi a5, a5, %lo(y)" // addr of y
     // "add a5, a5, index_reg"
     // "sw val_reg, 0(a5)"
+    std::string addr_reg = context.ReserveRegister("int");
     stream << "slli " << index_reg << ", " << index_reg << ", " << type_to_shift_amt[var.type] << std::endl;
-    std::string addr_reg = context.ReserveRegister(var.type);
-    if (var.type == "int")
-    {
-        stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
-        stream << "addi " << addr_reg <<", "<<addr_reg<< ", %lo(" << id << ")" << std::endl;
-        stream << "add " << addr_reg << ", " << addr_reg << ", " << index_reg << std::endl;
-        stream << "sw " << val_reg << ", 0(" << addr_reg << ")" << std::endl;
-    }
+    stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
+    stream << "addi " << addr_reg <<", "<<addr_reg<< ", %lo(" << id << ")" << std::endl;
+
+    // adds the index offset
+    stream << "add " << addr_reg << ", " << addr_reg << ", " << index_reg << std::endl;
+
+    stream << get_mem_write(var.type) << " " << val_reg << ", 0(" << addr_reg << ")" << std::endl;
 
     context.FreeRegister(addr_reg);
 }
@@ -114,6 +116,25 @@ inline void write_global_var(
     } else
     {
         reg_to_global_var(context, var, id, stream, val_reg);
+    }
+}
+
+// writes the memory address of the element to be accessed in the array into index_reg
+inline void get_array_address(Context &context, std::ostream &stream, VariableContext &var, std::string &index_reg){
+    // Store index offset + var offset + fp in index reg (location of array elem in memory)
+    stream << "slli " << index_reg << ", " << index_reg << ", " << type_to_shift_amt[var.type] << std::endl;
+    // if param, get load address of first element then find the offset
+    if(var.is_param) {
+        // tmp holds the first element of the array address to the array
+        std::string tmp = context.ReserveRegister("int");
+        stream << "lw " << tmp << ", "<< var.offset << "(fp)" << std::endl;
+        // add it to index_reg so index_reg stores memory address of value to be accessed
+        stream << "add " << index_reg << ", " << index_reg << ", " << tmp << std::endl;
+        context.FreeRegister(tmp);
+    }
+    else {
+        stream << "addi " << index_reg << ", " << index_reg << "," << var.offset << std::endl;
+        stream << "add " << index_reg << ", " << index_reg << ", fp" << std::endl;
     }
 }
 
@@ -141,10 +162,23 @@ inline void read_local_var(
         std::string index_reg = "";
         var_node->GetIndexExpression()->EmitRISCWithDest(stream, context, index_reg);
 
-        // Store index offset + var offset + fp in index reg (location of array elem in memory)
-        stream << "slli " << index_reg << ", " << index_reg << ", " << type_to_shift_amt[var.type] << std::endl;
-        stream << "addi " << index_reg << ", " << index_reg << "," << var.offset << std::endl;
-        stream << "add " << index_reg << ", " << index_reg << ", fp" << std::endl;
+        // // Store index offset + var offset + fp in index reg (location of array elem in memory)
+        // stream << "slli " << index_reg << ", " << index_reg << ", " << type_to_shift_amt[var.type] << std::endl;
+        // // if param, get load address of first element then find the offset
+        // if(var.is_param) {
+        //     // tmp holds the first element of the array address to the array
+        //     std::string tmp = context.ReserveRegister("int");
+        //     stream << "lw " << tmp << ", "<< var.offset << "(fp)" << std::endl;
+
+        //     // add it to index_reg so index_reg stores memory address of value to be accessed
+        //     stream << "add " << index_reg << ", " << index_reg << ", " << tmp << std::endl;
+        //     context.FreeRegister(tmp);
+        // }
+        // else {
+        //     stream << "addi " << index_reg << ", " << index_reg << "," << var.offset << std::endl;
+        //     stream << "add " << index_reg << ", " << index_reg << ", fp" << std::endl;
+        // }
+        get_array_address(context, stream, var, index_reg);
         local_var_to_reg(stream, var, 0, dest_reg, index_reg);
         context.FreeRegister(index_reg);
     } else {
@@ -174,9 +208,10 @@ inline void write_local_var(Node *var_node, Context &context, std::ostream &stre
         index_expr->EmitRISCWithDest(stream, context, index_reg);
 
         // Store index offset + var offset + fp in index reg (location of array elem in memory)
-        stream << "slli " << index_reg << ", " << index_reg << ", " << type_to_shift_amt[var.type] << std::endl;
-        stream << "addi " << index_reg << ", " << index_reg << "," << var.offset << std::endl;
-        stream << "add " << index_reg << ", " << index_reg << ", fp" << std::endl;
+        // stream << "slli " << index_reg << ", " << index_reg << ", " << type_to_shift_amt[var.type] << std::endl;
+        // stream << "addi " << index_reg << ", " << index_reg << "," << var.offset << std::endl;
+        // stream << "add " << index_reg << ", " << index_reg << ", fp" << std::endl;
+        get_array_address(context, stream, var, index_reg);
         reg_to_local_var(stream, var.type, 0, val_reg, index_reg);
 
         context.FreeRegister(index_reg);

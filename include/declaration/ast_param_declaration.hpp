@@ -53,6 +53,7 @@ public:
         // Don't need to use type from arg
         std::string type = declaration_specifiers_->GetTypeSpecifier();
         VariableContext var_context = declarator_->InitVariableContext(type);
+        var_context.is_param = true;
 
         return var_context;
     };

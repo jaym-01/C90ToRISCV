@@ -55,14 +55,19 @@ public:
             cur_scope->SetVarContext(id, arg_context);
 
             // Need to call after frame size is calculated
-            if ((arg_context.type == "int" || arg_context.type == "char") && cur_a_reg <= 7) {
+            if(arg_context.is_array && cur_a_reg <= 7){
+                // if in register -> store address on stack
+                stream << "sw a" << std::to_string(cur_a_reg) << ", " << var_offset << "(fp)" <<  std::endl;
+                cur_a_reg++;
+
+            } else if ((arg_context.type == "int" || arg_context.type == "char") && cur_a_reg <= 7 && !arg_context.is_array) {
                 // Arg passed through register
                 // if(arg_context.type == "int") ins = "sw";
                 // else if(arg_context.type == "char") ins = "sb";
                 stream << get_mem_write(arg_context.type) << " a" << std::to_string(cur_a_reg) << ", " << var_offset << "(fp)" << std::endl;
                 cur_a_reg++;
 
-            } else if((arg_context.type == "float" || arg_context.type == "double") && cur_fp_reg <= 7){
+            } else if((arg_context.type == "float" || arg_context.type == "double") && cur_fp_reg <= 7 && !arg_context.is_array){
                 // if(arg_context.type == "float") ins = "fsw";
                 // else if(arg_context.type == "double") ins = "fsd";
                 stream << get_mem_write(arg_context.type) << " fa" << std::to_string(cur_fp_reg) << ", " << var_offset << "(fp)" << std::endl;
@@ -73,7 +78,7 @@ public:
                 // always at the bottom of the previous stack
                 int offset = calculate_var_offset(cur_s0_offset, arg_context);
 
-                std::string temp_reg = context.ReserveRegister(arg_context.type);
+                std::string temp_reg = context.ReserveRegister(arg_context.is_array? "int" : arg_context.type);
 
                 // TODO: CHECK THIS
                 // should offset be -offset to make it positive?
@@ -96,8 +101,8 @@ public:
                 //     l_ins = "fld";
                 //     s_ins = "fsd";
                 // }
-                stream << get_mem_read(arg_context.type)  <<" "<<temp_reg<<", "<<offset<<"(fp)"<< std::endl;
-                stream << get_mem_write(arg_context.type) << " " <<temp_reg<< ", " << var_offset << "(fp)" << std::endl;
+                stream << get_mem_read(arg_context.is_array? "int" : arg_context.type)  <<" "<<temp_reg<<", "<<offset<<"(fp)"<< std::endl;
+                stream << get_mem_write(arg_context.is_array? "int" : arg_context.type) << " " <<temp_reg<< ", " << var_offset << "(fp)" << std::endl;
 
                 context.FreeRegister(temp_reg);
             }

@@ -50,13 +50,16 @@ public:
         } else if (unary_operator_ == "!") {
             stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
         } else if(unary_operator_ == "&"){
-            // TODO: get it to write the address of data into dest_reg
+            // get var information
             std::string var_name = expression_->GetIdentifier();
             ScopeContext* cur_scope = context.GetCurScope();
             VariableContext var = cur_scope->GetVarFromId(var_name);
 
-            // TODO: handle global case
-            stream << "addi " << dest_reg << ", fp, " << var.offset << std::endl;
+            if(var.is_global) {
+                stream << "lui " << dest_reg << ", %hi(" << var_name << ")" << std::endl;
+                stream << "addi " << dest_reg << ", " << dest_reg << ", %lo(" << var_name << ")" << std::endl;
+            }
+            else stream << "addi " << dest_reg << ", fp, " << var.offset << std::endl;
         }
 
         // Store result back to var if INC / DEC op
