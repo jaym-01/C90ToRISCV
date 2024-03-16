@@ -3,12 +3,14 @@
 
 #include "../ast_node.hpp"
 #include "helpers/var_helpers.hpp"
+#include <string>
 
 class UnaryExpression : public Node
 {
 private:
     std::string unary_operator_;
     Node *expression_;
+    std::string type_;
 
 public:
     UnaryExpression(
@@ -23,13 +25,20 @@ public:
     void EmitRISC(std::ostream &stream, Context &context) const {};
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest_reg) const {
         std::string id = expression_->GetIdentifier();
-        ScopeContext* cur_scope = context.GetCurScope();
-        VariableContext var = cur_scope->GetVarFromId(id);
+        VariableContext var;
+        std::string type;
+        if(id != ""){
+            ScopeContext* cur_scope = context.GetCurScope();
+            VariableContext var = cur_scope->GetVarFromId(id);
+            type = var.type;
+        } else{
+            type = type_;
+        }
 
 
         // 1. Evaluate
         if (dest_reg == ""){
-            dest_reg = context.ReserveRegister(var.type);
+            dest_reg = context.ReserveRegister(type);
         }
 
         if(unary_operator_ != "&") expression_->EmitRISCWithDest(stream, context, dest_reg);
@@ -44,7 +53,7 @@ public:
             // negate instruction, pseudo-ins for sub dest_reg, x0, dest_reg
             stream << "neg " << dest_reg << ", " << dest_reg << std::endl;
         } else if (unary_operator_ == "~") {
-            std::string tmp_reg = context.ReserveRegister(var.type);
+            std::string tmp_reg = context.ReserveRegister(type);
             stream << "li " << tmp_reg << ", -1" << std::endl; // Load 0xFFFFFFFF into temp_reg
             stream << "xor " << dest_reg << ", " << dest_reg <<", "<<tmp_reg << std::endl;
         } else if (unary_operator_ == "!") {
@@ -63,13 +72,14 @@ public:
         }
 
         // Store result back to var if INC / DEC op
-        if (unary_operator_ == "++" || unary_operator_ == "--") {
+        if (id != "" && (unary_operator_ == "++" || unary_operator_ == "--")) {
 
             write_var_value(expression_, context, stream, var, dest_reg);
         }
     };
 
     void DefineConstantType(std::string type) override {
+        type_ = type;
         expression_->DefineConstantType(type);
     };
 

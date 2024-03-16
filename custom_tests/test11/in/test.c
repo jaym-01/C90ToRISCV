@@ -12,7 +12,10 @@
 float test(float x[]){
 
     // x[0] = x[0] + 1;
-    return x[0];
+    float y[4];
+    y[0] = 40;
+
+    return y[0];
 }
 
 double test2(double x[]){

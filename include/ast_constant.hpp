@@ -77,6 +77,10 @@ public:
     void Print(std::ostream &stream) const{
         stream << "fdconst{" << value_ << "}";
     };
+
+    std::string GetIdentifier() const override {
+        return "";
+    }
 };
 
 
@@ -130,6 +134,10 @@ public:
     int GetNumBranches() const override {
         return 1;
     };
+
+    std::string GetIdentifier() const override {
+        return "";
+    }
 };
 
 #endif

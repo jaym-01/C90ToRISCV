@@ -12,7 +12,7 @@ inline int align_word(int offset){
 }
 
 inline std::string get_mem_write(std::string type){
-    if(type == "int") return "sw";
+    if(type == "int" || type == "unsigned") return "sw";
     else if(type == "char") return "sb";
     else if(type == "float") return "fsw";
     else if(type == "double") return "fsd";
@@ -20,7 +20,7 @@ inline std::string get_mem_write(std::string type){
 }
 
 inline std::string get_mem_read(std::string type){
-    if(type == "int") return "lw";
+    if(type == "int" || type == "unsigned") return "lw";
     else if(type == "char") return "lbu";
     else if(type == "float") return "flw";
     else if(type == "double") return "fld";
