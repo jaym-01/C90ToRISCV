@@ -74,6 +74,10 @@ public:
         return {dec_rep[0], dec_rep[1]};
     }
 
+    std::string GetType() const override{
+        return type_;
+    }
+
     void Print(std::ostream &stream) const{
         stream << "fdconst{" << value_ << "}";
     };
@@ -134,6 +138,11 @@ public:
     int GetNumBranches() const override {
         return 1;
     };
+
+    std::string GetType() const override{
+        if(fd_val_ != nullptr) return fd_val_->GetType();
+        else return "int";
+    }
 
     std::string GetIdentifier() const override {
         return "";

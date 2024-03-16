@@ -34,6 +34,7 @@ public:
 
         VariableContext var_context = cur_scope->GetVarFromId(id);
         int cur_func_offset = context.GetCurFuncOffset();
+        declarator_->DefineConstantType(var_context.type);
 
         // gets the offset relative to the fp
         int var_offset = calculate_var_offset(cur_func_offset, var_context);

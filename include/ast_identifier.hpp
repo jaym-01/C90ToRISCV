@@ -8,6 +8,7 @@ class Identifier : public Node
 {
 private:
     std::string identifier_;
+    std::string type_;
 
 public:
     Identifier(std::string identifier) : identifier_(identifier){};
@@ -68,7 +69,10 @@ public:
         return DeclaratorType::Variable;
     }
 
-    void DefineConstantType(std::string type) override {}
+    void DefineConstantType(std::string type) override { type_ = type; }
+    std::string GetType() const override{
+        return type_;
+    }
 
 };
 

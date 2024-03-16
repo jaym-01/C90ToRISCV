@@ -93,6 +93,14 @@ public:
         }
     };
 
+    void DefineConstantType(std::string type) override {
+        identifier_->DefineConstantType(type);
+    }
+
+    std::string GetType() const override{
+        return identifier_->GetType();
+    }
+
     std::string GetIdentifier() const override
     {
         return identifier_->GetIdentifier();

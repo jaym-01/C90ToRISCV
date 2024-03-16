@@ -12,7 +12,7 @@ private:
     Node *left_operand_;
     std::string b_operator_;
     Node *right_operand_;
-    std::string result_type;
+    std::string result_type_;
 
 public:
     BinaryExpression(
@@ -33,11 +33,13 @@ public:
     // };
 
     void EvaluateOperation(std::ostream &stream, std::string reg1, std::string reg2, std::string dest_reg) const {
-        std::string ins_prefix = "", ins_postfix = " ";
+        std::string ins_prefix = "", ins_postfix = " ", comp_postfix = " ";
 
-        if(result_type == "double" || result_type == "float"){
+        if(result_type_ == "double" || result_type_ == "float"){
             ins_prefix = "f";
-            ins_postfix = result_type == "double" ? ".d " : ".s ";
+            ins_postfix = result_type_ == "double" ? ".d " : ".s ";
+        } else if(GetChildrenType() == "unsigned"){
+            comp_postfix = "u ";
         }
 
         if (b_operator_ == "+") {
@@ -65,19 +67,19 @@ public:
 
         // Logical operations
         else if (b_operator_ == "<") {
-            stream << "slt " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            stream << "slt" << comp_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
         }
         else if (b_operator_ == "<=") {
             // Same as !(reg1 > reg2)
-            stream << "sgt " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            stream << "sgt" << comp_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
             stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
         }
         else if (b_operator_ == ">") {
-            stream << "sgt " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            stream << "sgt" << comp_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
         }
         else if (b_operator_ == ">=") {
             // Same as !(reg1 < reg2)
-            stream << "slt " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            stream << "slt" << comp_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
             stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
         }
         else if (b_operator_ == "==") {
@@ -117,8 +119,8 @@ public:
         std::string reg2 = "";
 
         // Define type of children
-        left_operand_->DefineConstantType(result_type);
-        right_operand_->DefineConstantType(result_type);
+        left_operand_->DefineConstantType(result_type_);
+        right_operand_->DefineConstantType(result_type_);
 
         // TODO: What happens if you run out of temp registers
         // Evaluate child with most branches first
@@ -133,9 +135,9 @@ public:
         }
 
 
-        // std::cout << "type: " << result_type << std::endl;
+        // std::cout << "type: " << result_type_ << std::endl;
         if (dest_reg == "") {
-            dest_reg = context.ReserveRegister(result_type);
+            dest_reg = context.ReserveRegister(result_type_);
         }
 
         EvaluateOperation(stream, reg1, reg2, dest_reg);
@@ -175,7 +177,22 @@ public:
 
     void DefineConstantType(std::string type) override {
         // std::cout << "this is what is passed through : " << type << std::endl;
-        result_type = type;
+        result_type_ = type;
+    }
+
+    std::string GetChildrenType() const {
+        std::string left = left_operand_->GetType(), right = right_operand_->GetType();
+        // only unsigned takes precedence
+        // normally there shouldn't be mixing of type
+        // this might happen with constant int and unsigned var
+        // treat expression as unsigned (i.e. use unsigned operations)
+        if(left == "unsigned" || right == "unsigned") return "unsigned";
+        else return left;
+    }
+
+    std::string GetType() const override{
+        // get type of children so you always get the type of the variable or constant used
+        return GetChildrenType();
     }
 
     int GetNumBranches() const override{

@@ -54,6 +54,9 @@ public:
         // TODO: FIX THIS - IT IS CAUSING TESTS TO FAIL
         throw std::runtime_error("Error: DefineConstantType not implemented for this node");
     }
+    virtual std::string GetType() const{
+        throw std::runtime_error("Error: GetType not implemented for this node");
+    }
     // virtual ScopeContext* BuildContext(Context &context, ScopeContext* cur_scope) {}; // old
 
     // For expressions

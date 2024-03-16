@@ -40,7 +40,12 @@ public:
         return index_expression_->GetNodes()[0];
     };
 
-    void DefineConstantType(std::string type) override {}
+    void DefineConstantType(std::string type) override {
+        identifier_->DefineConstantType(type);
+    }
+    std::string GetType() const override {
+        return identifier_->GetType();
+    }
 
     int GetNumBranches() const override {
         return 1;

@@ -8,6 +8,7 @@ class PostfixExpression : public Node
 private:
     Node *expression_;
     std::string postfix_operator_;
+    std::string type_;
 
 public:
     PostfixExpression(
@@ -53,6 +54,14 @@ public:
         write_var_value(expression_, context, stream, var, temp_reg);
         context.FreeRegister(temp_reg);
     };
+
+    void DefineConstantType(std::string type) override {
+        type_ = type;
+        expression_->DefineConstantType(type);
+    }
+    std::string GetType() const override {
+        return expression_->GetType();
+    }
 
     void Print(std::ostream &stream) const
     {

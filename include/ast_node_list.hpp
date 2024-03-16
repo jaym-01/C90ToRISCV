@@ -31,6 +31,17 @@ public:
         }
     }
 
+    std::string GetType() const override {
+        std::string type = "int";
+        for(auto node : nodes_){
+            if(node == nullptr) continue;
+            type = node->GetType();
+            if(type == "unsigned") return "unsigned";
+        }
+
+        return type;
+    }
+
     void PushBack(Node *item) {
         nodes_.push_back(item);
     };

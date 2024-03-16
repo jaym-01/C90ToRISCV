@@ -85,6 +85,10 @@ public:
         expression_->DefineConstantType(type);
     };
 
+    std::string GetType() const override{
+        return expression_->GetType();
+    }
+
     void Print(std::ostream &stream) const
     {
         stream<<"u_expr{ ";

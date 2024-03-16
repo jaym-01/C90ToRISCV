@@ -11,6 +11,7 @@ class FunctionCall : public Node
 private:
     Node *identifier_;
     NodeList *argument_expression_list_;
+    std::string return_type_;
 
 public:
     FunctionCall(
@@ -119,7 +120,10 @@ public:
         std::cout << ")";
     };
 
-    void DefineConstantType(std::string type) override {}
+    void DefineConstantType(std::string type) override { return_type_ = type; }
+    std::string GetType() const override{
+        return return_type_;
+    }
 
     int GetNumBranches() const override { return 1; };
 };
