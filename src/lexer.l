@@ -75,16 +75,16 @@ L?'(\\.|[^\\'])+'	{yylval.number_int = (int)yytext[1]; return(INT_CONSTANT);}
 L?\"(\\.|[^\\"])*\"	{yylval.string = new std::string(yytext); return(STRING_LITERAL);}
 
 "..."      {return(ELLIPSIS);}
-">>="			 {return(RIGHT_ASSIGN);}
-"<<="      {return(LEFT_ASSIGN);}
-"+="			 {return(ADD_ASSIGN);}
-"-="       {return(SUB_ASSIGN);}
-"*="       {return(MUL_ASSIGN);}
-"/="			 {return(DIV_ASSIGN);}
-"%="			 {return(MOD_ASSIGN);}
-"&="       {return(AND_ASSIGN);}
-"^="			 {return(XOR_ASSIGN);}
-"|="       {return(OR_ASSIGN);}
+">>="			 {yylval.string = new std::string(yytext); return(RIGHT_ASSIGN);}
+"<<="      {yylval.string = new std::string(yytext); return(LEFT_ASSIGN);}
+"+="			 {yylval.string = new std::string(yytext); return(ADD_ASSIGN);}
+"-="       {yylval.string = new std::string(yytext); return(SUB_ASSIGN);}
+"*="       {yylval.string = new std::string(yytext); return(MUL_ASSIGN);}
+"/="			 {yylval.string = new std::string(yytext); return(DIV_ASSIGN);}
+"%="			 {yylval.string = new std::string(yytext); return(MOD_ASSIGN);}
+"&="       {yylval.string = new std::string(yytext); return(AND_ASSIGN);}
+"^="			 {yylval.string = new std::string(yytext); return(XOR_ASSIGN);}
+"|="       {yylval.string = new std::string(yytext); return(OR_ASSIGN);}
 ">>"       {return(RIGHT_OP);}
 "<<"       {return(LEFT_OP);}
 "++"			 {return(INC_OP);}

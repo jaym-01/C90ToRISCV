@@ -111,6 +111,10 @@ public:
         // TODO: load in a1 if double is used
     };
 
+    std::string GetIdentifier() const override {
+        return identifier_->GetIdentifier();
+    }
+
     void Print(std::ostream &stream) const
     {
         identifier_->Print(stream);

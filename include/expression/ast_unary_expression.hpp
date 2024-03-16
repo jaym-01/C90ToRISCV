@@ -30,6 +30,7 @@ public:
         VariableContext var;
         std::string type;
         if(id != ""){
+            // -(function call) is valid
             ScopeContext* cur_scope = context.GetCurScope();
             VariableContext var = cur_scope->GetVarFromId(id);
             type = var.type;
@@ -66,6 +67,8 @@ public:
             ScopeContext* cur_scope = context.GetCurScope();
             VariableContext var = cur_scope->GetVarFromId(var_name);
 
+            // arrays always point to the first element
+            // so this will always load a pointer to the first element in the array
             if(var.is_global) {
                 stream << "lui " << dest_reg << ", %hi(" << var_name << ")" << std::endl;
                 stream << "addi " << dest_reg << ", " << dest_reg << ", %lo(" << var_name << ")" << std::endl;

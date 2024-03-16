@@ -390,6 +390,12 @@ public:
         return id_to_func_def[id];
     }
 
+    FuncDefinition *GetFuncDefIfExists(std::string id){
+        if (id_to_func_def.find(id) == id_to_func_def.end()) return nullptr;
+
+        return &id_to_func_def[id];
+    }
+
     std::vector<SavedRegister> SaveTempRegsToMemory(std::ostream &stream) {
         std::vector<SavedRegister> saved_regs = {};
 

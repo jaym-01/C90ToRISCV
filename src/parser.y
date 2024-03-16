@@ -57,7 +57,7 @@
 
 %type <number_int> INT_CONSTANT STRING_LITERAL
 %type <number_float> FLOAT_CONSTANT
-%type <string> IDENTIFIER
+%type <string> IDENTIFIER MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN
 
 
 %start ROOT
@@ -331,16 +331,16 @@ expression
 
 assignment_operator
 	: '=' { $$ = new std::string("="); }
-	| MUL_ASSIGN
-	| DIV_ASSIGN
-	| MOD_ASSIGN
-	| ADD_ASSIGN
-	| SUB_ASSIGN
-	| LEFT_ASSIGN
-	| RIGHT_ASSIGN
-	| AND_ASSIGN
-	| XOR_ASSIGN
-	| OR_ASSIGN
+	| MUL_ASSIGN { $$ = $1; }
+	| DIV_ASSIGN { $$ = $1; }
+	| MOD_ASSIGN { $$ = $1; }
+	| ADD_ASSIGN { $$ = $1; }
+	| SUB_ASSIGN { $$ = $1; }
+	| LEFT_ASSIGN { $$ = $1; }
+	| RIGHT_ASSIGN { $$ = $1; }
+	| AND_ASSIGN { $$ = $1; }
+	| XOR_ASSIGN { $$ = $1; }
+	| OR_ASSIGN { $$ = $1; }
 	;
 
 constant_expression

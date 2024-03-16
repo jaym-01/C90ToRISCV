@@ -43,8 +43,15 @@ public:
             dest_reg = context.ReserveRegister(var.type);
         }
 
-        assignment_expression_->DefineConstantType(var.type);
-        assignment_expression_->EmitRISCWithDest(stream, context, dest_reg);
+        BinaryExpression *op_expr = nullptr;
+        if(assignment_operator_ != "="){
+            std::string op = assignment_operator_.substr(0, assignment_operator_.size() - 1);
+            BinaryExpression *op_expr = new BinaryExpression(unary_expression_, op, assignment_expression_);
+            op_expr->EmitRISCWithDest(stream, context, dest_reg);
+        } else{
+            assignment_expression_->DefineConstantType(var.type);
+            assignment_expression_->EmitRISCWithDest(stream, context, dest_reg);
+        }
 
         // 2. Calculate var offset if not already done
         // TODO: optimize by doing graph coloring and assigning variables to saved regs?
@@ -58,6 +65,7 @@ public:
         std::cout << "writing: " << var_id << std::endl;
         // Dest reg here holds the value to be stored in var
         write_var_value(unary_expression_, context, stream, var, dest_reg);
+        if(op_expr != nullptr) delete op_expr;
     };
 
     // void EmitRISC(std::ostream &stream, Context &context) const {

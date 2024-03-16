@@ -1,5 +1,5 @@
 set -e
-test="test13"
+test="test14"
 
 # Compile and run test
 make bin/c_compiler
