@@ -62,7 +62,7 @@ public:
             var.offset = var_offset;
         }
 
-        std::cout << "writing: " << var_id << std::endl;
+        // std::cout << "writing: " << var_id << std::endl;
         // Dest reg here holds the value to be stored in var
         write_var_value(unary_expression_, context, stream, var, dest_reg);
         if(op_expr != nullptr) delete op_expr;

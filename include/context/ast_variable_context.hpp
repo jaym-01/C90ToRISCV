@@ -10,15 +10,28 @@
 struct VariableContext
 {
     // std::string storage_class;
+    // general
     std::string id;
     std::string type;
+
+    // arrays
     int array_size;
     bool is_array;
+
+    // scopes
     bool is_inherited = false;
     bool is_global = false;
     bool is_param = false;
+
+    // enum
     bool is_enum = false;
     int enum_val = 0;
+
+    // pointers
+    bool is_pntr = false;
+    int pntr_depth = 0;
+
+    // memory
     int offset = 1;
 
 

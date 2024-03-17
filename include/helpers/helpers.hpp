@@ -90,13 +90,13 @@ std::vector<int> CalcVal(std::vector<int> left, std::vector<int> right, std::str
 
 inline int calculate_var_offset(int cur_offset, VariableContext var_context) {
     std::string type = var_context.type;
-    // always an int as it passes the address
-    if(var_context.is_param && var_context.is_array) type = "int";
+    // always an int as it passes the address for array parameters / pointers
+    if((var_context.is_param && var_context.is_array) || var_context.is_pntr) type = "int";
     int size = type_size[type];
     int offset;
 
     // if param - store address if array so array size must be 1
-    offset = cur_offset - size * (var_context.is_param? 1: var_context.array_size);
+    offset = cur_offset - size * (var_context.is_param || var_context.is_pntr? 1: var_context.array_size);
 
     if (type == "char") {
         return offset;

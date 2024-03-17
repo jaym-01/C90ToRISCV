@@ -64,13 +64,13 @@ public:
                 // Arg passed through register
                 // if(arg_context.type == "int") ins = "sw";
                 // else if(arg_context.type == "char") ins = "sb";
-                stream << get_mem_write(arg_context.type) << " a" << std::to_string(cur_a_reg) << ", " << var_offset << "(fp)" << std::endl;
+                stream << get_mem_write(arg_context.type, arg_context.is_pntr) << " a" << std::to_string(cur_a_reg) << ", " << var_offset << "(fp)" << std::endl;
                 cur_a_reg++;
 
             } else if((arg_context.type == "float" || arg_context.type == "double") && cur_fp_reg <= 7 && !arg_context.is_array){
                 // if(arg_context.type == "float") ins = "fsw";
                 // else if(arg_context.type == "double") ins = "fsd";
-                stream << get_mem_write(arg_context.type) << " fa" << std::to_string(cur_fp_reg) << ", " << var_offset << "(fp)" << std::endl;
+                stream << get_mem_write(arg_context.type, arg_context.is_pntr) << " fa" << std::to_string(cur_fp_reg) << ", " << var_offset << "(fp)" << std::endl;
                 cur_fp_reg++;
 
             } else {
@@ -101,8 +101,8 @@ public:
                 //     l_ins = "fld";
                 //     s_ins = "fsd";
                 // }
-                stream << get_mem_read(arg_context.is_array? "int" : arg_context.type)  <<" "<<temp_reg<<", "<<offset<<"(fp)"<< std::endl;
-                stream << get_mem_write(arg_context.is_array? "int" : arg_context.type) << " " <<temp_reg<< ", " << var_offset << "(fp)" << std::endl;
+                stream << get_mem_read(arg_context.type, arg_context.is_array | arg_context.is_pntr)  <<" "<<temp_reg<<", "<<offset<<"(fp)"<< std::endl;
+                stream << get_mem_write(arg_context.type, arg_context.is_array | arg_context.is_pntr) << " " <<temp_reg<< ", " << var_offset << "(fp)" << std::endl;
 
                 context.FreeRegister(temp_reg);
             }

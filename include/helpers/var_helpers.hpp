@@ -30,7 +30,8 @@ inline void global_var_to_reg(Context &context, VariableContext var, std::string
     // else if(var.type == "char") ins = "lbu";
 
     stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
-    stream << get_mem_read(var.type) << " " << dest_reg << ", %lo(" << id << ")(" << addr_reg << ")" << std::endl;
+    // TODO: check this
+    stream << get_mem_read(var.type, var.is_pntr) << " " << dest_reg << ", %lo(" << id << ")(" << addr_reg << ")" << std::endl;
 
     context.FreeRegister(addr_reg);
 }
@@ -50,7 +51,8 @@ inline void global_arr_elem_to_reg(Context &context, VariableContext var, std::s
     // adds the index offset
     stream << "add " << addr_reg<< ", " << addr_reg << ", " << index_reg << std::endl;
 
-    stream << get_mem_read(var.type) << " " << dest_reg << ", 0(" << addr_reg << ")" << std::endl;
+    // TODO: check this
+    stream << get_mem_read(var.type, var.is_pntr) << " " << dest_reg << ", 0(" << addr_reg << ")" << std::endl;
 
     context.FreeRegister(addr_reg);
 }
@@ -75,7 +77,8 @@ inline void reg_to_global_var(Context &context, VariableContext var, std::string
     std::string addr_reg = context.ReserveRegister("int");
 
     stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
-    stream << get_mem_write(var.type) << " " << val_reg << ", %lo(" << id << ")(" << addr_reg << ")" << std::endl;
+    // TODO: Check this
+    stream << get_mem_write(var.type, var.is_pntr) << " " << val_reg << ", %lo(" << id << ")(" << addr_reg << ")" << std::endl;
 
     context.FreeRegister(addr_reg);
 }
@@ -95,7 +98,8 @@ inline void reg_to_global_array_mem(Context &context, VariableContext var, std::
     // adds the index offset
     stream << "add " << addr_reg << ", " << addr_reg << ", " << index_reg << std::endl;
 
-    stream << get_mem_write(var.type) << " " << val_reg << ", 0(" << addr_reg << ")" << std::endl;
+    // TODO: check this
+    stream << get_mem_write(var.type, var.is_pntr) << " " << val_reg << ", 0(" << addr_reg << ")" << std::endl;
 
     context.FreeRegister(addr_reg);
 }
@@ -142,7 +146,7 @@ inline void get_array_address(Context &context, std::ostream &stream, VariableCo
 
 // LOCAL VAR READ WRITE FUNCTIONS
 inline void local_var_to_reg(std::ostream &stream, VariableContext var, int offset, std::string dest_reg, std::string addr_reg = "fp") {
-    stream << get_mem_read(var.type) << " " << dest_reg << ", " << offset << "(" << addr_reg << ")" << std::endl;
+    stream << get_mem_read(var.type, var.is_pntr) << " " << dest_reg << ", " << offset << "(" << addr_reg << ")" << std::endl;
 }
 
 inline void read_local_var(
@@ -187,22 +191,11 @@ inline void read_local_var(
     }
 }
 
-inline void reg_to_local_var(std::ostream &stream, std::string var_type, int var_offset, std::string val_reg, std::string addr_reg = "fp") {
-    stream << get_mem_write(var_type) << " " << val_reg << ", " << var_offset << "(" << addr_reg << ")" << std::endl;
+inline void reg_to_local_var(std::ostream &stream, VariableContext var, int var_offset, std::string val_reg, std::string addr_reg = "fp") {
+    stream << get_mem_write(var.type, var.is_pntr) << " " << val_reg << ", " << var_offset << "(" << addr_reg << ")" << std::endl;
 }
 
 inline void write_local_var(Node *var_node, Context &context, std::ostream &stream, VariableContext var, std::string val_reg) {
-    // std::cout << "in local var write" << std::endl;
-
-    int offset;
-    // std::map<std::string, int> type_to_shift_amt = {
-    //     // can also do log2(type_size)
-    //     {"int", 2},
-    //     {"char", 0},
-    //     {"float", 2},
-    //     {""}
-    // };
-
     if (var.is_array)
     {
         std::string index_reg = "";
@@ -214,13 +207,21 @@ inline void write_local_var(Node *var_node, Context &context, std::ostream &stre
         // stream << "addi " << index_reg << ", " << index_reg << "," << var.offset << std::endl;
         // stream << "add " << index_reg << ", " << index_reg << ", fp" << std::endl;
         get_array_address(context, stream, var, index_reg);
-        reg_to_local_var(stream, var.type, 0, val_reg, index_reg);
+        reg_to_local_var(stream, var, 0, val_reg, index_reg);
 
         context.FreeRegister(index_reg);
+    } else if(var.is_pntr && var_node->IsDereference()) {
+        // check if writing to dereference pointer
+        // must load address is register and write to that address
+        std::string addr_reg = context.ReserveRegister("int");
+        // stream << "here" << std::endl;
+        stream << "lw " << addr_reg << ", " << var.offset << "(fp)" << std::endl;
+        reg_to_local_var(stream, var, 0, val_reg, addr_reg);
+        context.FreeRegister(addr_reg);
     } else {
 
         // Save variable to memory
-        reg_to_local_var(stream, var.type, var.offset, val_reg);
+        reg_to_local_var(stream, var, var.offset, val_reg);
     }
 }
 

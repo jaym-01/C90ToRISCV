@@ -67,7 +67,7 @@ public:
 
                 // in switch case - need to reserve regitser between different compound statements
                 // this is check is not possible
-                // if (context.temp_registers_avail.size() < 6 || context.fp_registers_avail.size() < 32) {
+                // if (context.temp_registers_avail.size() < 6 || context.fp_registers_avail.size() < 12) {
                 //     throw std::runtime_error("Less than 6 registers left after statement. Check for leaks");
                 // }
             }

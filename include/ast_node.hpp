@@ -70,6 +70,8 @@ public:
         throw std::runtime_error("Error: GetIndexExpression not implemented for this node");
     };
 
+    virtual bool IsDereference() const { return false; }
+
     // onyl used in switch case
     virtual void PassRegister(std::string &reg) {
         // throw std::runtime_error("Error: PassRegister not implemented for this node");

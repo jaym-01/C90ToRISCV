@@ -29,15 +29,21 @@ public:
         std::string id = expression_->GetIdentifier();
         VariableContext var;
         std::string type;
+
+        // if identifer exists
+        // use type from below
+        // to correctly evaluate unsigned types
         if(id != ""){
-            if(context.id_to_func_def.find(id) == context.id_to_func_def.end()) {
-                ScopeContext* cur_scope = context.GetCurScope();
-                VariableContext var = cur_scope->GetVarFromId(id);
+            ScopeContext* cur_scope = context.GetCurScope();
+            if(cur_scope->var_map.find(id) == cur_scope->var_map.end()) type = context.id_to_func_def[id].return_type;
+            else {
+                var = cur_scope->GetVarFromId(id);
                 type = var.type;
-            } else{
-                type = context.id_to_func_def[id].return_type;
             }
-        } else{
+        }
+        // if no identifier - then value is a constant
+        // use type passed from above
+        else{
             type = type_;
         }
 
@@ -52,18 +58,29 @@ public:
         // Note: do nothing for '+' operator
         if (unary_operator_ == "++") {
             stream << "addi " << dest_reg << ", " << dest_reg << ", 1" << std::endl;
+
         } else if (unary_operator_ == "--") {
             stream << "addi " << dest_reg << ", " << dest_reg << ", -1" << std::endl;
-        } else if (unary_operator_ == "-") {
 
+        } else if (unary_operator_ == "-") {
             // negate instruction, pseudo-ins for sub dest_reg, x0, dest_reg
             stream << "neg " << dest_reg << ", " << dest_reg << std::endl;
+
         } else if (unary_operator_ == "~") {
             std::string tmp_reg = context.ReserveRegister(type);
             stream << "li " << tmp_reg << ", -1" << std::endl; // Load 0xFFFFFFFF into temp_reg
             stream << "xor " << dest_reg << ", " << dest_reg <<", "<<tmp_reg << std::endl;
+
         } else if (unary_operator_ == "!") {
             stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
+
+        } else if(unary_operator_ == "*") {
+            if(!var.is_pntr | (var.pntr_depth < 1)) throw std::runtime_error("cannot dereference a type that is not a pointer");
+            // dest_reg contains the address the pointer holds
+            // check if the value the pointer points to is a value or another pointer
+            bool is_actual_value = (var.pntr_depth - 1) == 0;
+            stream << get_mem_read(var.type, is_actual_value) << " " << dest_reg << ",0(" << dest_reg << ")" << std::endl;
+
         } else if(unary_operator_ == "&"){
             // get var information
             std::string var_name = expression_->GetIdentifier();
@@ -94,6 +111,16 @@ public:
     std::string GetType() const override{
         return expression_->GetType();
     }
+
+    std::string GetIdentifier() const override {
+        return expression_->GetIdentifier();
+    }
+
+    bool IsDereference() const override {
+        if(unary_operator_ == "*") return true;
+        else return false;
+    }
+
 
     void Print(std::ostream &stream) const
     {

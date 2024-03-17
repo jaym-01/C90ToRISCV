@@ -3,18 +3,43 @@
 
 #include "../ast_node.hpp"
 
-class PointerDeclaration : public Node {
+class PointerDeclarator : public Node {
 private:
-Node* pointers_;
+int pointer_depth_;
 Node* direct_declarator_;
 
 public:
-    PointerDeclaration(Node* pointers, Node* direct_declarator) : pointers_(pointers), direct_declarator_(direct_declarator){};
+    PointerDeclarator(int pointer_depth, Node* direct_declarator) : pointer_depth_(pointer_depth), direct_declarator_(direct_declarator){};
 
-    ~PointerDeclaration(){
-        delete pointers_;
+    ~PointerDeclarator(){
         delete direct_declarator_;
     };
+
+    VariableContext InitVariableContext(std::string type) override {
+        VariableContext var = direct_declarator_->InitVariableContext(type);
+        var.is_pntr = true;
+        var.pntr_depth = pointer_depth_;
+
+        return var;
+    }
+
+    DeclaratorType GetDeclaratorType() const override { return direct_declarator_->GetDeclaratorType(); }
+
+    std::string GetIdentifier() const override { return direct_declarator_->GetIdentifier(); }
+
+    void DefineConstantType(std::string type) override { direct_declarator_->DefineConstantType(type); }
+
+    std::string GetType() const override { return direct_declarator_->GetType(); }
+
+    int GetNumBranches() const override{ return direct_declarator_->GetNumBranches(); };
+
+    void Print(std::ostream &stream) const override {
+        stream << "pntr(";
+        for(int i = 0; i < pointer_depth_; i++) stream << "*";
+        stream << "){";
+        direct_declarator_->Print(stream);
+        stream << "}";
+    }
 
 };
 

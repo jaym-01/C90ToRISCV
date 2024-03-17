@@ -47,6 +47,11 @@ public:
         return identifier_->GetType();
     }
 
+    // index access on pointer dereferences it
+    virtual bool IsDereference() const {
+        return true;
+    }
+
     int GetNumBranches() const override {
         return 1;
     };

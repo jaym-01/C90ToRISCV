@@ -58,7 +58,7 @@ public:
 
                 initializers[i]->EmitRISCWithDest(stream, context, dest_reg);
 
-                stream << get_mem_write(var_context.type) << " " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+                stream << get_mem_write(var_context.type, var_context.is_pntr) << " " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
 
                 context.FreeRegister(dest_reg);
 

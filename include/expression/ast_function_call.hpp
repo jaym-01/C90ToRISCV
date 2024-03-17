@@ -88,7 +88,7 @@ public:
                 // else if(params[i].type == "float") ins = "fsw";
                 // else if(params[i].type == "double") ins = "fsd";
                 // function arguements below the current stack
-                stream << get_mem_write(type) << " " << temp_reg << ", " << aligned_offset << "(sp)" << std::endl;
+                stream << get_mem_write(type, params[i].is_pntr) << " " << temp_reg << ", " << aligned_offset << "(sp)" << std::endl;
                 context.FreeRegister(temp_reg);
             }
         }
@@ -110,6 +110,10 @@ public:
 
         // TODO: load in a1 if double is used
     };
+
+    DeclaratorType GetDeclaratorType() const{
+        return DeclaratorType::Function;
+    }
 
     std::string GetIdentifier() const override {
         return identifier_->GetIdentifier();

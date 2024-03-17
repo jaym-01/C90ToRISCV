@@ -11,16 +11,16 @@ inline int align_word(int offset){
     else return offset - rem - 4;
 }
 
-inline std::string get_mem_write(std::string type){
-    if(type == "int" || type == "unsigned") return "sw";
+inline std::string get_mem_write(std::string type, bool is_pntr_type){
+    if(type == "int" || type == "unsigned" || is_pntr_type) return "sw";
     else if(type == "char") return "sb";
     else if(type == "float") return "fsw";
     else if(type == "double") return "fsd";
     else throw std::runtime_error("invalid type loaded from memory");
 }
 
-inline std::string get_mem_read(std::string type){
-    if(type == "int" || type == "unsigned") return "lw";
+inline std::string get_mem_read(std::string type, bool is_pntr_type){
+    if(type == "int" || type == "unsigned" || is_pntr_type) return "lw";
     else if(type == "char") return "lbu";
     else if(type == "float") return "flw";
     else if(type == "double") return "fld";

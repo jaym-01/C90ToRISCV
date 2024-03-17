@@ -44,9 +44,9 @@ public:
         // get a temp register
         std::string tmp_reg = context.ReserveRegister("int");
 
-        // load the value defined into the floating point register
+        // load the value defined outside into the floating point register
         stream << "lui " << tmp_reg << "," << "%hi(" << label << ")" << std::endl;
-        stream << get_mem_read(type_) << " " << dest_reg << ",%lo("<< label << ")(" << tmp_reg << ")" << std::endl;
+        stream << get_mem_read(type_, false) << " " << dest_reg << ",%lo("<< label << ")(" << tmp_reg << ")" << std::endl;
 
         context.FreeRegister(tmp_reg);
     }

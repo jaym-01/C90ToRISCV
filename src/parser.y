@@ -42,7 +42,7 @@
 %type <node> equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
 %type <node> conditional_expression assignment_expression constant_expression declaration declaration_specifiers
 %type <node> init_declarator type_specifier struct_specifier struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list
-%type <node> struct_declarator enum_specifier enumerator declarator direct_declarator pointer parameter_declaration
+%type <node> struct_declarator enum_specifier enumerator declarator direct_declarator parameter_declaration
 %type <node> identifier_list type_name abstract_declarator direct_abstract_declarator statement labeled_statement // initializer initializer_list
 %type <node> expression_statement selection_statement iteration_statement jump_statement
 
@@ -55,7 +55,7 @@
 
 %type <string> unary_operator assignment_operator storage_class_specifier
 
-%type <number_int> INT_CONSTANT STRING_LITERAL
+%type <number_int> INT_CONSTANT STRING_LITERAL pointer
 %type <number_float> FLOAT_CONSTANT
 %type <string> IDENTIFIER MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN
 
@@ -195,7 +195,7 @@ init_declarator
 /* parent of direct declarator (to include pointer syntax) */
 declarator
 	: direct_declarator { $$ = $1; }
-	/*| pointer direct_declarator { $$ = new PointerDeclarator($1, $2);}*/
+	| pointer direct_declarator { $$ = new PointerDeclarator($1, $2); }
 	;
 
 direct_declarator
@@ -243,33 +243,8 @@ initializer_list
 	;
 
 pointer
-	: '*'
-	| '*' pointer
-	;
-
-
-abstract_declarator
-	: pointer
-	| direct_abstract_declarator
-	| pointer direct_abstract_declarator
-	;
-
-abstract_declarator
-	: pointer
-	| direct_abstract_declarator
-	| pointer direct_abstract_declarator
-	;
-
-direct_abstract_declarator
-	: '(' abstract_declarator ')'
-	| '[' ']'
-	| '[' constant_expression ']'
-	| direct_abstract_declarator '[' ']'
-	| direct_abstract_declarator '[' constant_expression ']'
-	| '(' ')'
-	| '(' parameter_list ')'
-	| direct_abstract_declarator '(' ')'
-	| direct_abstract_declarator '(' parameter_list ')'
+	: '*' { $$ = 1; }
+	| '*' pointer { $$ = $2 + 1; }
 	;
 
 /* STATEMENT PARSING */
