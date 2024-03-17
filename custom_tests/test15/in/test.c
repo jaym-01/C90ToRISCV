@@ -30,7 +30,7 @@
 
 int test(){
     int x[] = {1, 2, 3};
-    int *y = &x;
+    int *y = x;
     return *(y + 1);
 }
 

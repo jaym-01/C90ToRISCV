@@ -29,7 +29,11 @@ public:
 
     // New
     virtual std::string GetIdentifier() const {
-        throw std::runtime_error("Error: GetIdentifier not implemented for this node");
+        // can be changed to helper spot errors
+        // change by implementing in all expressions
+        // used for pointer_offset
+        // throw std::runtime_error("Error: GetIdentifier not implemented for this node");
+        return "";
     };
 
     virtual std::string GetTypeSpecifier() const {

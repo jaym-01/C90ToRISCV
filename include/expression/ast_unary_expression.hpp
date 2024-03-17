@@ -4,6 +4,7 @@
 #include "../ast_node.hpp"
 #include "helpers/var_helpers.hpp"
 #include "helpers/helpers.hpp"
+#include "helpers/pointer_helpers.hpp"
 #include "../ast_constant.hpp"
 #include <string>
 
@@ -57,10 +58,10 @@ public:
         // 2. Apply unary operator
         // Note: do nothing for '+' operator
         if (unary_operator_ == "++") {
-            stream << "addi " << dest_reg << ", " << dest_reg << ", 1" << std::endl;
+            stream << "addi " << dest_reg << ", " << dest_reg << ", " << one_pointer_offset(context, expression_) << std::endl;
 
         } else if (unary_operator_ == "--") {
-            stream << "addi " << dest_reg << ", " << dest_reg << ", -1" << std::endl;
+            stream << "addi " << dest_reg << ", " << dest_reg << ", -" << one_pointer_offset(context, expression_) << std::endl;
 
         } else if (unary_operator_ == "-") {
             // negate instruction, pseudo-ins for sub dest_reg, x0, dest_reg
@@ -75,10 +76,10 @@ public:
             stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
 
         } else if(unary_operator_ == "*") {
-            if(!var.is_pntr | (var.pntr_depth < 1)) throw std::runtime_error("cannot dereference a type that is not a pointer");
+            // if(!var.is_pntr | (var.pntr_depth < 1)) throw std::runtime_error("cannot dereference a type that is not a pointer");
             // dest_reg contains the address the pointer holds
             // check if the value the pointer points to is a value or another pointer
-            bool is_actual_value = (var.pntr_depth - 1) == 0;
+            bool is_actual_value = (var.pntr_depth - 1) == 0 || (!var.is_pntr);
             stream << get_mem_read(var.type, is_actual_value) << " " << dest_reg << ",0(" << dest_reg << ")" << std::endl;
 
         } else if(unary_operator_ == "&"){

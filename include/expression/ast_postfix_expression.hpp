@@ -2,7 +2,9 @@
 #define AST_POSTFIX_EXPRESSION_HPP
 
 #include "../ast_node.hpp"
-#include "helpers/var_helpers.hpp"
+#include "../helpers/var_helpers.hpp"
+#include "../helpers/pointer_helpers.hpp"
+#include "../ast_constant.hpp"
 class PostfixExpression : public Node
 {
 private:
@@ -42,13 +44,16 @@ public:
         // Load var into temp reg
         // stream<< "add " << temp_reg << ", " << dest_reg << ", x0" << std::endl;
 
+        int offset = one_pointer_offset(context, expression_);
         // Increment or decrement
         if (postfix_operator_ == "++") {
-            stream << "addi " << temp_reg << ", " << dest_reg << ", 1" << std::endl;
+            stream << "addi " << temp_reg << ", " << dest_reg << ", " << offset << std::endl;
         }
         else if (postfix_operator_ == "--"){
-            stream << "addi " << temp_reg << ", " << dest_reg << ", -1" << std::endl;
+            stream << "addi " << temp_reg << ", " << dest_reg << ", -" << offset << std::endl;
         }
+
+
 
         // Store temp reg back into var
         write_var_value(expression_, context, stream, var, temp_reg);

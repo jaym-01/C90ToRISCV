@@ -3,6 +3,7 @@
 
 #include "../ast_node.hpp"
 #include "helpers/helpers.hpp"
+#include "../helpers/pointer_helpers.hpp"
 #include <string>
 #include <vector>
 
@@ -134,6 +135,16 @@ public:
             left_operand_->EmitRISCWithDest(stream, context, reg1);
         }
 
+
+        ScopeContext *scope = context.cur_scope;
+        // check if left is pointer
+        // if it is -> shift right val
+        std::string l_id = left_operand_->GetIdentifier(), r_id = right_operand_->GetIdentifier();
+        if(l_id != "" && scope->var_map.find(l_id) != scope->var_map.end() && scope->GetVarFromId(l_id).is_pntr){
+            stream << "slli " << reg2 << ", " << reg2 << ", 2" << std::endl;
+        } else if(r_id != "" && scope->var_map.find(r_id) != scope->var_map.end() && scope->GetVarFromId(r_id).is_pntr){
+            stream << "slli " << reg1 << ", " << reg1 << ", 2" << std::endl;
+        }
 
         // std::cout << "type: " << result_type_ << std::endl;
         if (dest_reg == "") {
