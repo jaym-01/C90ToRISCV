@@ -67,7 +67,8 @@ public:
         throw std::runtime_error("Error: EvalExpression not implemented for this node");
     };
     virtual Node* GetIndexExpression() const {
-        throw std::runtime_error("Error: GetIndexExpression not implemented for this node");
+        return nullptr;
+        // throw std::runtime_error("Error: GetIndexExpression not implemented for this node");
     };
 
     virtual bool IsDereference() const { return false; }

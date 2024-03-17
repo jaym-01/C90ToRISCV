@@ -30,7 +30,7 @@ public:
         if(var.is_enum){
             stream << "li " << dest_reg << ", " << var.enum_val << std::endl;
         } else{
-            read_var_value(nullptr, context, stream, var, dest_reg);
+            read_var_value(this, context, stream, var, dest_reg);
         }
 
 

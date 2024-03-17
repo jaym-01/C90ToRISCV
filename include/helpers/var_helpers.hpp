@@ -129,7 +129,7 @@ inline void get_array_address(Context &context, std::ostream &stream, VariableCo
     // Store index offset + var offset + fp in index reg (location of array elem in memory)
     stream << "slli " << index_reg << ", " << index_reg << ", " << type_to_shift_amt[var.type] << std::endl;
     // if param, get load address of first element then find the offset
-    if(var.is_param) {
+    if(var.is_param || var.is_pntr) {
         // tmp holds the first element of the array address to the array
         std::string tmp = context.ReserveRegister("int");
         stream << "lw " << tmp << ", "<< var.offset << "(fp)" << std::endl;
@@ -161,9 +161,11 @@ inline void read_local_var(
     }
 
     int offset;
-
-    if (var.is_array) {
+    // this could be bad is trying to dereference point?
+    // TODO: CHECK THIS IS OK
+    if ((var.is_array || var.is_pntr) && var_node->IsDereference()) {
         // Get index offset and store in index reg
+        // std::cout << "here" << std::endl;
         std::string index_reg = "";
         var_node->GetIndexExpression()->EmitRISCWithDest(stream, context, index_reg);
 
@@ -186,6 +188,9 @@ inline void read_local_var(
         get_array_address(context, stream, var, index_reg);
         local_var_to_reg(stream, var, 0, dest_reg, index_reg);
         context.FreeRegister(index_reg);
+    } else if(var.is_array){
+        // array is not being dereferenced here
+        stream << "addi " << dest_reg << ", fp, " << var.offset << std::endl;
     } else {
         local_var_to_reg(stream, var, var.offset, dest_reg, "fp");
     }
@@ -196,7 +201,7 @@ inline void reg_to_local_var(std::ostream &stream, VariableContext var, int var_
 }
 
 inline void write_local_var(Node *var_node, Context &context, std::ostream &stream, VariableContext var, std::string val_reg) {
-    if (var.is_array)
+    if ((var.is_array || var.is_pntr) && var_node->GetIndexExpression() != nullptr)
     {
         std::string index_reg = "";
         Node *index_expr = var_node->GetIndexExpression();

@@ -5,12 +5,12 @@
 //     return z;
 // }
 
-int test(){
-    int x = 5;
-    int *y = &x;
-    *y = 100;
-    return *y;
-}
+// int test(){
+//     int x = 5;
+//     int *y = &x;
+//     *y = 100;
+//     return *y;
+// }
 
 // int test() {
 //     int x[] = {100, 200, 300}, *y, **z;
@@ -22,21 +22,21 @@ int test(){
 // }
 
 // int test(){
-//     int x = 5;
-//     int *y = &x;
-//     y[0] = 100;
-//     return y[0];
+//     int x[] = {1, 2, 2,4};
+//     int *y = x;
+//     y[3] = 200;
+//     return y[3];
 // }
 
-// int test(){
-//     int x[] = {1, 2, 3};
-//     int *y = &x;
-//     return *(y + 1);
-// }
+int test(){
+    int x[] = {1, 2, 3};
+    int *y = &x;
+    return *(y + 1);
+}
 
 // int test(){
-//     int x[] = {1, 2, 3};
-//     int *y = &x;
+//     int x[] = {500, 2, 3}, *y;
+//     y = x;
 //     return y[1];
 // }
 

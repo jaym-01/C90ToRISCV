@@ -47,7 +47,7 @@ public:
         return identifier_->GetType();
     }
 
-    // index access on pointer dereferences it
+    // index access dereferences it
     virtual bool IsDereference() const {
         return true;
     }
