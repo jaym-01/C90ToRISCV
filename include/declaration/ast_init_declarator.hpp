@@ -124,12 +124,16 @@ public:
             for (std::size_t i = 0; i < initializers.size(); i++)
             {
                 initializers[i]->DefineConstantType(var_context.type);
-                std::vector<int> eval = initializers[i]->EvalExpression(var_context.type);
+                if(initializers[i]->IsMemoryReference(context)){
+                    stream << ".word " << initializers[i]->GetIdentifier() << std::endl;
+                } else{
+                    std::vector<int> eval = initializers[i]->EvalExpression(var_context.type);
 
-                for(int constant : eval){
-                    if(var_context.type == "char") stream << ".byte ";
-                    else stream << ".word ";
-                    stream << constant << std::endl;
+                    for(int constant : eval){
+                        if(var_context.type == "char") stream << ".byte ";
+                        else stream << ".word ";
+                        stream << constant << std::endl;
+                    }
                 }
 
                 // std::string dest_reg = "";
@@ -141,7 +145,7 @@ public:
                 // var_offset += type_size[var_context.type];
             }
         } else {
-            stream << ".zero " << type_size[var_context.type] << std::endl;
+            stream << ".zero " << type_size[var_context.GetType()] << std::endl;
         }
         stream<<std::endl;
     };

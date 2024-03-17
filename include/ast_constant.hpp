@@ -85,6 +85,10 @@ public:
     std::string GetIdentifier() const override {
         return "";
     }
+
+    bool IsMemoryReference(Context &context) const override {
+        return false;
+    }
 };
 
 
@@ -146,6 +150,10 @@ public:
 
     std::string GetIdentifier() const override {
         return "";
+    }
+
+    bool IsMemoryReference(Context &context) const override {
+        return false;
     }
 };
 

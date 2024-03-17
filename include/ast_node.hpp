@@ -77,6 +77,11 @@ public:
 
     virtual bool IsDereference() const { return false; }
 
+    // searches the tree to find a node that is using a memory address
+    virtual bool IsMemoryReference(Context &context) const {
+        throw std::runtime_error("Error: IsMemoryReference not implemented for this node");
+    }
+
     // onyl used in switch case
     virtual void PassRegister(std::string &reg) {
         // throw std::runtime_error("Error: PassRegister not implemented for this node");

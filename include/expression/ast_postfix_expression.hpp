@@ -75,6 +75,10 @@ public:
         std::cout<<postfix_operator_;
         std::cout<<"}";
     };
+
+    bool IsMemoryReference(Context &context) const override {
+        return expression_->IsMemoryReference(context);
+    }
 };
 
 #endif

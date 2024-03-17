@@ -36,25 +36,32 @@ inline void global_var_to_reg(Context &context, VariableContext var, std::string
     context.FreeRegister(addr_reg);
 }
 
-inline void global_arr_elem_to_reg(Context &context, VariableContext var, std::string id, std::ostream &stream, std::string dest_reg, std::string index_reg) {
+inline void global_arr_elem_to_reg(Node* index_expr, Context &context, VariableContext var, std::string id, std::ostream &stream, std::string dest_reg, std::string index_reg) {
     // "lui a5, %hi(y)"
     // "addi a5, a5, %lo(y)" // addr of y
     // "add a5, a5, index_reg"
     // "lw dest_reg, 0(a5)"
 
-    std::string addr_reg = context.ReserveRegister("int");
+    // getting the address of the array
+    if(index_expr == nullptr){
+        stream << "lui " << dest_reg << ", %hi(" << id << ")" << std::endl;
+        stream << "addi " << dest_reg << ", " << dest_reg << ", %lo(" << id << ")" << std::endl;
+    } else{
 
-    stream << "slli " << index_reg << ", " << index_reg << ", "<<type_to_shift_amt[var.type] << std::endl;
-    stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
-    stream << "addi " << addr_reg << ", " << addr_reg << ", %lo(" << id << ")" << std::endl;
+        std::string addr_reg = context.ReserveRegister("int");
 
-    // adds the index offset
-    stream << "add " << addr_reg<< ", " << addr_reg << ", " << index_reg << std::endl;
+        stream << "slli " << index_reg << ", " << index_reg << ", "<<type_to_shift_amt[var.type] << std::endl;
+        stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
+        stream << "addi " << addr_reg << ", " << addr_reg << ", %lo(" << id << ")" << std::endl;
 
-    // TODO: check this
-    stream << get_mem_read(var.type, var.is_pntr) << " " << dest_reg << ", 0(" << addr_reg << ")" << std::endl;
+        // adds the index offset
+        stream << "add " << addr_reg<< ", " << addr_reg << ", " << index_reg << std::endl;
 
-    context.FreeRegister(addr_reg);
+        // TODO: check this
+        stream << get_mem_read(var.type, var.is_pntr) << " " << dest_reg << ", 0(" << addr_reg << ")" << std::endl;
+
+        context.FreeRegister(addr_reg);
+    }
 }
 
 inline void read_global_var(
@@ -64,8 +71,9 @@ inline void read_global_var(
 ) {
     std::string index_reg = "";
     if (var.is_array) {
-        var_node->GetIndexExpression()->EmitRISCWithDest(stream, context, index_reg);
-        global_arr_elem_to_reg(context, var, id, stream, dest_reg, index_reg);
+        Node* index_expr = var_node->GetIndexExpression();
+        if(index_expr != nullptr) index_expr->EmitRISCWithDest(stream, context, index_reg);
+        global_arr_elem_to_reg(index_expr, context, var, id, stream, dest_reg, index_reg);
         context.FreeRegister(index_reg);
     } else {
         global_var_to_reg(context, var, id, stream, dest_reg);

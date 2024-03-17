@@ -34,6 +34,11 @@ struct VariableContext
     // memory
     int offset = 1;
 
+    std::string GetType(){
+        if(is_pntr || (is_array && is_param) || is_enum) return "int";
+        else return type;
+    }
+
 
     void Print() {
         std::cout<<"id: "<<id<<", ";

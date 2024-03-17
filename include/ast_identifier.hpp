@@ -74,6 +74,14 @@ public:
         return type_;
     }
 
+    bool IsMemoryReference(Context &context) const override {
+        if(context.GetCurScope()->var_map.find(identifier_) != context.GetCurScope()->var_map.end()){
+            return context.GetCurScope()->GetVarFromId(identifier_).is_pntr;
+        } else {
+            return false;
+        }
+    }
+
 };
 
 #endif

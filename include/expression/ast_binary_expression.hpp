@@ -218,6 +218,10 @@ public:
         right_operand_->Print(stream);
         std::cout<<" }";
     };
+
+    bool IsMemoryReference(Context &context) const override {
+        return left_operand_->IsMemoryReference(context) | right_operand_->IsMemoryReference(context);
+    }
 };
 
 #endif

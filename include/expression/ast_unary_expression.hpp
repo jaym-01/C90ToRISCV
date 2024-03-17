@@ -95,6 +95,17 @@ public:
                 stream << "addi " << dest_reg << ", " << dest_reg << ", %lo(" << var_name << ")" << std::endl;
             }
             else stream << "addi " << dest_reg << ", fp, " << var.offset << std::endl;
+
+            if(var.is_array){
+                Node *index_expr = expression_->GetIndexExpression();
+                if(index_expr != nullptr){
+                    std::string index_reg = context.ReserveRegister("int");
+                    index_expr->EmitRISCWithDest(stream, context, index_reg);
+                    stream << "slli " << index_reg << ", " << index_reg << ", 2" << std::endl;
+                    stream << "add " << dest_reg << ", " << dest_reg << ", " << index_reg << std::endl;
+                    context.FreeRegister(index_reg);
+                }
+            }
         }
 
         // Store result back to var if INC / DEC op
@@ -142,6 +153,12 @@ public:
         else if(type == "double") return CalcVal<double>(left, right, unary_operator_);
         else if(type == "char") return {(int)((signed char)(left[0] + right[0]))};
         else throw std::runtime_error("An invalid type is trying to be evaluated");
+    }
+
+    bool IsMemoryReference(Context &context) const override {
+        if(unary_operator_ == "&") return true;
+        else if (unary_operator_ != "*") return expression_->IsMemoryReference(context);
+        else return false;
     }
 };
 
