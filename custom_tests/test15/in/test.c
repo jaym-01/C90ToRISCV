@@ -76,12 +76,13 @@
 
 
 
-int x = 4;
-int *y = &x;
+// int x = 4;
+// int *y = &x;
 
-int test(){
-    return *(y + 1);
-}
+// int test(){
+//     *y = 200;
+//     return x;
+// }
 
 
 // int x[] = {1,2,3,4};

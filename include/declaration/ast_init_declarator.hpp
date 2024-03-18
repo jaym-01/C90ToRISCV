@@ -123,10 +123,7 @@ public:
             // For each initializer:
             for (std::size_t i = 0; i < initializers.size(); i++)
             {
-                std::cout << "hee" << std::endl;
                 initializers[i]->DefineConstantType(var_context.type);
-                initializers[i]->IsMemoryReference(context);
-                std::cout << "hee1" << std::endl;
                 if(var_context.is_pntr && initializers[i]->IsMemoryReference(context)){
                     // it's a pointer so is always an int
                     int offset = initializers[i]->EvalExpression(var_context.type)[0];

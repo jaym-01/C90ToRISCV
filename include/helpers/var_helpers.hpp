@@ -50,7 +50,7 @@ inline void global_arr_elem_to_reg(Node* index_expr, Context &context, VariableC
 
         std::string addr_reg = context.ReserveRegister("int");
 
-        stream << "slli " << index_reg << ", " << index_reg << ", "<<type_to_shift_amt[var.type] << std::endl;
+        stream << "slli " << index_reg << ", " << index_reg << ", "<<type_to_shift_amt[var.GetType()] << std::endl;
         stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
         stream << "addi " << addr_reg << ", " << addr_reg << ", %lo(" << id << ")" << std::endl;
 
@@ -102,9 +102,12 @@ inline void reg_to_global_array_mem(Context &context, VariableContext var, std::
     // "add a5, a5, index_reg"
     // "sw val_reg, 0(a5)"
     std::string addr_reg = context.ReserveRegister("int");
-    stream << "slli " << index_reg << ", " << index_reg << ", " << type_to_shift_amt[var.type] << std::endl;
+    stream << "slli " << index_reg << ", " << index_reg << ", " << type_to_shift_amt[var.GetType()] << std::endl;
     stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
     stream << "addi " << addr_reg <<", "<<addr_reg<< ", %lo(" << id << ")" << std::endl;
+
+    // if pointer - load the address it's pointing to
+    if(var.is_pntr) stream << "lw " << addr_reg << ", 0(" << addr_reg << ")" << std::endl;
 
     // adds the index offset
     stream << "add " << addr_reg << ", " << addr_reg << ", " << index_reg << std::endl;
@@ -124,12 +127,36 @@ inline void write_global_var(
     std::string val_reg)
 {
     std::string index_reg = "";
-    if (var.is_array)
+    const Node *index_expr = var_node->GetIndexExpression();
+    if (var.is_array || (var.is_pntr && index_expr != nullptr))
     {
         var_node->GetIndexExpression()->EmitRISCWithDest(stream, context, index_reg);
         reg_to_global_array_mem(context, var, id, stream, val_reg, index_reg);
         context.FreeRegister(index_reg);
-    } else
+    } else if(var.is_pntr && var_node->IsDereference()){
+        // load in the address pointer is pointing to
+        std::string addr_reg = context.ReserveRegister("int");
+        stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
+        stream << "addi " << addr_reg << ", " << addr_reg << ", %lo(" << id << ")" << std::endl;
+        stream << "lw " << addr_reg << ", 0(" << addr_reg << ")" << std::endl;
+
+        std::string type;
+        bool is_pntr;
+        // check if writing actual value or another address (for double or more pointers)
+        if(var.pntr_depth > 1){
+            is_pntr = true;
+            type = "int";
+        } else{
+            is_pntr = false;
+            type = var.type;
+        }
+
+        // write the value to the address
+        stream << get_mem_write(type, is_pntr) << " " << val_reg << ", 0(" << addr_reg << ")" << std::endl;
+
+        context.FreeRegister(addr_reg);
+    }
+    else
     {
         reg_to_global_var(context, var, id, stream, val_reg);
     }
