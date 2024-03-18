@@ -24,7 +24,7 @@ public:
         VariableContext var = cur_scope->GetVarFromId(identifier_);
 
         if (dest_reg == "") {
-            dest_reg = context.ReserveRegister(var.type);
+            dest_reg = context.ReserveRegister(var.is_array || var.is_pntr? type_: var.type);
         }
 
         if(var.is_enum){

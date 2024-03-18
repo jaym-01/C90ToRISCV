@@ -30,6 +30,7 @@ struct VariableContext
     // pointers
     bool is_pntr = false;
     int pntr_depth = 0;
+    int working_pntr_depth = 0;
 
     // memory
     int offset = 1;

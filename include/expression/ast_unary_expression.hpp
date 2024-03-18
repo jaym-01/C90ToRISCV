@@ -30,16 +30,19 @@ public:
         std::string id = expression_->GetIdentifier();
         VariableContext var;
         std::string type;
+        ScopeContext* cur_scope = nullptr;
+        std::string tmp = "";
 
         // if identifer exists
         // use type from below
         // to correctly evaluate unsigned types
-        if(id != ""){
-            ScopeContext* cur_scope = context.GetCurScope();
+        if(unary_operator_ == "&") type = "int";
+        else if(id != ""){
+            cur_scope = context.GetCurScope();
             if(cur_scope->var_map.find(id) == cur_scope->var_map.end()) type = context.id_to_func_def[id].return_type;
             else {
                 var = cur_scope->GetVarFromId(id);
-                type = var.type;
+                type = var.GetType();
             }
         }
         // if no identifier - then value is a constant
@@ -54,7 +57,27 @@ public:
             dest_reg = context.ReserveRegister(type);
         }
 
-        if(unary_operator_ != "&") expression_->EmitRISCWithDest(stream, context, dest_reg);
+        // special case - recieving floating point register for a pointer type
+        // must only write on the final expression = this one
+        if(dest_reg.size() > 0 && dest_reg[0] == 'f'){
+            tmp = dest_reg;
+            dest_reg = context.ReserveRegister("int");
+        }
+
+        // clean up from previous use
+        if(unary_operator_ == "*" && cur_scope != nullptr && var.is_pntr && var.working_pntr_depth < var.pntr_depth){
+            var.working_pntr_depth = var.pntr_depth;
+        }
+
+        if(unary_operator_ != "&") {
+            // if dereferencing then it must recieve an int
+            expression_->DefineConstantType(unary_operator_ == "*"? "int": type);
+            expression_->EmitRISCWithDest(stream, context, dest_reg);
+        }
+
+        if(unary_operator_ == "*" && cur_scope != nullptr && var.is_pntr) {
+            var = cur_scope->var_map[id];
+        }
         // 2. Apply unary operator
         // Note: do nothing for '+' operator
         if (unary_operator_ == "++") {
@@ -79,8 +102,14 @@ public:
             // if(!var.is_pntr | (var.pntr_depth < 1)) throw std::runtime_error("cannot dereference a type that is not a pointer");
             // dest_reg contains the address the pointer holds
             // check if the value the pointer points to is a value or another pointer
-            bool is_actual_value = (var.pntr_depth - 1) == 0 || (!var.is_pntr);
-            stream << get_mem_read(var.type, is_actual_value) << " " << dest_reg << ",0(" << dest_reg << ")" << std::endl;
+            // bool is_actual_value = (var.pntr_depth - 1) == 0 || (!var.is_pntr);
+            // stream << "here: " << (var.type == ""? type: var.type) << " | " << var.working_pntr_depth << std::endl;
+            stream << get_mem_read(var.is_pntr? var.type: type, var.is_pntr? !(var.working_pntr_depth == 1): false) << " " << (tmp.size() > 0 && tmp[0] == 'f'? tmp : dest_reg) << ",0(" << dest_reg << ")" << std::endl;
+
+            if(unary_operator_ == "*" && cur_scope != nullptr && var.is_pntr){
+                --var.working_pntr_depth;
+                cur_scope->var_map[id] = var;
+            }
 
         } else if(unary_operator_ == "&"){
             // get var information
@@ -106,6 +135,11 @@ public:
                     context.FreeRegister(index_reg);
                 }
             }
+        }
+
+        if(tmp.size() > 0 && tmp[0] == 'f'){
+            context.FreeRegister(dest_reg);
+            dest_reg = tmp;
         }
 
         // Store result back to var if INC / DEC op

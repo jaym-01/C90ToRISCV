@@ -23,6 +23,7 @@ public:
         VariableContext var = direct_declarator_->InitVariableContext(type);
         var.is_pntr = true;
         var.pntr_depth = pointer_depth_;
+        var.working_pntr_depth = pointer_depth_;
 
         return var;
     }

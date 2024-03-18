@@ -183,8 +183,8 @@ inline void get_array_address(Context &context, std::ostream &stream, VariableCo
 
 
 // LOCAL VAR READ WRITE FUNCTIONS
-inline void local_var_to_reg(std::ostream &stream, VariableContext var, int offset, std::string dest_reg, std::string addr_reg = "fp") {
-    stream << get_mem_read(var.type, var.is_pntr) << " " << dest_reg << ", " << offset << "(" << addr_reg << ")" << std::endl;
+inline void local_var_to_reg(std::ostream &stream, VariableContext var, int offset, std::string dest_reg, bool is_pntr, std::string addr_reg = "fp") {
+    stream << get_mem_read(var.type, is_pntr) << " " << dest_reg << ", " << offset << "(" << addr_reg << ")" << std::endl;
 }
 
 inline void read_local_var(
@@ -224,18 +224,18 @@ inline void read_local_var(
         //     stream << "add " << index_reg << ", " << index_reg << ", fp" << std::endl;
         // }
         get_array_address(context, stream, var, index_reg);
-        local_var_to_reg(stream, var, 0, dest_reg, index_reg);
+        local_var_to_reg(stream, var, 0, dest_reg, false, index_reg);
         context.FreeRegister(index_reg);
     } else if(var.is_array){
         // array is not being dereferenced here
         stream << "addi " << dest_reg << ", fp, " << var.offset << std::endl;
     } else {
-        local_var_to_reg(stream, var, var.offset, dest_reg, "fp");
+        local_var_to_reg(stream, var, var.offset, dest_reg, var.is_pntr, "fp");
     }
 }
 
-inline void reg_to_local_var(std::ostream &stream, VariableContext var, int var_offset, std::string val_reg, std::string addr_reg = "fp") {
-    stream << get_mem_write(var.type, var.is_pntr) << " " << val_reg << ", " << var_offset << "(" << addr_reg << ")" << std::endl;
+inline void reg_to_local_var(std::ostream &stream, VariableContext var, int var_offset, std::string val_reg, bool is_pntr, std::string addr_reg = "fp") {
+    stream << get_mem_write(var.type, is_pntr) << " " << val_reg << ", " << var_offset << "(" << addr_reg << ")" << std::endl;
 }
 
 inline void write_local_var(Node *var_node, Context &context, std::ostream &stream, VariableContext var, std::string val_reg) {
@@ -250,7 +250,7 @@ inline void write_local_var(Node *var_node, Context &context, std::ostream &stre
         // stream << "addi " << index_reg << ", " << index_reg << "," << var.offset << std::endl;
         // stream << "add " << index_reg << ", " << index_reg << ", fp" << std::endl;
         get_array_address(context, stream, var, index_reg);
-        reg_to_local_var(stream, var, 0, val_reg, index_reg);
+        reg_to_local_var(stream, var, 0, val_reg, false, index_reg);
 
         context.FreeRegister(index_reg);
     } else if(var.is_pntr && var_node->IsDereference()) {
@@ -259,12 +259,12 @@ inline void write_local_var(Node *var_node, Context &context, std::ostream &stre
         std::string addr_reg = context.ReserveRegister("int");
         // stream << "here" << std::endl;
         stream << "lw " << addr_reg << ", " << var.offset << "(fp)" << std::endl;
-        reg_to_local_var(stream, var, 0, val_reg, addr_reg);
+        reg_to_local_var(stream, var, 0, val_reg, var.is_pntr, addr_reg);
         context.FreeRegister(addr_reg);
     } else {
 
         // Save variable to memory
-        reg_to_local_var(stream, var, var.offset, val_reg);
+        reg_to_local_var(stream, var, var.offset, val_reg, var.is_pntr);
     }
 }
 

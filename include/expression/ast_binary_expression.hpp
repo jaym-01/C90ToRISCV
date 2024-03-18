@@ -119,6 +119,7 @@ public:
         std::string reg1 = "";
         std::string reg2 = "";
 
+        std::cout << result_type_ << std::endl;
         // Define type of children
         left_operand_->DefineConstantType(result_type_);
         right_operand_->DefineConstantType(result_type_);
@@ -189,6 +190,8 @@ public:
     void DefineConstantType(std::string type) override {
         // std::cout << "this is what is passed through : " << type << std::endl;
         result_type_ = type;
+        // left_operand_->DefineConstantType(type);
+        // right_operand_->DefineConstantType(type);
     }
 
     std::string GetChildrenType() const {
