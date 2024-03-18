@@ -58,7 +58,7 @@ public:
         // TODO: FIX THIS - IT IS CAUSING TESTS TO FAIL
         throw std::runtime_error("Error: DefineConstantType not implemented for this node");
     }
-    virtual std::string GetType() const{
+    virtual std::string GetType(Context &context) const{
         throw std::runtime_error("Error: GetType not implemented for this node");
     }
     // virtual ScopeContext* BuildContext(Context &context, ScopeContext* cur_scope) {}; // old
@@ -95,6 +95,16 @@ public:
         // throw std::runtime_error("Error: PassRegister not implemented for this node");
     };
     virtual void EmitCases(std::ostream &stream, Context &context) {}
+
+
+    // TODO: find a better way of doing these
+    // this is for the parsing of strings
+    virtual bool IsString() const {
+        return false;
+    }
+    virtual bool IsNodeList() const {
+        return false;
+    }
 
     virtual ~Node() {
         for (auto branch : branches_)

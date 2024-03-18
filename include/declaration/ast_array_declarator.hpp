@@ -97,8 +97,8 @@ public:
         identifier_->DefineConstantType(type);
     }
 
-    std::string GetType() const override{
-        return identifier_->GetType();
+    std::string GetType(Context &context) const override{
+        return identifier_->GetType(context);
     }
 
     std::string GetIdentifier() const override

@@ -21,6 +21,7 @@ inline std::string get_mem_write(std::string type, bool is_pntr_type){
 }
 
 inline std::string get_mem_read(std::string type, bool is_pntr_type){
+    // std::cout << type << " | "  << is_pntr_type << std::endl;
     if(type == "int" || type == "unsigned" || is_pntr_type) return "lw";
     else if(type == "char") return "lbu";
     else if(type == "float") return "flw";

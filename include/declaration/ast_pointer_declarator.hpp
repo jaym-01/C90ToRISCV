@@ -34,7 +34,7 @@ public:
 
     void DefineConstantType(std::string type) override { direct_declarator_->DefineConstantType(type); }
 
-    std::string GetType() const override { return direct_declarator_->GetType(); }
+    std::string GetType(Context &context) const override { return direct_declarator_->GetType(context); }
 
     int GetNumBranches() const override{ return direct_declarator_->GetNumBranches(); };
 

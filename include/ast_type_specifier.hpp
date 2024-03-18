@@ -19,7 +19,7 @@ public:
         std::cout<<"Emitting risc for type_spec, "<<type_<<std::endl;
     };
 
-    std::string GetType() const override {
+    std::string GetType(Context &context) const override {
         return type_;
     }
 

@@ -70,8 +70,14 @@ public:
     }
 
     void DefineConstantType(std::string type) override { type_ = type; }
-    std::string GetType() const override{
-        return type_;
+    std::string GetType(Context &context) const override{
+        ScopeContext* cur_scope = context.GetCurScope();
+        if(cur_scope->var_map.find(identifier_) != cur_scope->var_map.end()){
+            return cur_scope->GetVarFromId(identifier_).type;
+        } else {
+            // return the type passed down to it if not recieved a type
+            return type_;
+        }
     }
 
     bool IsMemoryReference(Context &context) const override {

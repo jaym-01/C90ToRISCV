@@ -129,7 +129,7 @@ public:
     };
 
     void DefineConstantType(std::string type) override { return_type_ = type; }
-    std::string GetType() const override{
+    std::string GetType(Context &context) const override{
         return return_type_;
     }
 

@@ -4,6 +4,7 @@
 #include "../ast_node.hpp"
 #include "helpers/helpers.hpp"
 #include "../helpers/pointer_helpers.hpp"
+#include "../helpers/var_helpers.hpp"
 #include <string>
 #include <vector>
 
@@ -33,13 +34,13 @@ public:
 
     // };
 
-    void EvaluateOperation(std::ostream &stream, std::string reg1, std::string reg2, std::string dest_reg) const {
+    void EvaluateOperation(std::ostream &stream, Context &context, std::string reg1, std::string reg2, std::string dest_reg) const {
         std::string ins_prefix = "", ins_postfix = " ", comp_postfix = " ";
 
         if(result_type_ == "double" || result_type_ == "float"){
             ins_prefix = "f";
             ins_postfix = result_type_ == "double" ? ".d " : ".s ";
-        } else if(GetChildrenType() == "unsigned"){
+        } else if(GetChildrenType(context) == "unsigned"){
             comp_postfix = "u ";
         }
 
@@ -142,9 +143,9 @@ public:
         // if it is -> shift right val
         std::string l_id = left_operand_->GetIdentifier(), r_id = right_operand_->GetIdentifier();
         if(l_id != "" && scope->var_map.find(l_id) != scope->var_map.end() && scope->GetVarFromId(l_id).is_pntr){
-            stream << "slli " << reg2 << ", " << reg2 << ", 2" << std::endl;
+            stream << "slli " << reg2 << ", " << reg2 << ", " << type_to_shift_amt[scope->var_map[l_id].type] << std::endl;
         } else if(r_id != "" && scope->var_map.find(r_id) != scope->var_map.end() && scope->GetVarFromId(r_id).is_pntr){
-            stream << "slli " << reg1 << ", " << reg1 << ", 2" << std::endl;
+            stream << "slli " << reg1 << ", " << reg1 << ", " << type_to_shift_amt[scope->var_map[l_id].type] << std::endl;
         }
 
         // std::cout << "type: " << result_type_ << std::endl;
@@ -152,7 +153,7 @@ public:
             dest_reg = context.ReserveRegister(result_type_);
         }
 
-        EvaluateOperation(stream, reg1, reg2, dest_reg);
+        EvaluateOperation(stream, context, reg1, reg2, dest_reg);
 
         // std::cout<<"Operand 1 stored in reg: "<<reg1<<std::endl;
         // std::cout<<"Operand 2 stored in reg: "<<reg2<<std::endl;
@@ -194,19 +195,21 @@ public:
         // right_operand_->DefineConstantType(type);
     }
 
-    std::string GetChildrenType() const {
-        std::string left = left_operand_->GetType(), right = right_operand_->GetType();
+    std::string GetChildrenType(Context &context) const {
+        std::string left = left_operand_->GetType(context), right = right_operand_->GetType(context);
         // only unsigned takes precedence
         // normally there shouldn't be mixing of type
         // this might happen with constant int and unsigned var
         // treat expression as unsigned (i.e. use unsigned operations)
         if(left == "unsigned" || right == "unsigned") return "unsigned";
+        // give char precedence over int
+        else if(left == "char" || right == "char") return "char";
         else return left;
     }
 
-    std::string GetType() const override{
+    std::string GetType(Context &context) const override{
         // get type of children so you always get the type of the variable or constant used
-        return GetChildrenType();
+        return GetChildrenType(context);
     }
 
     int GetNumBranches() const override{

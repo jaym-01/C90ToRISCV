@@ -43,8 +43,8 @@ public:
     void DefineConstantType(std::string type) override {
         identifier_->DefineConstantType(type);
     }
-    std::string GetType() const override {
-        return identifier_->GetType();
+    std::string GetType(Context &context) const override {
+        return identifier_->GetType(context);
     }
 
     // index access dereferences it

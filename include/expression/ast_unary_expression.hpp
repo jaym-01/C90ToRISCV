@@ -36,19 +36,22 @@ public:
         // if identifer exists
         // use type from below
         // to correctly evaluate unsigned types
+        // TODO: fix finding the type
+        // will give incorrect results for float + double
         if(unary_operator_ == "&") type = "int";
         else if(id != ""){
             cur_scope = context.GetCurScope();
             if(cur_scope->var_map.find(id) == cur_scope->var_map.end()) type = context.id_to_func_def[id].return_type;
             else {
                 var = cur_scope->GetVarFromId(id);
-                type = var.GetType();
+                // type = var.GetType();
+                type = GetType(context);
             }
         }
         // if no identifier - then value is a constant
         // use type passed from above
         else{
-            type = type_;
+            type = GetType(context);
         }
 
 
@@ -104,7 +107,10 @@ public:
             // check if the value the pointer points to is a value or another pointer
             // bool is_actual_value = (var.pntr_depth - 1) == 0 || (!var.is_pntr);
             // stream << "here: " << (var.type == ""? type: var.type) << " | " << var.working_pntr_depth << std::endl;
-            stream << get_mem_read(var.is_pntr? var.type: type, var.is_pntr? !(var.working_pntr_depth == 1): false) << " " << (tmp.size() > 0 && tmp[0] == 'f'? tmp : dest_reg) << ",0(" << dest_reg << ")" << std::endl;
+            // stream << "here" << std::endl;
+
+            // TODO: is this condition right?
+            stream << get_mem_read(var.is_pntr? var.type: type, var.is_pntr? !(var.working_pntr_depth <= 1): false) << " " << (tmp.size() > 0 && tmp[0] == 'f'? tmp : dest_reg) << ",0(" << dest_reg << ")" << std::endl;
 
             if(unary_operator_ == "*" && cur_scope != nullptr && var.is_pntr){
                 --var.working_pntr_depth;
@@ -125,6 +131,7 @@ public:
             }
             else stream << "addi " << dest_reg << ", fp, " << var.offset << std::endl;
 
+            // getting the address of a specific index
             if(var.is_array){
                 Node *index_expr = expression_->GetIndexExpression();
                 if(index_expr != nullptr){
@@ -154,8 +161,8 @@ public:
         expression_->DefineConstantType(type);
     };
 
-    std::string GetType() const override{
-        return expression_->GetType();
+    std::string GetType(Context &context) const override{
+        return expression_->GetType(context);
     }
 
     std::string GetIdentifier() const override {

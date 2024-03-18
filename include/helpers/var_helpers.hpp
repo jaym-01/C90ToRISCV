@@ -142,6 +142,7 @@ inline void write_global_var(
 
         std::string type;
         bool is_pntr;
+        // TODO: change this, it is wrong
         // check if writing actual value or another address (for double or more pointers)
         if(var.pntr_depth > 1){
             is_pntr = true;
@@ -259,7 +260,7 @@ inline void write_local_var(Node *var_node, Context &context, std::ostream &stre
         std::string addr_reg = context.ReserveRegister("int");
         // stream << "here" << std::endl;
         stream << "lw " << addr_reg << ", " << var.offset << "(fp)" << std::endl;
-        reg_to_local_var(stream, var, 0, val_reg, var.is_pntr, addr_reg);
+        reg_to_local_var(stream, var, 0, val_reg, false, addr_reg);
         context.FreeRegister(addr_reg);
     } else {
 

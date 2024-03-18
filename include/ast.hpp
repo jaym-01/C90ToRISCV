@@ -15,6 +15,7 @@
 #include "ast_type_specifier.hpp"
 #include "ast_constant.hpp"
 #include "ast_enum.hpp"
+#include "ast_string_constant.hpp"
 
 // Context
 #include "./context/ast_context.hpp"

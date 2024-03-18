@@ -55,9 +55,9 @@
 
 %type <string> unary_operator assignment_operator storage_class_specifier
 
-%type <number_int> INT_CONSTANT STRING_LITERAL pointer
+%type <number_int> INT_CONSTANT pointer
 %type <number_float> FLOAT_CONSTANT
-%type <string> IDENTIFIER MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN
+%type <string> IDENTIFIER MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN STRING_LITERAL
 
 
 %start ROOT
@@ -231,7 +231,7 @@ identifier_list
 /* Parent of initializer_list. Can be expression or initializer*/
 /* NOTE: int x = {1} is allowed in ANSI C...? */
 initializer
-	: assignment_expression { $$ = new NodeList($1); }
+	: assignment_expression { $$ = ($1->IsNodeList() ? (NodeList*)$1 : new NodeList($1)); }
 	| '{' initializer_list '}' { $$ = $2; }
 	| '{' initializer_list ',' '}'
 	;
@@ -453,6 +453,7 @@ primary_expression
 	}
 	| INT_CONSTANT { $$ = new IntConstant($1); }
 	| FLOAT_CONSTANT { $$ = new FloatDoubleConstant($1); }
+	| STRING_LITERAL { $$ = new StringConstant($1->substr(1, $1->size() - 2)); delete $1; }
 	| '(' expression ')' { $$ = $2; }
 	;
 

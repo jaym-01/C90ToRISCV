@@ -64,8 +64,8 @@ public:
         type_ = type;
         expression_->DefineConstantType(type);
     }
-    std::string GetType() const override {
-        return expression_->GetType();
+    std::string GetType(Context &context) const override {
+        return expression_->GetType(context);
     }
 
     void Print(std::ostream &stream) const

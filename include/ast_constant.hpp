@@ -32,6 +32,7 @@ public:
 
         // defines the value outside of the function
         if(f_context != nullptr){
+            f_context->extern_declns += ".data\n";
             f_context->extern_declns += "\n" + label + ":\n";
             if(type_ == "float") f_context->extern_declns += ".word " + std::to_string(GetFloatVal()) + "\n\n";
             else {
@@ -74,7 +75,7 @@ public:
         return {dec_rep[0], dec_rep[1]};
     }
 
-    std::string GetType() const override{
+    std::string GetType(Context &context) const override{
         return type_;
     }
 
@@ -147,8 +148,8 @@ public:
         return 1;
     };
 
-    std::string GetType() const override{
-        if(fd_val_ != nullptr) return fd_val_->GetType();
+    std::string GetType(Context &context) const override{
+        if(fd_val_ != nullptr) return fd_val_->GetType(context);
         else return "int";
     }
 

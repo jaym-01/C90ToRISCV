@@ -31,11 +31,11 @@ public:
         }
     }
 
-    std::string GetType() const override {
+    std::string GetType(Context &context) const override {
         std::string type = "int";
         for(auto node : nodes_){
             if(node == nullptr) continue;
-            type = node->GetType();
+            type = node->GetType(context);
             if(type == "unsigned") return "unsigned";
         }
 
@@ -77,6 +77,14 @@ public:
             }
         }
     };
+
+    virtual std::string EmitRISCString(std::ostream &stream, Context &context) const {
+        throw std::runtime_error("Cannot emit string RISC for node list");
+    }
+
+    bool IsNodeList() const override {
+        return true;
+    }
 
     void Print(std::ostream &stream) const override{
         stream<<"node_list[";

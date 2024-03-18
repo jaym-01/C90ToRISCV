@@ -4,6 +4,7 @@
 
 #include "../ast_node.hpp"
 #include "../helpers/memory_helpers.hpp"
+#include <sstream>
 
 // Declarator can either be a direct declarator or a pointer declarator
 // Direct declarator can either be an identifier or a function declarator
@@ -50,12 +51,26 @@ public:
             // NEW:
             std::vector<Node*> initializers = initializer_->GetNodes();
 
+            // std::cout << "array size: " << var_context.array_size << std::endl;
+            // std::cout << "is string: " << initializer_->IsString() << std::endl;
+            // std::cout << "is pointer: " << var_context.is_pntr << std::endl;
+
+            // special case for pointer strings (i.e. char* x = "test")
+            if(var_context.type == "char" && var_context.is_pntr && initializer_->IsString()) {
+                std::string tmp_reg = "";
+                initializer_->EmitRISCWithDest(stream, context, tmp_reg);
+                stream << "sw " << tmp_reg << ", " << var_offset << "(fp)" << std::endl;
+                context.FreeRegister(tmp_reg);
+                return;
+            }
+
             // For each initializer:
             for (std::size_t i = 0; i < initializers.size(); i++) {
                 std::string dest_reg = "";
                 // AT THIS STAGE YOU HAVE VARIABLE CONTEXT -- NEED TO PASS IT THROUGH TO TELL IF DOUBLE OR FLOAT NEEDED
                 initializers[i]->DefineConstantType(var_context.GetType());
 
+                // initializers[i]->EmitRISCWithDest(stream, context, dest_reg);
                 initializers[i]->EmitRISCWithDest(stream, context, dest_reg);
 
                 stream << get_mem_write(var_context.type, var_context.is_pntr) << " " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
@@ -72,7 +87,7 @@ public:
 
         VariableContext var_context = declarator_->InitVariableContext(type);
 
-        if (!var_context.is_array && initializer_ != nullptr && initializer_->GetNodes().size() > 1)
+        if (!var_context.is_array && initializer_ != nullptr && initializer_->GetNodes().size() > 1 && !var_context.is_pntr && var_context.type != "char")
             throw std::runtime_error("Error: variable " + declarator_->GetIdentifier() + " is not an array but has multiple initializers");
 
         if (var_context.is_array && var_context.array_size == -1) {
