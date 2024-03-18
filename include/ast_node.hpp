@@ -86,6 +86,10 @@ public:
         throw std::runtime_error("Error: DFSIdentifier not implemented for this node");
     }
 
+    virtual bool IsPointer() const {
+        throw std::runtime_error("Error: IsPointer not implemented for this node");
+    }
+
     // onyl used in switch case
     virtual void PassRegister(std::string &reg) {
         // throw std::runtime_error("Error: PassRegister not implemented for this node");

@@ -123,6 +123,7 @@ public:
     std::vector<std::string> arg_registers_used;
 
     std::string return_label;
+    bool return_pointer;
     int max_func_overflow = 0; // When calling functions, might have to store some args in memory
 
     std::string extern_declns;
@@ -130,7 +131,7 @@ public:
 
     std::string default_case = "";
 
-    FunctionContext(std::string id, std::string _return_label, std::string return_type) {
+    FunctionContext(std::string id, std::string _return_label, std::string return_type, bool is_pointer) {
 
         identifier = id;
         // root_scope = nullptr;
@@ -145,10 +146,16 @@ public:
         // arg_registers_avail = {"a7", "a6", "a5", "a4", "a3", "a2", "a1", "a0"};
         // arg_registers_used = {};
         return_type_ = return_type;
+
+        return_pointer = is_pointer;
     }
 
     std::string GetReturnType() const {
         return return_type_;
+    }
+
+    bool IsPointer() const {
+        return return_pointer;
     }
 
     //    // Get a free register for temporary use

@@ -25,14 +25,15 @@ public:
 
         // get function context to find return type
         std::string r_type = context.f_context->GetReturnType();
+        bool return_pointer = context.f_context->IsPointer();
 
         // Evaluate expression
         // TODO: extend this for double
-        std::string ret_reg = context.GetReturnRegister(r_type);
+        std::string ret_reg = context.GetReturnRegister(return_pointer ? "int" : r_type);
 
         if (expression_ != nullptr)
         {
-            expression_->DefineConstantType(r_type);
+            expression_->DefineConstantType(return_pointer ? "int" :  r_type);
             expression_->EmitRISCWithDest(stream, context, ret_reg);
         }
 

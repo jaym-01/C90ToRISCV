@@ -97,6 +97,13 @@
 
 
 
-int test(int *x){
-    return *x;
+// int test(int *x){
+//     return *x;
+// }
+
+
+int *test(int *x){
+    int test1 = 5;
+    int *z = &test1;
+    return z;
 }

@@ -52,7 +52,7 @@ public:
         stream << id << ": " << std::endl;
 
         // 1. Initialise function context and root scope context
-        FunctionContext *f_context = new FunctionContext(id, context.GetNewLabel("return"), declaration_specifiers_->GetTypeSpecifier());
+        FunctionContext *f_context = new FunctionContext(id, context.GetNewLabel("return"), declaration_specifiers_->GetTypeSpecifier(), declaration_specifiers_->IsPointer());
         context.InitFunctionContext(f_context);
         ScopeContext* arg_scope = new ScopeContext(context.global_scope);
         context.SetCurScope(arg_scope);

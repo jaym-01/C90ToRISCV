@@ -26,6 +26,10 @@ public:
     void Print(std::ostream &stream) const override {
         std::cout<<"type_spec{"<<type_<<"}";
     };
+
+    bool IsPointer() const override {
+        return false;
+    }
 };
 
 #endif

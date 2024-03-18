@@ -15,6 +15,10 @@ public:
         delete direct_declarator_;
     };
 
+    void EmitRISC(std::ostream &stream, Context &context) const override {
+        direct_declarator_->EmitRISC(stream, context);
+    }
+
     VariableContext InitVariableContext(std::string type) override {
         VariableContext var = direct_declarator_->InitVariableContext(type);
         var.is_pntr = true;
@@ -39,6 +43,10 @@ public:
         stream << "){";
         direct_declarator_->Print(stream);
         stream << "}";
+    }
+
+    bool IsPointer() const override {
+        return true;
     }
 
 };
