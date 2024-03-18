@@ -222,6 +222,13 @@ public:
     bool IsMemoryReference(Context &context) const override {
         return left_operand_->IsMemoryReference(context) | right_operand_->IsMemoryReference(context);
     }
+
+    std::string DFSIdentifier() const override {
+        std::string l = left_operand_->DFSIdentifier(), r = right_operand_->DFSIdentifier();
+        if(l != "" && r != "") throw std::runtime_error("Error: Cannot have two identifiers in binary expression");
+        else if(l != "") return l;
+        else return r;
+    }
 };
 
 #endif

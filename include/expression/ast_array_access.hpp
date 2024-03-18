@@ -67,6 +67,10 @@ public:
     std::string GetIdentifier() const override {
         return identifier_->GetIdentifier();
     }
+
+    std::string DFSIdentifier() const override {
+        return identifier_->DFSIdentifier();
+    }
 };
 
 #endif

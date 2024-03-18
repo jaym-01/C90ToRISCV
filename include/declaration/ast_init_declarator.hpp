@@ -124,8 +124,11 @@ public:
             for (std::size_t i = 0; i < initializers.size(); i++)
             {
                 initializers[i]->DefineConstantType(var_context.type);
-                if(initializers[i]->IsMemoryReference(context)){
-                    stream << ".word " << initializers[i]->GetIdentifier() << std::endl;
+                if(var_context.is_pntr && initializers[i]->IsMemoryReference(context)){
+                    // it's a pointer so is always an int
+                    int offset = initializers[i]->EvalExpression(var_context.type)[0];
+                    if(offset != 0) stream << ".word " << initializers[i]->DFSIdentifier() << "+" << (offset*4) << std::endl;
+                    else stream << ".word " << initializers[i]->DFSIdentifier() << std::endl;
                 } else{
                     std::vector<int> eval = initializers[i]->EvalExpression(var_context.type);
 

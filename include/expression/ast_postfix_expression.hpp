@@ -79,6 +79,10 @@ public:
     bool IsMemoryReference(Context &context) const override {
         return expression_->IsMemoryReference(context);
     }
+
+    std::string DFSIdentifier() const override {
+        return expression_->DFSIdentifier();
+    }
 };
 
 #endif

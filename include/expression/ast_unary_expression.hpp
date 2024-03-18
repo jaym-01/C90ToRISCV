@@ -143,6 +143,7 @@ public:
     };
 
     std::vector<int> EvalExpression(std::string type) const override{
+        if(unary_operator_ == "&") return {0};
         IntConstant *zero_c = new IntConstant(0);
         zero_c->DefineConstantType(type);
         std::vector<int> left = zero_c->EvalExpression(type), right = expression_->EvalExpression(type);
@@ -159,6 +160,9 @@ public:
         if(unary_operator_ == "&") return true;
         else if (unary_operator_ != "*") return expression_->IsMemoryReference(context);
         else return false;
+    }
+    std::string DFSIdentifier() const override {
+        return expression_->DFSIdentifier();
     }
 };
 

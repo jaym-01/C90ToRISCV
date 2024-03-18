@@ -46,7 +46,7 @@ std::vector<int> CalcVal(std::vector<int> left, std::vector<int> right, std::str
     } else if (b_op == "/") {
         res = x / y;
     } else {
-        throw std::runtime_error("Error: Invalid binary operator");
+        throw std::runtime_error("Error: Invalid binary operator: " + b_op);
     }
 
     std::vector<int> out;

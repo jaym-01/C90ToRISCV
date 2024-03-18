@@ -89,6 +89,10 @@ public:
     bool IsMemoryReference(Context &context) const override {
         return false;
     }
+
+    std::string DFSIdentifier() const override {
+        return "";
+    }
 };
 
 
@@ -154,6 +158,10 @@ public:
 
     bool IsMemoryReference(Context &context) const override {
         return false;
+    }
+
+    std::string DFSIdentifier() const override {
+        return "";
     }
 };
 
