@@ -91,3 +91,12 @@
 // int test(){
 //     return y[0];
 // }
+
+
+
+
+
+
+int test(int *x){
+    return *x;
+}

@@ -89,9 +89,7 @@ std::vector<int> CalcVal(std::vector<int> left, std::vector<int> right, std::str
 // }
 
 inline int calculate_var_offset(int cur_offset, VariableContext var_context) {
-    std::string type = var_context.type;
-    // always an int as it passes the address for array parameters / pointers
-    if((var_context.is_param && var_context.is_array) || var_context.is_pntr) type = "int";
+    std::string type = var_context.GetType();
     int size = type_size[type];
     int offset;
 
@@ -107,7 +105,7 @@ inline int calculate_var_offset(int cur_offset, VariableContext var_context) {
 
 inline int calculate_arg_overflow(int &cur_offset, VariableContext var_context) {
     // int size = type_size[var_context.type] * var_context.array_size;
-    int size = type_size[var_context.type];
+    int size = type_size[var_context.GetType()];
 
     // First calculate aligned offset of last
     int aligned_offset;
@@ -131,7 +129,7 @@ inline int calculate_var_size(VariableContext var)
         return type_size[var.type] * var.array_size;
     }
     else {
-        return type_size[var.type];
+        return type_size[var.GetType()];
     }
 }
 

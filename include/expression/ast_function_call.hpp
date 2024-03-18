@@ -50,7 +50,7 @@ public:
         std::string type, dest_reg;
         for (std::size_t i = 0; i < args.size(); i++)
         {
-            type = params[i].type;
+            type = params[i].GetType();
             if(params[i].is_array){
                 // load the memory address of the array into a register
                 // store it in memory if not enough 'a' registers
@@ -66,18 +66,18 @@ public:
 
             } else if ((type == "int" || type == "char" || type == "unsigned") && cur_a_reg <= 7 && !params[i].is_array) {
                 dest_reg = "a" + std::to_string(cur_a_reg);
-                args[i]->DefineConstantType(params[i].type);
+                args[i]->DefineConstantType(type);
                 args[i]->EmitRISCWithDest(stream, context, dest_reg);
                 cur_a_reg++;
 
             } else if((type == "float" || type == "double") && cur_fp_reg <= 7 && !params[i].is_array){
                 dest_reg = "fa" + std::to_string(cur_fp_reg);
-                args[i]->DefineConstantType(params[i].type);
+                args[i]->DefineConstantType(type);
                 args[i]->EmitRISCWithDest(stream, context, dest_reg);
                 cur_fp_reg++;
             } else {
                 std::string temp_reg = "";
-                args[i]->DefineConstantType(params[i].type);
+                args[i]->DefineConstantType(type);
                 args[i]->EmitRISCWithDest(stream, context, temp_reg);
                 // increase the stack size for the param
                 int aligned_offset = context.CalcOverflowOffsetAndUpdate(cur_sp_offset, params[i]);

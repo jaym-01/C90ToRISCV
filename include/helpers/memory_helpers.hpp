@@ -11,6 +11,7 @@ inline int align_word(int offset){
     else return offset - rem - 4;
 }
 
+// is_pntr_type need?
 inline std::string get_mem_write(std::string type, bool is_pntr_type){
     if(type == "int" || type == "unsigned" || is_pntr_type) return "sw";
     else if(type == "char") return "sb";

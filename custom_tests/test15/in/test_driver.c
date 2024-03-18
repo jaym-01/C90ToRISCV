@@ -1,13 +1,15 @@
 #include <stdio.h>
 
-int test();
+int test(int *x);
 
 int f(){
     return 200;
 }
 
 int main() {
-    printf("Test 1: %d\n", test());
+    int x = 100;
+    int *y = &x;
+    printf("Test 1: %d\n", test(y));
 
     return 0;
 }
