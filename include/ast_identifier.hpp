@@ -75,8 +75,9 @@ public:
     }
 
     bool IsMemoryReference(Context &context) const override {
-        if(context.GetCurScope()->var_map.find(identifier_) != context.GetCurScope()->var_map.end()){
-            return context.GetCurScope()->GetVarFromId(identifier_).is_pntr;
+        ScopeContext* cur_scope = context.GetCurScope();
+        if(cur_scope->var_map.find(identifier_) != cur_scope->var_map.end()){
+            return context.GetCurScope()->GetVarFromId(identifier_).is_pntr | context.GetCurScope()->GetVarFromId(identifier_).is_array;
         } else {
             return false;
         }

@@ -115,6 +115,14 @@ public:
         }
     };
 
+    bool IsMemoryReference(Context &context) const override {
+        for (auto node : nodes_) {
+            if (node == nullptr) continue;
+            if (node->IsMemoryReference(context)) return true;
+        }
+        return false;
+    };
+
 };
 
 #endif

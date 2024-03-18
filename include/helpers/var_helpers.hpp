@@ -54,10 +54,12 @@ inline void global_arr_elem_to_reg(Node* index_expr, Context &context, VariableC
         stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
         stream << "addi " << addr_reg << ", " << addr_reg << ", %lo(" << id << ")" << std::endl;
 
+        // if pointer - load the address it's pointing to
+        if(var.is_pntr) stream << "lw " << addr_reg << ", 0(" << addr_reg << ")" << std::endl;
+
         // adds the index offset
         stream << "add " << addr_reg<< ", " << addr_reg << ", " << index_reg << std::endl;
 
-        // TODO: check this
         stream << get_mem_read(var.type, var.is_pntr) << " " << dest_reg << ", 0(" << addr_reg << ")" << std::endl;
 
         context.FreeRegister(addr_reg);
@@ -70,8 +72,9 @@ inline void read_global_var(
     std::ostream &stream, std::string &dest_reg
 ) {
     std::string index_reg = "";
-    if (var.is_array) {
-        Node* index_expr = var_node->GetIndexExpression();
+    Node* index_expr = var_node->GetIndexExpression();
+
+    if (var.is_array || (var.is_pntr && index_expr != nullptr)) {
         if(index_expr != nullptr) index_expr->EmitRISCWithDest(stream, context, index_reg);
         global_arr_elem_to_reg(index_expr, context, var, id, stream, dest_reg, index_reg);
         context.FreeRegister(index_reg);
