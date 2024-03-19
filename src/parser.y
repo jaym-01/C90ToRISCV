@@ -413,8 +413,36 @@ unary_expression
 		$$ = new UnaryExpression(*$1, $2);
 		delete $1;
 	}
-	/* | SIZEOF unary_expression { $$ = new UnaryExpression("sizeof", $2); } */
-	/* | SIZEOF '(' type_name ')' */
+	| SIZEOF unary_expression { $$ = new SizeOfExpression(nullptr, $2); }
+	| SIZEOF '(' type_name ')' { $$ = new SizeOfExpression($3, nullptr); }
+	;
+
+type_name
+	: specifier_qualifier_list
+	| specifier_qualifier_list abstract_declarator
+	;
+
+specifier_qualifier_list
+	: type_specifier specifier_qualifier_list
+	| type_specifier
+	;
+
+abstract_declarator
+	: pointer
+	| direct_abstract_declarator
+	| pointer direct_abstract_declarator
+	;
+
+direct_abstract_declarator
+	: '(' abstract_declarator ')'
+	| '[' ']'
+	| '[' constant_expression ']'
+	| direct_abstract_declarator '[' ']'
+	| direct_abstract_declarator '[' constant_expression ']'
+	| '(' ')'
+	| '(' parameter_list ')'
+	| direct_abstract_declarator '(' ')'
+	| direct_abstract_declarator '(' parameter_list ')'
 	;
 
 unary_operator

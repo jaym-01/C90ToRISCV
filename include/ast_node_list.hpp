@@ -25,6 +25,14 @@ public:
         return nodes_;
     };
 
+    std::string GetIdentifier() const override {
+        if (nodes_.size() == 1) {
+            return nodes_[0]->GetIdentifier();
+        } else {
+            throw std::runtime_error("Too many identifiers");
+        }
+    };
+
     void DefineConstantType(std::string type) override {
         for(auto node : nodes_) {
             if(node != nullptr) node->DefineConstantType(type);
