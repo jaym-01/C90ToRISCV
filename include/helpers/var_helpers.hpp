@@ -113,7 +113,7 @@ inline void reg_to_global_array_mem(Context &context, VariableContext var, std::
     stream << "add " << addr_reg << ", " << addr_reg << ", " << index_reg << std::endl;
 
     // TODO: check this
-    stream << get_mem_write(var.type, var.is_pntr) << " " << val_reg << ", 0(" << addr_reg << ")" << std::endl;
+    stream << get_mem_write(var.type, false) << " " << val_reg << ", 0(" << addr_reg << ")" << std::endl;
 
     context.FreeRegister(addr_reg);
 }

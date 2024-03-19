@@ -49,6 +49,21 @@ public:
     //     return label;
     // }
 
+    void EmitRISCGlobalVar(std::ostream &stream, Context &context) const override {
+        std::string label = context.GetNewLabel("string");
+
+        std::stringstream label_data;
+        label_data << ".data" << std::endl;
+        label_data << label << ":" << std::endl;
+        label_data << ".string \"" << value_ << "\"" << std::endl << std::endl;
+        context.f_context->extern_declns += label_data.str();
+    }
+
+    std::string GetStringValue() const override {
+        return value_;
+    }
+
+
     void Print(std::ostream &stream) const override {
         stream << "sconst{\"" << value_ << "\\0\"}";
     }

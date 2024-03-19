@@ -135,6 +135,19 @@ public:
         {
             std::vector<Node *> initializers = initializer_->GetNodes();
 
+            // case where initializer is a string
+            if(initializer_->IsString()){
+                std::string val = initializer_->GetStringValue();
+                if(var_context.is_array){
+                    stream << ".string \"" << val << "\"" << std::endl;
+                } else {
+                    std::string string_label = context.GetNewLabel("string");
+                    stream << ".word " << string_label << std::endl;
+
+                    stream << ".data" << std::endl << string_label << ":" << std::endl << ".string \"" << val << "\"" << std::endl;
+                }
+            }
+
             // For each initializer:
             for (std::size_t i = 0; i < initializers.size(); i++)
             {

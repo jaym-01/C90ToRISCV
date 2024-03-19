@@ -123,6 +123,11 @@ public:
         }
     };
 
+    // TODO: find a better way to do this
+    virtual std::string GetStringValue() const {
+        throw std::runtime_error("This is not a string constant");
+    }
+
     bool IsMemoryReference(Context &context) const override {
         for (auto node : nodes_) {
             if (node == nullptr) continue;
