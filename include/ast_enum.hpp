@@ -85,15 +85,23 @@ public:
             }
 
             id = enumNode->GetIdentifier();
-            VariableContext var = {
-                .id = id,
-                .type = "int",
-                .array_size = 1,
-                .is_array = false,
-                .is_global = is_global,
-                .is_enum = true,
-                .enum_val = cur_val
-            };
+            // VariableContext var = {
+            //     .id = id,
+            //     .type = "int",
+            //     .array_size = 1,
+            //     .is_array = false,
+            //     .is_global = is_global,
+            //     .is_enum = true,
+            //     .enum_val = cur_val
+            // };
+            VariableContext var;
+            var.id = id;
+            var.type = "int";
+            var.array_size = 1;
+            var.is_array = false;
+            var.is_global = is_global;
+            var.is_enum = true;
+            var.enum_val = cur_val;
 
             scope->SetVarContext(id, var);
             cur_val++;

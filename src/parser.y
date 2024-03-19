@@ -41,14 +41,14 @@
 %type <node> unary_expression cast_expression multiplicative_expression additive_expression shift_expression relational_expression
 %type <node> equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
 %type <node> conditional_expression assignment_expression constant_expression declaration declaration_specifiers
-%type <node> init_declarator type_specifier struct_specifier struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list
+%type <node> init_declarator type_specifier struct_specifier struct_declaration
 %type <node> struct_declarator enum_specifier enumerator declarator direct_declarator parameter_declaration
 %type <node> identifier_list type_name abstract_declarator direct_abstract_declarator statement labeled_statement // initializer initializer_list
 %type <node> expression_statement selection_statement iteration_statement jump_statement
 
 /* Moved declaration_list, argument_expression_list, compound_statement to nodes */
-%type <nodes> statement_list declaration_list argument_expression_list init_declarator_list expression enumerator_list
-%type <nodes> initializer initializer_list translation_unit parameter_list
+%type <nodes> statement_list declaration_list argument_expression_list init_declarator_list expression enumerator_list struct_declaration_list
+%type <nodes> initializer initializer_list translation_unit parameter_list specifier_qualifier_list struct_declarator_list
 
 /* New */
 %type <compound_statement> compound_statement
@@ -151,28 +151,28 @@ enumerator
 	;
 
 struct_specifier
-	: STRUCT IDENTIFIER '{' struct_declaration_list '}'
-	| STRUCT '{' struct_declaration_list '}'
-	| STRUCT IDENTIFIER
+	: STRUCT IDENTIFIER '{' struct_declaration_list '}' { $$ = new StructSpecifier(*$2, $4); delete $2; }
+	| STRUCT '{' struct_declaration_list '}' { $$ = new StructSpecifier("", $3); }
+	| STRUCT IDENTIFIER { $$ = new StructSpecifier(*$2, nullptr); delete $2; }
 	;
 
 struct_declaration_list
-	: struct_declaration
-	| struct_declaration_list struct_declaration
+	: struct_declaration { $$ = new NodeList($1); }
+	| struct_declaration_list struct_declaration { $1->PushBack($2); $$ = $1; }
 	;
 
 struct_declaration
-	: specifier_qualifier_list struct_declarator_list ';'
+	: specifier_qualifier_list struct_declarator_list ';' { $$ = new StructDeclarator($1, $2); }
 	;
 
 specifier_qualifier_list
-	: type_specifier specifier_qualifier_list
-	| type_specifier
+	: type_specifier specifier_qualifier_list { $2->PushBack($1); $$ = $2; }
+	| type_specifier { $$ = new NodeList($1); }
 	;
 
 struct_declarator_list
-	: struct_declarator
-	| struct_declarator_list ',' struct_declarator
+	: struct_declarator { $$ = new NodeList($1); }
+	| struct_declarator_list ',' struct_declarator { $1->PushBack($3); $$ = $1; }
 	;
 
 struct_declarator
@@ -220,7 +220,7 @@ parameter_list
 parameter_declaration
 	: declaration_specifiers declarator { $$ = new ParamDeclaration($1, $2); }
 	| declaration_specifiers { $$ = new ParamDeclaration($1, nullptr); }
-	/* | declaration_specifiers abstract_declarator // TODO: Used to declare abstract arrs, funcs, etc.  */
+	/* | declaration_specifiers abstract_declarator */
 	;
 
 identifier_list
@@ -471,6 +471,8 @@ postfix_expression
 	}
 	| postfix_expression '(' ')' { $$ = new FunctionCall($1, nullptr); }
 	| postfix_expression '(' argument_expression_list ')' { $$ = new FunctionCall($1, $3); }
+	| postfix_expression '.' IDENTIFIER
+	| postfix_expression PTR_OP IDENTIFIER
 	/* To add the rest for arrays, functions & structs */
 	;
 

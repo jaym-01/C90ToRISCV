@@ -31,6 +31,7 @@
 #include "declaration/ast_init_declarator.hpp"
 #include "declaration/ast_function_declarator.hpp"
 #include "declaration/ast_pointer_declarator.hpp"
+#include "declaration/ast_struct_declarator.hpp"
 
 // Expression
 #include "expression/ast_postfix_expression.hpp"

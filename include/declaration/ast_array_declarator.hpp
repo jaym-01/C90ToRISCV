@@ -76,20 +76,35 @@ public:
         if (size_expression_ != nullptr){
             std::vector<int> size = size_expression_->EvalExpression(type);
             if(size.size() > 1) throw std::runtime_error("Array size is not an int");
-            return {
-                .id=identifier_->GetIdentifier(),
-                .type=type,
-                .array_size=size[0],
-                .is_array=true,
-            };
+
+            VariableContext var_context;
+            var_context.id=identifier_->GetIdentifier();
+            var_context.type=type;
+            var_context.array_size=size[0];
+            var_context.is_array=true;
+
+            return var_context;
+            // return {
+            //     .id=identifier_->GetIdentifier(),
+            //     .type=type,
+            //     .array_size=size[0],
+            //     .is_array=true,
+            // };
         } else {
             // return VariableContext{type : type, offset : 1, array_size : -1, is_array : true};
-            return {
-                .id=identifier_->GetIdentifier(),
-                .type = type,
-                .array_size = -1,
-                .is_array = true,
-            };
+            VariableContext var_context;
+            var_context.id=identifier_->GetIdentifier();
+            var_context.type=type;
+            var_context.array_size=-1;
+            var_context.is_array=true;
+
+            return var_context;
+            // return {
+            //     .id=identifier_->GetIdentifier(),
+            //     .type = type,
+            //     .array_size = -1,
+            //     .is_array = true,
+            // };
         }
     };
 

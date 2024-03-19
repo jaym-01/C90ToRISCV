@@ -29,7 +29,7 @@ public:
             ScopeContext *scope = context.GetCurScope();
             VariableContext var = scope->GetVarFromId(id);
 
-            int size = type_size[var.type] * var.array_size;
+            int size = type_size[var.GetType()] * var.array_size;
             stream << "li " << dest_reg << ", " << size << std::endl;
         }
     }

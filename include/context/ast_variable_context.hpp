@@ -7,6 +7,14 @@
 #ifndef AST_VARIABLE_CONTEXT_HPP
 #define AST_VARIABLE_CONTEXT_HPP
 
+inline std::map<std::string, int> type_size_ = {
+    {"int", 4},
+    {"unsigned", 4},
+    {"char", 1},
+    {"float", 4},
+    {"double", 8}
+};
+
 struct VariableContext
 {
     // std::string storage_class;
@@ -35,7 +43,7 @@ struct VariableContext
     // memory
     int offset = 1;
 
-    std::string GetType(){
+    std::string GetType() const {
         if(is_pntr || (is_array && is_param) || is_enum) return "int";
         else return type;
     }
@@ -61,10 +69,36 @@ struct VariableContext
         str += "offset: " + std::to_string(offset);
         return str;
     }
+
+    virtual std::map<std::string, VariableContext> GetStructMembers() {
+        throw std::runtime_error("Error: this is not a struct, GetStructMembers is not implemented");
+    }
+
+    virtual int GetSize() const{
+        if(is_array && !is_param) return array_size * type_size_[type];
+        else return type_size_[GetType()];
+    }
     // // Constructor for the Person struct
     // VariableContext(VariableContextParams p)
     //     :   type(p.type), array_size(p.array_size), is_array(p.is_array),
     //         is_inherited(p.is_inherited), is_global(p.is_global), offset(p.offset) {}
+};
+
+
+struct StructContext : public VariableContext {
+    std::map<std::string, VariableContext> members;
+
+    std::map<std::string, VariableContext> GetStructMembers() override {
+        return members;
+    }
+
+    int GetSize() const override{
+        int size = 0;
+        for(auto const& member : members) {
+            size += member.second.GetSize();
+        }
+        return size;
+    }
 };
 
 

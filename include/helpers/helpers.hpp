@@ -11,6 +11,7 @@ enum DeclaratorType
     Variable,
     Function,
     Array,
+    Struct,
     None
 };
 
