@@ -48,7 +48,7 @@ public:
         throw std::runtime_error("Error: EmitRISCGlobalVar not implemented for this node");
     };
     virtual DeclaratorType GetDeclaratorType() const {
-        throw std::runtime_error("Error: GetDeclaratorType not implemented for this node");
+        // throw std::runtime_error("Error: GetDeclaratorType not implemented for this node");
         return DeclaratorType::None;
     };
 
@@ -95,6 +95,12 @@ public:
         // throw std::runtime_error("Error: PassRegister not implemented for this node");
     };
     virtual void EmitCases(std::ostream &stream, Context &context) {}
+
+
+    // TODO: find a better way to do this
+    virtual std::string GetMemberId() const {
+        throw std::runtime_error("Error: GetMemberId not implemented");
+    }
 
 
     // TODO: find a better way of doing these

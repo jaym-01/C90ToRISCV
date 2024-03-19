@@ -5,9 +5,14 @@ struct test1 {
 
 int test() {
     int test1;
-    struct test1 {
-        int x;
-        int y;
+    // struct test1 {
+    //     int x;
+    //     int y;
+    // };
+
+    struct test1 t = {
+        10, 20
     };
-    return 0;
+
+    return t.x + t.y;
 }

@@ -471,7 +471,7 @@ postfix_expression
 	}
 	| postfix_expression '(' ')' { $$ = new FunctionCall($1, nullptr); }
 	| postfix_expression '(' argument_expression_list ')' { $$ = new FunctionCall($1, $3); }
-	| postfix_expression '.' IDENTIFIER
+	| postfix_expression '.' IDENTIFIER { $$ = new StructAccess($1, *$3); delete $3; }
 	| postfix_expression PTR_OP IDENTIFIER
 	/* To add the rest for arrays, functions & structs */
 	;

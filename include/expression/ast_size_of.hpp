@@ -18,8 +18,9 @@ public:
     };
 
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest_reg) const override {
+        if(dest_reg == "") dest_reg = context.ReserveRegister("int");
+
         if(expr_ == nullptr){
-            if(dest_reg == "") dest_reg = context.ReserveRegister("int");
 
             std::string type = type_name_->GetType(context);
             stream << "li " << dest_reg << ", " << type_size[type] << std::endl;
@@ -29,8 +30,8 @@ public:
             ScopeContext *scope = context.GetCurScope();
             VariableContext var = scope->GetVarFromId(id);
 
-            int size = type_size[var.GetType()] * var.array_size;
-            stream << "li " << dest_reg << ", " << size << std::endl;
+            // int size = type_size[var.GetType()] * var.array_size;
+            stream << "li " << dest_reg << ", " << var.GetSize() << std::endl;
         }
     }
 

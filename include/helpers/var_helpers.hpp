@@ -254,7 +254,7 @@ inline void write_local_var(Node *var_node, Context &context, std::ostream &stre
         reg_to_local_var(stream, var, 0, val_reg, false, index_reg);
 
         context.FreeRegister(index_reg);
-    } else if(var.is_pntr && var_node->IsDereference()) {
+    } else if(var.is_pntr && var_node != nullptr && var_node->IsDereference()) {
         // check if writing to dereference pointer
         // must load address is register and write to that address
         std::string addr_reg = context.ReserveRegister("int");
@@ -262,6 +262,9 @@ inline void write_local_var(Node *var_node, Context &context, std::ostream &stre
         stream << "lw " << addr_reg << ", " << var.offset << "(fp)" << std::endl;
         reg_to_local_var(stream, var, 0, val_reg, false, addr_reg);
         context.FreeRegister(addr_reg);
+    } else if(var.type == "struct"){
+        VariableContext var_m = var.GetMemberById(var_node->GetMemberId());
+        reg_to_local_var(stream, var_m, var_m.offset, val_reg, var_m.is_pntr);
     } else {
 
         // Save variable to memory

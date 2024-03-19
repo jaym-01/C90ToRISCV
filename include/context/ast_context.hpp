@@ -85,7 +85,17 @@ public:
     }
 
     void SetVarOffset(std::string identifier, int offset) {
-        var_map[identifier].offset = offset;
+        VariableContext &var = var_map[identifier];
+        var.offset = offset;
+
+        // struct is only type with members
+        if(var.type == "struct"){
+            for(int i = 0; i < var.members.size(); i++){
+                var.members[i].offset = offset;
+                // std::cout << "Setting offset for member " << var.members[i].id << " to " << var.members[i].offset << std::endl;
+                offset += var.members[i].GetSize();
+            }
+        }
     }
 
     int GetVarOffset(std::string identifier) {

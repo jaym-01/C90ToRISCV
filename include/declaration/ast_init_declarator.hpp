@@ -44,7 +44,8 @@ public:
         cur_scope->SetVarOffset(id, var_offset);
         context.SetCurFuncOffset(var_offset);
 
-        int t_size = type_size[var_context.type];
+        // int t_size = type_size[var_context.type];
+        int t_size = var_context.GetSize();
         if (initializer_ != nullptr)
         {
 
@@ -73,7 +74,14 @@ public:
                 // initializers[i]->EmitRISCWithDest(stream, context, dest_reg);
                 initializers[i]->EmitRISCWithDest(stream, context, dest_reg);
 
-                stream << get_mem_write(var_context.type, var_context.is_pntr) << " " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+                // special case for structs
+                if(var_context.type == "struct"){
+                    stream << get_mem_write(var_context.members[i].GetType(), var_context.members[i].is_pntr) << " " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+                    // std::cout << "this is the offset: " << var_context.members[i].offset << std::endl;
+                    t_size = var_context.members[i].GetSize();
+                } else {
+                    stream << get_mem_write(var_context.type, var_context.is_pntr) << " " << dest_reg << ", " << var_offset << "(fp)" << std::endl;
+                }
 
                 context.FreeRegister(dest_reg);
 

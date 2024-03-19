@@ -127,7 +127,7 @@ public:
         if (nodes_.size() == 1) {
             return nodes_[0]->GetTypeSpecifier();
         } else {
-            throw std::runtime_error("Cannot get type specifier twice...");
+            throw std::runtime_error("Cannot get type specifier twice");
         }
     };
 
@@ -135,6 +135,14 @@ public:
     virtual std::string GetStringValue() const {
         throw std::runtime_error("This is not a string constant");
     }
+
+    DeclaratorType GetDeclaratorType() const override {
+        if(nodes_.size() == 1) {
+            return nodes_[0]->GetDeclaratorType();
+        } else {
+            throw std::runtime_error("Cannot get declarator type twice");
+        }
+    };
 
     bool IsMemoryReference(Context &context) const override {
         for (auto node : nodes_) {

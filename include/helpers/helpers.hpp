@@ -90,14 +90,15 @@ std::vector<int> CalcVal(std::vector<int> left, std::vector<int> right, std::str
 // }
 
 inline int calculate_var_offset(int cur_offset, VariableContext var_context) {
-    std::string type = var_context.GetType();
-    int size = type_size[type];
+    // std::string type = var_context.GetType();
+    // std::cout << "type: " << var_context.type << std::endl;
+    int size = var_context.GetSize();
     int offset;
 
     // if param - store address if array so array size must be 1
-    offset = cur_offset - size * (var_context.is_param || var_context.is_pntr? 1: var_context.array_size);
+    offset = cur_offset - size; //* (var_context.is_param || var_context.is_pntr? 1: var_context.array_size);
 
-    if (type == "char") {
+    if (var_context.GetType() == "char") {
         return offset;
     } else {
         return align_word(offset);

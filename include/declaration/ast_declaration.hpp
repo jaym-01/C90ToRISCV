@@ -33,12 +33,25 @@ public:
 
         for (auto init_decl : init_declarator_list_->GetNodes())
         {
-            DeclaratorType declarator_type = init_decl->GetDeclaratorType();
-            if (declarator_type  == DeclaratorType::Function) {
+            if (type == "struct") {
+                std::string struct_id = declaration_specifiers_->GetIdentifier();
+                VariableContext struct_context = cur_scope->struct_map[struct_id];
+
+                std::string id = init_decl->GetIdentifier();
+                struct_context.id = id;
+                cur_scope->SetVarContext(id, struct_context);
+
+                init_decl->EmitRISC(stream, context);
+                continue;
+            } else if (init_decl->GetDeclaratorType() == DeclaratorType::Function){
                 init_decl->EmitRISC(stream, context);
                 context.id_to_func_def[init_decl->GetIdentifier()].return_type = type;
                 continue;
             }
+            // DeclaratorType declarator_type = ;
+            // if (declarator_type  == ) {
+
+            // }
 
             // 1. Initialise variable in context var_map
             std::string id = init_decl->GetIdentifier();

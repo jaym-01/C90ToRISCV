@@ -22,6 +22,10 @@ struct VariableContext
     std::string id;
     std::string type;
 
+    // different parts can be seperated
+    // but polymorphism needs pointers
+    // change all other places to pointer to seperate
+
     // arrays
     int array_size;
     bool is_array;
@@ -42,6 +46,11 @@ struct VariableContext
 
     // memory
     int offset = 1;
+
+    // struct
+    // must be a vector to preserve order
+    std::vector<VariableContext> members;
+    std::string struct_name;
 
     std::string GetType() const {
         if(is_pntr || (is_array && is_param) || is_enum) return "int";
@@ -70,36 +79,65 @@ struct VariableContext
         return str;
     }
 
-    virtual std::map<std::string, VariableContext> GetStructMembers() {
-        throw std::runtime_error("Error: this is not a struct, GetStructMembers is not implemented");
+    std::vector<VariableContext> GetStructMembers() {
+        if(type != "struct") throw std::runtime_error("Error: this is not a struct, GetStructMembers is not implemented");
+        else return members;
     }
 
-    virtual int GetSize() const{
-        if(is_array && !is_param) return array_size * type_size_[type];
+    int GetSize() const {
+        if(type == "struct") {
+            // std::cout << "in here" << std::endl;
+            int size = 0;
+            for(auto const& member : members) {
+                // std::cout << "this is the size: " << member.GetSize() << std::endl;
+                size += member.GetSize();
+            }
+            return size;
+        }
+        else if(is_array && !is_param) return array_size * type_size_[type];
         else return type_size_[GetType()];
     }
-    // // Constructor for the Person struct
-    // VariableContext(VariableContextParams p)
-    //     :   type(p.type), array_size(p.array_size), is_array(p.is_array),
-    //         is_inherited(p.is_inherited), is_global(p.is_global), offset(p.offset) {}
-};
 
-
-struct StructContext : public VariableContext {
-    std::map<std::string, VariableContext> members;
-
-    std::map<std::string, VariableContext> GetStructMembers() override {
-        return members;
+    // performs linear search
+    // vector used to maintain order
+    VariableContext GetMemberById(std::string id) {
+        if(type == "struct") {
+            for(auto const& member : members) {
+                if(member.id == id) return member;
+            }
+            throw std::runtime_error("Error: member not found");
+        } else throw std::runtime_error("Error: this is not a struct, GetMemberById is not implemented");
     }
 
-    int GetSize() const override{
-        int size = 0;
-        for(auto const& member : members) {
-            size += member.second.GetSize();
-        }
-        return size;
+    std::string GetStructName() {
+        if(type != "struct") throw std::runtime_error("Error: this is not a struct, GetStructName is not implemented");
+        else return struct_name;
     }
 };
+
+
+// struct StructContext : public VariableContext {
+//     std::map<std::string, VariableContext> members;
+//     std::string struct_name;
+
+//     std::map<std::string, VariableContext> GetStructMembers() override {
+//         return members;
+//     }
+
+//     int GetSize() const override {
+//         std::cout << "in here" << std::endl;
+//         int size = 0;
+//         for(auto const& member : members) {
+//             std::cout << "this is the size: " << member.second.GetSize() << std::endl;
+//             size += member.second.GetSize();
+//         }
+//         return size;
+//     }
+
+//     std::string GetStructName() {
+//         return struct_name;
+//     }
+// };
 
 
 #endif
