@@ -36,7 +36,7 @@ public:
         // {
         //     // 1. Initialise variable in context var_map
         //     std::string id = init_decl->GetIdentifier();
-        //     VariableContext var_context = init_decl->InitVariableContext(type);
+        //     VariableContext var_context = init_decl->InitVariableContext(type)[0];
         //     cur_scope->SetVarContext(id, var_context);
 
         //     // 2. EmitRISC for init_declarator
@@ -48,14 +48,14 @@ public:
         return declarator_->GetIdentifier();
     };
 
-    VariableContext InitVariableContext(std::string t) override {
+    std::vector<VariableContext> InitVariableContext(std::string t) override {
 
         // Don't need to use type from arg
         std::string type = declaration_specifiers_->GetTypeSpecifier();
-        VariableContext var_context = declarator_->InitVariableContext(type);
+        VariableContext var_context = declarator_->InitVariableContext(type)[0];
         var_context.is_param = true;
 
-        return var_context;
+        return {var_context};
     };
 
     void Print(std::ostream &stream) const

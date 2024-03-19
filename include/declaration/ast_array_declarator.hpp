@@ -72,7 +72,7 @@ public:
         stream<< " }";
     };
 
-    VariableContext InitVariableContext(std::string type) override {
+    std::vector<VariableContext> InitVariableContext(std::string type) override {
         if (size_expression_ != nullptr){
             std::vector<int> size = size_expression_->EvalExpression(type);
             if(size.size() > 1) throw std::runtime_error("Array size is not an int");
@@ -83,7 +83,7 @@ public:
             var_context.array_size=size[0];
             var_context.is_array=true;
 
-            return var_context;
+            return {var_context};
             // return {
             //     .id=identifier_->GetIdentifier(),
             //     .type=type,
@@ -98,7 +98,7 @@ public:
             var_context.array_size=-1;
             var_context.is_array=true;
 
-            return var_context;
+            return {var_context};
             // return {
             //     .id=identifier_->GetIdentifier(),
             //     .type = type,

@@ -83,9 +83,9 @@ public:
         }
     };
 
-    VariableContext InitVariableContext(std::string type) override {
+    std::vector<VariableContext> InitVariableContext(std::string type) override {
 
-        VariableContext var_context = declarator_->InitVariableContext(type);
+        VariableContext var_context = declarator_->InitVariableContext(type)[0];
 
         if (!var_context.is_array && initializer_ != nullptr && initializer_->GetNodes().size() > 1 && !var_context.is_pntr && var_context.type != "char")
             throw std::runtime_error("Error: variable " + declarator_->GetIdentifier() + " is not an array but has multiple initializers");
@@ -97,7 +97,7 @@ public:
             var_context.array_size = initializer_->GetNodes().size();
         }
 
-        return var_context;
+        return {var_context};
     };
 
     void Print(std::ostream &stream) const override {

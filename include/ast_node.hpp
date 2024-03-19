@@ -41,7 +41,7 @@ public:
     };
 
     // For declarations
-    virtual VariableContext InitVariableContext(std::string type) {
+    virtual std::vector<VariableContext> InitVariableContext(std::string type) {
         throw std::runtime_error("Error: InitVariableContext not implemented for this node");
     };
     virtual void EmitRISCGlobalVar (std::ostream &stream, Context &context) const {

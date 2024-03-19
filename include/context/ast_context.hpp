@@ -18,6 +18,7 @@ class ScopeContext {
 public:
     std::map<std::string, VariableContext> var_map;
     std::vector<ScopeContext*> child_scopes;
+    std::map<std::string, VariableContext> struct_map;
 
     ScopeContext() {
         var_map = {};
@@ -30,6 +31,12 @@ public:
             var_map[var.first] = var.second;
             var_map[var.first].is_inherited = true;
         }
+
+        for(auto struct_val : parent->struct_map){
+            struct_map[struct_val.first] = struct_val.second;
+            struct_map[struct_val.first].is_inherited = true;
+        }
+
         child_scopes = {};
     };
 
@@ -45,6 +52,8 @@ public:
                 var_map[var.first] = var.second;
             }
         }
+
+        // if struct is redefined in the child scope - do not replace in parent scope
     }
 
     void SetVarContext(std::string identifier, VariableContext context) {
@@ -58,6 +67,13 @@ public:
         }
 
         var_map[identifier] = context;
+    }
+
+    void SetStructContext(std::string identifier, VariableContext context) {
+        if (struct_map.find(identifier) != struct_map.end() && struct_map[identifier].is_inherited == false)
+            throw std::runtime_error("Error: struct " + identifier + " already exists");
+
+        struct_map[identifier] = context;
     }
 
     void AddChildScope(ScopeContext* scope) {

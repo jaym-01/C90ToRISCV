@@ -44,14 +44,14 @@ public:
         return 1;
     };
 
-    VariableContext InitVariableContext(std::string type) override {
+    std::vector<VariableContext> InitVariableContext(std::string type) override {
         VariableContext var;
         var.id=identifier_;
         var.type=type;
         var.array_size=1;
         var.is_array=false;
 
-        return var;
+        return {var};
     };
 
     void Print(std::ostream &stream) const override {

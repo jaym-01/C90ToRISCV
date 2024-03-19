@@ -19,13 +19,13 @@ public:
         direct_declarator_->EmitRISC(stream, context);
     }
 
-    VariableContext InitVariableContext(std::string type) override {
-        VariableContext var = direct_declarator_->InitVariableContext(type);
+    std::vector<VariableContext> InitVariableContext(std::string type) override {
+        VariableContext var = direct_declarator_->InitVariableContext(type)[0];
         var.is_pntr = true;
         var.pntr_depth = pointer_depth_;
         var.working_pntr_depth = pointer_depth_;
 
-        return var;
+        return {var};
     }
 
     DeclaratorType GetDeclaratorType() const override { return direct_declarator_->GetDeclaratorType(); }

@@ -42,7 +42,7 @@ public:
 
             // 1. Initialise variable in context var_map
             std::string id = init_decl->GetIdentifier();
-            VariableContext var_context = init_decl->InitVariableContext(type);
+            VariableContext var_context = init_decl->InitVariableContext(type)[0];
             cur_scope->SetVarContext(id, var_context);
 
             // 2. EmitRISC for init_declarator
@@ -83,7 +83,7 @@ public:
             }
 
             std::string id = init_decl->GetIdentifier();
-            VariableContext var_context = init_decl->InitVariableContext(type);
+            VariableContext var_context = init_decl->InitVariableContext(type)[0];
             var_context.is_global = true;
             context.global_scope->SetVarContext(id, var_context);
 
@@ -110,7 +110,7 @@ public:
 //         std::string var_id = init_decl->GetIdentifier();
 
 //         // TODO: If no identifier, invalid declaration
-//         VariableContext var_context = init_decl->InitVariableContext(type);
+//         VariableContext var_context = init_decl->InitVariableContext(type)[0];
 //         cur_scope->SetVarContext(var_id, var_context);
 //         context.SetFuncTotalVarSize(cur_func_var_size + calculate_var_size(var_context));
 //     }

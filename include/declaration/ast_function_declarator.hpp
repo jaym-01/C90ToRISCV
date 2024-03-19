@@ -45,7 +45,7 @@ public:
         {
             std::string id = params[i]->GetIdentifier();
             // type is defined further down, don't need to specify it here
-            VariableContext arg_context = params[i]->InitVariableContext("");
+            VariableContext arg_context = params[i]->InitVariableContext("")[0];
             // allocates stack memory to param
             int var_offset = context.CalcVarOffsetAndUpdate(arg_context);
 
@@ -129,7 +129,7 @@ public:
         for (std::size_t i = 0; i < params.size(); i++)
         {
             std::string id = params[i]->GetIdentifier();
-            VariableContext arg_context = params[i]->InitVariableContext(""); // TODO make it work for just type specifier
+            VariableContext arg_context = params[i]->InitVariableContext("")[0]; // TODO make it work for just type specifier
 
             arg_contexts.push_back(arg_context);
         }

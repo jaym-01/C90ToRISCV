@@ -17,9 +17,24 @@ public:
         if(declaration_list_ != nullptr) delete declaration_list_;
     }
 
+    void EmitRISC(std::ostream &stream, Context &context) const override {
+        // this is for defining a struct
+        // no risc is emitted
+        VariableContext struct_context = InitVariableContext("")[0];
+        ScopeContext *cur_scope = context.GetCurScope();
+        cur_scope->SetStructContext(identifier_, struct_context);
+    }
+
     void EmitRISCGlobalVar(std::ostream &stream, Context &context) const override {
         // this is for defining a struct
         // no risc is emitted
+        VariableContext struct_context = InitVariableContext("")[0];
+        ScopeContext *cur_scope = context.global_scope;
+        cur_scope->SetStructContext(identifier_, struct_context);
+    }
+
+    std::vector<VariableContext> InitVariableContext(std::string type) const {
+        std::vector<VariableContext> var_contexts;
         StructContext struct_context;
         struct_context.id = identifier_;
         struct_context.type = "struct";
@@ -29,9 +44,13 @@ public:
         std::vector<Node *> vars = declaration_list_->GetNodes();
 
         for(auto var : vars){
-            var->EmitRISCGlobalVar(stream, context);
+            var_contexts = var->InitVariableContext(""); // type should be defined for each property in the struct
+            for(auto var_context : var_contexts){
+                struct_context.members[var_context.id] = var_context;
+            }
         }
 
+        return {struct_context};
     }
 
     void Print(std::ostream &stream) const override{
@@ -56,14 +75,16 @@ public:
         if(declarator_list_ != nullptr) delete declarator_list_;
     }
 
-    VariableContext InitVariableContext(std::string type) override {
-        std::string type = qualifier_list_->GetNodes()[0]->GetTypeSpecifier();
+    std::vector<VariableContext> InitVariableContext(std::string type) override {
+        std::string var_type = qualifier_list_->GetNodes()[0]->GetTypeSpecifier();
         std::vector<VariableContext> var_contexts;
         std::vector<Node *> declarators = declarator_list_->GetNodes();
 
         for(auto declarator : declarators){
-            var_contexts.push_back(declarator->InitVariableContext(type));
+            var_contexts.push_back(declarator->InitVariableContext(type)[0]);
         }
+
+        return var_contexts;
     }
 
     void Print(std::ostream &stream) const override{
