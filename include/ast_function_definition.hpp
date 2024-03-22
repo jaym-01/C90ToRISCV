@@ -3,6 +3,7 @@
 
 #include "ast_node.hpp"
 #include "statement/ast_compound_statement.hpp"
+#include "helpers/ast_type_helpers.hpp"
 
 class FunctionDefinition : public Node
 {
@@ -51,15 +52,20 @@ public:
         stream << ".globl " << id << std::endl;
         stream << id << ": " << std::endl;
 
+        std::string type = declaration_specifiers_->GetTypeSpecifier();
+        TypeDefContext type_context = resolve_type(type, context.global_scope);
+        type = type_context.type;
+        std::cout << "type: " << type << std::endl;
+
         // 1. Initialise function context and root scope context
-        FunctionContext *f_context = new FunctionContext(id, context.GetNewLabel("return"), declaration_specifiers_->GetTypeSpecifier(), declaration_specifiers_->IsPointer());
+        FunctionContext *f_context = new FunctionContext(id, context.GetNewLabel("return"), type, declaration_specifiers_->IsPointer());
         context.InitFunctionContext(f_context);
         ScopeContext* arg_scope = new ScopeContext(context.global_scope);
         context.SetCurScope(arg_scope);
         // 2. Emit RISC for function declarator (build params)
         std::stringstream declarator_stream;
         declarator_->EmitRISC(declarator_stream, context);
-        context.id_to_func_def[id].return_type = declaration_specifiers_->GetTypeSpecifier(); // set return type of function
+        context.id_to_func_def[id].return_type = type; // set return type of function
 
         if (declaration_list_ != nullptr)
             declaration_list_->Print(stream);
