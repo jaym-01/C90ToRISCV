@@ -15,17 +15,7 @@
 //     }
 // }
 
-int f(int x, int y)
-{
-    int acc=0;
-    // if(x < 0){
-    //     return -f(-x, y);
-    // }
-
-    // while(x > 0){
-    //     acc += y;
-    //     x--;
-    // }
-    acc += y;
-    return acc;
+char test2(){
+    char a = '\\';
+    return a;
 }

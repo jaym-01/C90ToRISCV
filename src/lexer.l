@@ -70,7 +70,28 @@ IS  (u|U|l|L)*
 0[xX]{H}+{IS}?		{yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
 0{D}+{IS}?		    {yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
 {D}+{IS}?		      {yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
-L?'(\\.|[^\\'])+'	{yylval.number_int = (int)yytext[1]; return(INT_CONSTANT);}
+L?'(\\.|[^\\'])+'	{
+  // handles escape sequences
+  if(yytext[1] == '\\' && yytext[2] != '\''){
+    switch(yytext[2]){
+      case 'a': yylval.number_int = 7; break;
+      case 'b': yylval.number_int = 8; break;
+      case 't': yylval.number_int = 9; break;
+      case 'n': yylval.number_int = 10; break;
+      case 'v': yylval.number_int = 11; break;
+      case 'f': yylval.number_int = 12; break;
+      case 'r': yylval.number_int = 13; break;
+      case '\\': yylval.number_int = 92; break;
+      case '\'': yylval.number_int = 39; break;
+      case '"': yylval.number_int = 34; break;
+      case '0': yylval.number_int = 0; break;
+      default: yylval.number_int = (int)yytext[2]; break;
+    }
+  } else {
+    yylval.number_int = (int)yytext[1];
+  }
+  return(INT_CONSTANT);
+}
 
 {D}+{E}{FS}?		        {yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
 {D}*"."{D}+({E})?{FS}?	{yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
