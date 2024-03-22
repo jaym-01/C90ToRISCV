@@ -1,14 +1,22 @@
 
 int test1(){
-    float x = 2.5, y = 3.5;
-    double z = 4.5, h = 4;
+    // float x = 2.5, y = 3.5;
+    // double z = 4.5, h = 4;
 
-    return (x < y) == 1;
+    // return (x < y) == 1;
+    char x = 5, *y = &x;
+    return sizeof(*y);
 }
 
 char test2(){
-    char a = '\\';
-    return a;
+    struct test{
+        char a;
+        int b;
+    };
+
+    struct test t;
+    t.a = 'a';
+    return t.a;
 }
 
 int test3(){
@@ -23,4 +31,14 @@ int *p1 = a1;
 
 int test4(){
     return *(p1 + 2);
+}
+
+float* test5(){
+    float x = 5.5, *y = &x;
+    return y;
+}
+
+char *test6(){
+    char x = 'a', *y = &x;
+    return y;
 }

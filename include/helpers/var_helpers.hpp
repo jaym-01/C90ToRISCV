@@ -24,6 +24,8 @@ inline void dereference_pntr(const Node *var_node, Context &context, std::ostrea
     var_node->EmitRISCWithDest(tmp, context, tmp_reg);
     context.FreeRegister(tmp_reg);
 
+    var = context.GetCurScope()->GetVarFromId(var.id);
+
     // load the address of the pointer
     if(var.is_global){
         stream << "lui " << addr_reg << ", %hi(" << var.id << ")" << std::endl;

@@ -57,7 +57,8 @@ public:
         type = type_context.type;
 
         // 1. Initialise function context and root scope context
-        FunctionContext *f_context = new FunctionContext(id, context.GetNewLabel("return"), type, declaration_specifiers_->IsPointer());
+        // FunctionContext *f_context = new FunctionContext(id, context.GetNewLabel("return"), type, declaration_specifiers_->IsPointer());
+        FunctionContext *f_context = new FunctionContext(id, context.GetNewLabel("return"), type, declarator_->IsPointer());
         context.InitFunctionContext(f_context);
         ScopeContext* arg_scope = new ScopeContext(context.global_scope);
         context.SetCurScope(arg_scope);

@@ -29,6 +29,7 @@ public:
 
         // Evaluate expression
         // TODO: extend this for double
+        std::cout << "Return type: " << return_pointer << std::endl;
         std::string ret_reg = context.GetReturnRegister(return_pointer ? "int" : r_type);
 
         if (expression_ != nullptr)

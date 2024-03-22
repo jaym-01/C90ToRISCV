@@ -131,6 +131,8 @@ public:
         }
     };
 
+    bool IsDereference() const { return nodes_[0]->IsDereference(); }
+
     // TODO: find a better way to do this
     virtual std::string GetStringValue() const {
         throw std::runtime_error("This is not a string constant");

@@ -39,6 +39,12 @@ public:
         ScopeContext* cur_scope = context.GetCurScope();
         VariableContext var = cur_scope->GetVarFromId(var_id);
 
+        if(var.type == "struct"){
+            // get the variable being accessed
+            std::string var_name = unary_expression_->GetMemberId();
+            var = var.GetMemberById(var_name);
+        }
+
         if (dest_reg == "") {
             dest_reg = context.ReserveRegister(var.type);
         }

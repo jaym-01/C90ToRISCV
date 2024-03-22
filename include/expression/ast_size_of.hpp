@@ -39,6 +39,22 @@ public:
             ScopeContext *scope = context.GetCurScope();
             VariableContext var = scope->GetVarFromId(id);
 
+            if(expr_->IsDereference()){
+                // check whether to load a pointer or the actual value
+                // first adjust the working pntr depth
+                std::string tmp;
+                std::stringstream s;
+                expr_->EmitRISCWithDest(s, context, tmp);
+                context.FreeRegister(tmp);
+
+                var = scope->GetVarFromId(id);
+
+                if(var.working_pntr_depth == 0){
+                    var.is_pntr = false;
+                    stream << "li " << dest_reg << ", " << var.GetSize() << std::endl;
+                }
+            }
+
             // int size = type_size[var.GetType()] * var.array_size;
             stream << "li " << dest_reg << ", " << var.GetSize() << std::endl;
         }
