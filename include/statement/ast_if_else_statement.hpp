@@ -17,6 +17,7 @@ public:
 
     ~IfElseStatement()
     {
+        delete cond_expression_;
         delete if_statement_;
         delete else_statement_;
     };
