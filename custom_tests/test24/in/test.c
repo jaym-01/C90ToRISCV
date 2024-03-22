@@ -37,3 +37,10 @@ int test3(){
     *h = i;
     return *z;
 }
+
+int a1[] = {1, 2, 3, 4, 5};
+int *p1 = a1;
+
+int test4(){
+    return *(p1 + 2);
+}

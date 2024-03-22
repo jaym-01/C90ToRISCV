@@ -125,9 +125,9 @@ public:
     }
 
     void EmitRISCGlobalVar(std::ostream &stream, Context &context) const override {
-        std::cout<<"Emitting RISC for glo var: ";
-        Print(std::cout);
-        std::cout<<std::endl;
+        // std::cout<<"Emitting RISC for glo var: ";
+        // Print(std::cout);
+        // std::cout<<std::endl;
 
         if (GetDeclaratorType() == DeclaratorType::Function) {
             declarator_->EmitRISCGlobalVar(stream, context);
@@ -149,6 +149,7 @@ public:
                 if(var_context.is_array){
                     stream << ".string \"" << val << "\"" << std::endl;
                 } else {
+                    // for pointer
                     std::string string_label = context.GetNewLabel("string");
                     stream << ".word " << string_label << std::endl;
 
@@ -160,11 +161,18 @@ public:
             for (std::size_t i = 0; i < initializers.size(); i++)
             {
                 initializers[i]->DefineConstantType(var_context.type);
-                if(var_context.is_pntr && initializers[i]->IsMemoryReference(context)){
+                std::string id = initializers[i]->DFSIdentifier();
+
+                if(var_context.is_pntr && (initializers[i]->IsMemoryReference(context) || (id != "" && context.global_scope->GetVarFromId(id).is_array))){
                     // it's a pointer so is always an int
-                    int offset = initializers[i]->EvalExpression(var_context.type)[0];
-                    if(offset != 0) stream << ".word " << initializers[i]->DFSIdentifier() << "+" << (offset*4) << std::endl;
-                    else stream << ".word " << initializers[i]->DFSIdentifier() << std::endl;
+                    std::vector<int> eval = initializers[i]->EvalExpression("int");
+                    if(eval.size() > 0){
+                        int offset = eval[0];
+                        if(offset != 0) stream << ".word " << id << "+" << (offset*4) << std::endl;
+                        else stream << ".word " << id << std::endl;
+                    } else{
+                        stream << ".word " << id << std::endl;
+                    }
                 } else{
                     std::vector<int> eval = initializers[i]->EvalExpression(var_context.type);
 

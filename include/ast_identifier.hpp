@@ -59,7 +59,8 @@ public:
     };
 
     std::vector<int> EvalExpression(std::string type) const override {
-        throw std::runtime_error("Cannot evaluate identifier as int expression");
+        // throw std::runtime_error("Cannot evaluate identifier as int expression");
+        return {};
     };
 
     std::string GetIdentifier() const override {

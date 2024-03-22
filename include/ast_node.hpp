@@ -83,7 +83,8 @@ public:
     }
 
     virtual std::string DFSIdentifier() const {
-        throw std::runtime_error("Error: DFSIdentifier not implemented for this node");
+        // throw std::runtime_error("Error: DFSIdentifier not implemented for this node");
+        return "";
     }
 
     virtual bool IsPointer() const {

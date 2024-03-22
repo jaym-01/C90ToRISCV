@@ -191,6 +191,9 @@ public:
         std::vector<int> left = left_operand_->EvalExpression(type);
         std::vector<int> right = right_operand_->EvalExpression(type);
 
+        if(left.size() == 0) return right;
+        if(right.size() == 0) return left;
+
         // if (b_operator_ == "+") {
         //     return left + right;
         // } else if (b_operator_ == "-") {
