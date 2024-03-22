@@ -17,6 +17,25 @@ inline std::map<std::string, int> type_to_shift_amt = {
     {"double", 3},
 };
 
+inline void dereference_pntr(const Node *var_node, Context &context, std::ostream &stream, VariableContext &var, std::string &addr_reg){
+    // adjust the working pntr depth - to see how much is dereferenced
+    std::stringstream tmp;
+    std::string tmp_reg;
+    var_node->EmitRISCWithDest(tmp, context, tmp_reg);
+    context.FreeRegister(tmp_reg);
+
+    // load the address of the pointer
+    if(var.is_global){
+        stream << "lui " << addr_reg << ", %hi(" << var.id << ")" << std::endl;
+        stream << "addi " << addr_reg << ", " << addr_reg << ", %lo(" << var.id << ")" << std::endl;
+        stream << "lw " << addr_reg << ", 0(" << addr_reg << ")" << std::endl;
+    }
+    else stream << "lw " << addr_reg << ", " << var.offset << "(fp)" << std::endl;
+    for(int i = 0; i < var.pntr_depth - var.working_pntr_depth - 1; ++i){
+        stream << "lw " << addr_reg << ", 0(" << addr_reg << ")" << std::endl;
+    }
+}
+
 
 // GLOBAL VAR READ FUNCTIONS
 inline void global_var_to_reg(Context &context, VariableContext var, std::string id, std::ostream &stream, std::string dest_reg) {
@@ -136,15 +155,14 @@ inline void write_global_var(
     } else if(var.is_pntr && var_node->IsDereference()){
         // load in the address pointer is pointing to
         std::string addr_reg = context.ReserveRegister("int");
-        stream << "lui " << addr_reg << ", %hi(" << id << ")" << std::endl;
-        stream << "addi " << addr_reg << ", " << addr_reg << ", %lo(" << id << ")" << std::endl;
-        stream << "lw " << addr_reg << ", 0(" << addr_reg << ")" << std::endl;
+
+        dereference_pntr(var_node, context, stream, var, addr_reg);
 
         std::string type;
         bool is_pntr;
         // TODO: change this, it is wrong
         // check if writing actual value or another address (for double or more pointers)
-        if(var.pntr_depth > 1){
+        if(var.working_pntr_depth > 0){
             is_pntr = true;
             type = "int";
         } else{
@@ -206,24 +224,8 @@ inline void read_local_var(
         // Get index offset and store in index reg
         // std::cout << "here" << std::endl;
         std::string index_reg = "";
-        var_node->GetIndexExpression()->EmitRISCWithDest(stream, context, index_reg);
+        if(var_node->GetIndexExpression() != nullptr) var_node->GetIndexExpression()->EmitRISCWithDest(stream, context, index_reg);
 
-        // // Store index offset + var offset + fp in index reg (location of array elem in memory)
-        // stream << "slli " << index_reg << ", " << index_reg << ", " << type_to_shift_amt[var.type] << std::endl;
-        // // if param, get load address of first element then find the offset
-        // if(var.is_param) {
-        //     // tmp holds the first element of the array address to the array
-        //     std::string tmp = context.ReserveRegister("int");
-        //     stream << "lw " << tmp << ", "<< var.offset << "(fp)" << std::endl;
-
-        //     // add it to index_reg so index_reg stores memory address of value to be accessed
-        //     stream << "add " << index_reg << ", " << index_reg << ", " << tmp << std::endl;
-        //     context.FreeRegister(tmp);
-        // }
-        // else {
-        //     stream << "addi " << index_reg << ", " << index_reg << "," << var.offset << std::endl;
-        //     stream << "add " << index_reg << ", " << index_reg << ", fp" << std::endl;
-        // }
         get_array_address(context, stream, var, index_reg);
         local_var_to_reg(stream, var, 0, dest_reg, false, index_reg);
         context.FreeRegister(index_reg);
@@ -258,8 +260,20 @@ inline void write_local_var(Node *var_node, Context &context, std::ostream &stre
         // check if writing to dereference pointer
         // must load address is register and write to that address
         std::string addr_reg = context.ReserveRegister("int");
-        // stream << "here" << std::endl;
-        stream << "lw " << addr_reg << ", " << var.offset << "(fp)" << std::endl;
+
+        // // adjust the working pntr depth - to see how much is dereferenced
+        // std::stringstream tmp;
+        // std::string tmp_reg;
+        // var_node->EmitRISCWithDest(tmp, context, tmp_reg);
+        // context.FreeRegister(tmp_reg);
+
+        // stream << "lw " << addr_reg << ", " << var.offset << "(fp)" << std::endl;
+
+        // for(int i = 0; i < var.pntr_depth - var.working_pntr_depth - 1; ++i){
+        //     stream << "lw " << addr_reg << ", 0(" << addr_reg << ")" << std::endl;
+        // }
+        dereference_pntr(var_node, context, stream, var, addr_reg);
+
         reg_to_local_var(stream, var, 0, val_reg, false, addr_reg);
         context.FreeRegister(addr_reg);
     } else if(var.type == "struct"){

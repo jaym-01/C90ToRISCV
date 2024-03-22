@@ -102,15 +102,8 @@ public:
             stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
 
         } else if(unary_operator_ == "*") {
-            // if(!var.is_pntr | (var.pntr_depth < 1)) throw std::runtime_error("cannot dereference a type that is not a pointer");
-            // dest_reg contains the address the pointer holds
-            // check if the value the pointer points to is a value or another pointer
-            // bool is_actual_value = (var.pntr_depth - 1) == 0 || (!var.is_pntr);
-            // stream << "here: " << (var.type == ""? type: var.type) << " | " << var.working_pntr_depth << std::endl;
-            // stream << "here" << std::endl;
-
             // TODO: is this condition right?
-            stream << get_mem_read(var.is_pntr? var.type: type, var.is_pntr? !(var.working_pntr_depth <= 1): false) << " " << (tmp.size() > 0 && tmp[0] == 'f'? tmp : dest_reg) << ",0(" << dest_reg << ")" << std::endl;
+            stream << get_mem_read(var.is_pntr? var.type: type, var.is_pntr? !(var.working_pntr_depth == 0): false) << " " << (tmp.size() > 0 && tmp[0] == 'f'? tmp : dest_reg) << ",0(" << dest_reg << ")" << std::endl;
 
             if(unary_operator_ == "*" && cur_scope != nullptr && var.is_pntr){
                 --var.working_pntr_depth;

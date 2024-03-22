@@ -55,7 +55,6 @@ public:
         std::string type = declaration_specifiers_->GetTypeSpecifier();
         TypeDefContext type_context = resolve_type(type, context.global_scope);
         type = type_context.type;
-        std::cout << "type: " << type << std::endl;
 
         // 1. Initialise function context and root scope context
         FunctionContext *f_context = new FunctionContext(id, context.GetNewLabel("return"), type, declaration_specifiers_->IsPointer());

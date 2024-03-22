@@ -30,3 +30,10 @@ char test2(){
     char a = '\\';
     return a;
 }
+
+int test3(){
+    int x = 5, y = 10;
+    int *z = &x, **h = &z, *i = &y;
+    *h = i;
+    return *z;
+}

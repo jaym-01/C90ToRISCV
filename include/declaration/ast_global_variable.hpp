@@ -20,8 +20,10 @@ public:
     };
 
     void EmitRISC(std::ostream &stream, Context &context) const {
-        std::cout<<"Em RISC for ";
-        Print(std::cout);
+        // std::cout<<"Em RISC for ";
+        // Print(std::cout);
+        // set current scope to the global scope
+        context.SetCurScope(context.global_scope);
         stream<<".data"<<std::endl;
         declaration_->EmitRISCGlobalVar(stream, context);
     };
