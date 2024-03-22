@@ -3,7 +3,8 @@
 
 #include "../ast_node.hpp"
 #include "../ast_node_list.hpp"
-#include "helpers/helpers.hpp"
+#include "../helpers/helpers.hpp"
+#include "../helpers/ast_type_helpers.hpp"
 class Declaration : public Node
 {
 private:
@@ -30,6 +31,7 @@ public:
 
         ScopeContext* cur_scope = context.GetCurScope();
         std::string type = declaration_specifiers_->GetTypeSpecifier();
+        type = resolve_type(type, context.GetCurScope());
 
         for (auto init_decl : init_declarator_list_->GetNodes())
         {
@@ -43,7 +45,13 @@ public:
 
                 init_decl->EmitRISC(stream, context);
                 continue;
-            } else if (init_decl->GetDeclaratorType() == DeclaratorType::Function){
+            } else if(declaration_specifiers_->GetDeclaratorType() == DeclaratorType::TypeDef){
+                std::string id = init_decl->GetIdentifier();
+                TypeDefContext type_def_context = {.id = id, .type = type, .is_pntr = init_decl->IsPointer()};
+                // if()
+                cur_scope->AddTypeDef(id, type_def_context);
+                continue;
+            }else if (init_decl->GetDeclaratorType() == DeclaratorType::Function){
                 init_decl->EmitRISC(stream, context);
                 context.id_to_func_def[init_decl->GetIdentifier()].return_type = type;
                 continue;
@@ -85,11 +93,17 @@ public:
 
 
         std::string type = declaration_specifiers_->GetTypeSpecifier();
+        type = resolve_type(type, context.global_scope);
 
         for (auto init_decl : init_declarator_list_->GetNodes())
         {
-            DeclaratorType declarator_type = init_decl->GetDeclaratorType();
-            if (declarator_type  == DeclaratorType::Function) {
+            if(declaration_specifiers_->GetDeclaratorType() == DeclaratorType::TypeDef){
+                std::string id = init_decl->GetIdentifier();
+                TypeDefContext type_def_context = {.id = id, .type = type, .is_pntr = false};
+                // if()
+                context.global_scope->AddTypeDef(id, type_def_context);
+                continue;
+            } else if (init_decl->GetDeclaratorType() == DeclaratorType::Function) {
                 init_decl->EmitRISCGlobalVar(stream, context);
                 context.id_to_func_def[init_decl->GetIdentifier()].return_type = type;
                 continue;

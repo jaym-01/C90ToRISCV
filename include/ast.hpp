@@ -26,6 +26,7 @@
 #include "declaration/ast_declaration_specifiers.hpp"
 #include "declaration/ast_global_variable.hpp"
 #include "declaration/ast_param_declaration.hpp"
+#include "declaration/ast_type_declaration.hpp"
 
 // Declarators
 #include "declaration/ast_init_declarator.hpp"
@@ -57,6 +58,12 @@
 #include "statement/ast_break_continue_statement.hpp"
 #include "statement/ast_switch_case_statement.hpp"
 
+// #include <unordered_map>
+// // using map for fast access
+// std::unordered_map<std::string, bool> typedef_ids;
+
 extern Node *ParseAST(std::string file_name);
+
+
 
 #endif

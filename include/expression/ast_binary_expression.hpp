@@ -37,10 +37,14 @@ public:
     void EvaluateOperation(std::ostream &stream, Context &context, std::string reg1, std::string reg2, std::string dest_reg) const {
         std::string ins_prefix = "", ins_postfix = " ", comp_postfix = " ";
 
-        if(result_type_ == "double" || result_type_ == "float"){
+        bool float_double = result_type_ == "double" || result_type_ == "float"  || GetChildrenType(context) == "float" || GetChildrenType(context) == "double";
+
+        if(float_double){
             ins_prefix = "f";
-            ins_postfix = result_type_ == "double" ? ".d " : ".s ";
-        } else if(GetChildrenType(context) == "unsigned"){
+            ins_postfix = result_type_ == "double" || GetChildrenType(context) == "double" ? ".d " : ".s ";
+        }
+
+        if(GetChildrenType(context) == "unsigned"){
             comp_postfix = "u ";
         }
 
@@ -69,27 +73,46 @@ public:
 
         // Logical operations
         else if (b_operator_ == "<") {
-            stream << "slt" << comp_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            if(float_double) stream << "flt" << ins_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            else stream << "slt" << comp_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
         }
         else if (b_operator_ == "<=") {
-            // Same as !(reg1 > reg2)
-            stream << "sgt" << comp_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
-            stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
+            if(float_double) stream << "fle" << ins_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            else {
+                // Same as !(reg1 > reg2)
+                stream << "sgt" << comp_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+                stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
+            }
         }
         else if (b_operator_ == ">") {
-            stream << "sgt" << comp_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            if(float_double) stream << "fgt" << ins_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            else stream << "sgt" << comp_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
         }
         else if (b_operator_ == ">=") {
             // Same as !(reg1 < reg2)
-            stream << "slt" << comp_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
-            stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
+            if(float_double) stream << "fge" << ins_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            else {
+                stream << "slt" << comp_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+                stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
+            }
         }
         else if (b_operator_ == "==") {
-            stream << "sub " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
-            stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
+            if(float_double){
+                // this will write 1 into reg when equal
+                stream << "feq" << ins_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            } else {
+                stream << "sub " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+                stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
+            }
         }
         else if (b_operator_ == "!=") {
-            stream << "sub " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            if(float_double){
+                // this will write 1 into reg when equal
+                stream << "feq" << ins_postfix << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+                stream << "seqz " << dest_reg << ", " << dest_reg << std::endl;
+            } else {
+                stream << "sub " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
+            }
         }
         else if (b_operator_ == "&") {
             stream << "and " << dest_reg << ", " << reg1 << ", " << reg2 << std::endl;
@@ -202,7 +225,7 @@ public:
         // this might happen with constant int and unsigned var
         // treat expression as unsigned (i.e. use unsigned operations)
         if(left == "unsigned" || right == "unsigned") return "unsigned";
-        // give char precedence over int
+        // give char precedence over other types
         else if(left == "char" || right == "char") return "char";
         else return left;
     }

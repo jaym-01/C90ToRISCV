@@ -90,6 +90,10 @@ public:
         }
     }
 
+    bool IsPointer() const override {
+        return false;
+    }
+
     std::string DFSIdentifier() const override {
         return identifier_;
     }

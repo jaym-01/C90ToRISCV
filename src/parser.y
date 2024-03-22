@@ -11,6 +11,7 @@
     extern FILE *yyin;
     int yylex(void);
     void yyerror(const char *);
+	extern std::unordered_map<std::string, bool> typedef_ids;
 }
 
 // Represents the value associated with any kind of AST node.
@@ -57,7 +58,8 @@
 
 %type <number_int> INT_CONSTANT pointer
 %type <number_float> FLOAT_CONSTANT
-%type <string> IDENTIFIER MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN STRING_LITERAL
+%type <string> IDENTIFIER MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN STRING_LITERAL TYPE_NAME
+%type <string> TYPEDEF EXTERN STATIC AUTO REGISTER SIZEOF
 
 
 %start ROOT
@@ -107,16 +109,31 @@ declaration_list
 
 declaration
 	: declaration_specifiers ';' { $$ = $1; }
-	| declaration_specifiers init_declarator_list ';' { $$ = new Declaration($1, $2); }
+	| declaration_specifiers init_declarator_list ';' {
+		$$ = new Declaration($1, $2);
+		if($1->GetDeclaratorType() == DeclaratorType::TypeDef){
+			std::vector<Node *> types = $2->GetNodes();
+			for(auto type : types){
+				typedef_ids[type->GetIdentifier()] = true;
+			}
+		}
+	}
 
 /* Parent of type_specifier and storage_class_specifier
 (includes e.g. int, static, int statc, static int) */
 declaration_specifiers
 	: type_specifier { $$ = $1; }
-	/* | storage_class_specifier { $$ = new DeclarationSpecifiers(nullptr, $1); } */
-	/* | storage_class_specifier declaration_specifiers { $2->AddStorageClassSpecifier($1); $$ = $2;} */
-	// | type_specifier declaration_specifiers { $2->AddTypeSpecifier($1); $$ = $2; }
+	| storage_class_specifier { $$ = nullptr; }
+	| storage_class_specifier declaration_specifiers { $$ = new TypeDeclaration($2); }
 	| type_specifier declaration_specifiers
+	;
+
+storage_class_specifier
+	: TYPEDEF
+	| EXTERN
+	| STATIC
+	| AUTO
+	| REGISTER
 	;
 
 
@@ -129,9 +146,9 @@ type_specifier
 	| DOUBLE	{	$$ = new TypeSpecifier("double");	}
 	| VOID 		{	$$ = new TypeSpecifier("void");		}
 	| UNSIGNED  {   $$ = new TypeSpecifier("unsigned"); }
-	| enum_specifier { $$ = $1; }
+	| enum_specifier
 	| struct_specifier
-	| TYPE_NAME
+	| TYPE_NAME { $$ = new TypeSpecifier(*$1); delete $1; }
 	;
 
 enum_specifier

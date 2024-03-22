@@ -38,16 +38,14 @@ public:
 
     int GetNumBranches() const override{ return direct_declarator_->GetNumBranches(); };
 
+    bool IsPointer() const override { return true; }
+
     void Print(std::ostream &stream) const override {
         stream << "pntr(";
         for(int i = 0; i < pointer_depth_; i++) stream << "*";
         stream << "){";
         direct_declarator_->Print(stream);
         stream << "}";
-    }
-
-    bool IsPointer() const override {
-        return true;
     }
 
 };

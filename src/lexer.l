@@ -6,6 +6,7 @@
   // Avoid error "error: `fileno' was not declared in this scope"
   extern "C" int fileno(FILE *stream);
   #include "parser.tab.hpp"
+  std::unordered_map<std::string, bool> typedef_ids  = {};
 %}
 
 D	  [0-9]
@@ -60,7 +61,11 @@ IS  (u|U|l|L)*
 "volatile"	{return(VOLATILE);}
 "while"			{return(WHILE);}
 
-{L}({L}|{D})*		{yylval.string = new std::string(yytext); return(IDENTIFIER);}
+{L}({L}|{D})*		{
+  yylval.string = new std::string(yytext);
+  if(typedef_ids.find(*yylval.string) != typedef_ids.end()) return(TYPE_NAME);
+  return(IDENTIFIER);
+}
 
 0[xX]{H}+{IS}?		{yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
 0{D}+{IS}?		    {yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}

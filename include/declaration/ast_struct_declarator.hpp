@@ -59,9 +59,9 @@ public:
         return "struct";
     }
 
-    DeclaratorType GetDeclaratorType() const override {
-        return DeclaratorType::Struct;
-    };
+    // DeclaratorType GetDeclaratorType() const override {
+    //     return DeclaratorType::Struct;
+    // };
 
     std::string GetIdentifier() const override {
         return identifier_;

@@ -10,6 +10,7 @@
 
 #include "ast_variable_context.hpp"
 #include "../helpers/memory_helpers.hpp"
+#include "../helpers/helpers.hpp"
 // An object of class Context is passed between AST nodes during compilation.
 // This can be used to pass around information about what's currently being
 // compiled (e.g. function scope and variable names).
@@ -19,6 +20,7 @@ public:
     std::map<std::string, VariableContext> var_map;
     std::vector<ScopeContext*> child_scopes;
     std::map<std::string, VariableContext> struct_map;
+    std::map<std::string, TypeDefContext> typedef_map;
 
     ScopeContext() {
         var_map = {};
@@ -35,6 +37,10 @@ public:
         for(auto struct_val : parent->struct_map){
             struct_map[struct_val.first] = struct_val.second;
             struct_map[struct_val.first].is_inherited = true;
+        }
+
+        for(auto typedef_val : parent->typedef_map){
+            typedef_map[typedef_val.first] = typedef_val.second;
         }
 
         child_scopes = {};
@@ -54,6 +60,7 @@ public:
         }
 
         // if struct is redefined in the child scope - do not replace in parent scope
+        // applies to typedef too
     }
 
     void SetVarContext(std::string identifier, VariableContext context) {
@@ -126,6 +133,15 @@ public:
         for (auto scope : child_scopes) {
             scope->PrintTree(level + 1);
         }
+    }
+
+    void AddTypeDef(std::string identifier, TypeDefContext context) {
+        typedef_map[identifier] = context;
+    }
+
+    TypeDefContext GetTypeDef(std::string identifier) {
+        if (typedef_map.find(identifier) == typedef_map.end()) throw std::runtime_error("Error: typedef " + identifier + " not found in scope");
+        return typedef_map[identifier];
     }
 
     ~ScopeContext() {
