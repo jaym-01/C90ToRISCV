@@ -17,9 +17,9 @@ public:
 
     ~IfElseStatement()
     {
-        delete cond_expression_;
-        delete if_statement_;
-        delete else_statement_;
+        if(cond_expression_ != nullptr) delete cond_expression_;
+        if(if_statement_ != nullptr) delete if_statement_;
+        if(else_statement_ != nullptr) delete else_statement_;
     };
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest) const override
     {

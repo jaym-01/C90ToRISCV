@@ -20,8 +20,8 @@ public:
 
     ~AssignmentExpression()
     {
-        delete unary_expression_;
-        delete assignment_expression_;
+        if(unary_expression_ != nullptr) delete unary_expression_;
+        if(assignment_expression_ != nullptr) delete assignment_expression_;
     };
 
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string& dest_reg) const {
@@ -46,7 +46,7 @@ public:
         BinaryExpression *op_expr = nullptr;
         if(assignment_operator_ != "="){
             std::string op = assignment_operator_.substr(0, assignment_operator_.size() - 1);
-            BinaryExpression *op_expr = new BinaryExpression(unary_expression_, op, assignment_expression_);
+            op_expr = new BinaryExpression(unary_expression_, op, assignment_expression_);
             op_expr->EmitRISCWithDest(stream, context, dest_reg);
         } else{
             assignment_expression_->DefineConstantType(var.type);
@@ -65,7 +65,11 @@ public:
         // std::cout << "writing: " << var_id << std::endl;
         // Dest reg here holds the value to be stored in var
         write_var_value(unary_expression_, context, stream, var, dest_reg);
-        if(op_expr != nullptr) delete op_expr;
+        if(op_expr != nullptr) {
+            op_expr->left_operand_ = nullptr;
+            op_expr->right_operand_ = nullptr;
+            delete op_expr;
+        }
     };
 
     // void EmitRISC(std::ostream &stream, Context &context) const {

@@ -10,13 +10,13 @@
 
 class BinaryExpression : public Node
 {
-private:
+public:
     Node *left_operand_;
     std::string b_operator_;
     Node *right_operand_;
     std::string result_type_;
 
-public:
+
     BinaryExpression(
         Node *left_operand,
         std::string b_operator,
@@ -26,8 +26,8 @@ public:
 
     ~BinaryExpression()
     {
-        delete left_operand_;
-        delete right_operand_;
+        if(left_operand_ != nullptr) delete left_operand_;
+        if(right_operand_ != nullptr) delete right_operand_;
     };
 
     // void EmitRISC(std::ostream &stream, Context &context) const {
