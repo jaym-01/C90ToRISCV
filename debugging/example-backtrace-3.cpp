@@ -11,7 +11,7 @@ static int process_arguments(int argc, const char *argv[])
     numbers[i - 1] = atoi(argv[i]);
   }
   std::sort(numbers.begin(), numbers.end());
-  return *(numbers.end() - 1);
+  return 0;
 }
 
 

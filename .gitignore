@@ -8,3 +8,7 @@ bin/
 *.gcno
 coverage/
 *.d
+codespace_shortcuts.json
+custom_tests/*/out
+c90_tests
+git_push.sh

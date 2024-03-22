@@ -6,9 +6,12 @@
 
 Node *Parse(CommandLineArguments &args)
 {
+    std::cout<<"-----------------------"<<std::endl;
     std::cout << "Parsing: " << args.compile_source_path << std::endl;
     auto root = ParseAST(args.compile_source_path);
     std::cout << "AST parsing complete" << std::endl;
+    std::cout<<"-----------------------"<<std::endl;
+    std::cout<<"PRINTING AST: "<<std::endl;
     return root;
 }
 
@@ -33,10 +36,13 @@ void Compile(Node *root, CommandLineArguments &args)
     // what's currently being compiled (e.g. function scope and variable names).
     Context ctx;
 
+    std::cout << "\n\n-----------------------" << std::endl;
     std::cout << "Compiling parsed AST..." << std::endl;
     std::ofstream output(args.compile_output_path, std::ios::trunc);
     root->EmitRISC(output, ctx);
+    // root->EmitRISC(std::cout, ctx);
     output.close();
+    std::cout << "-----------------------" << std::endl;
     std::cout << "Compiled to: " << args.compile_output_path << std::endl;
 }
 
@@ -49,6 +55,13 @@ int main(int argc, char **argv)
 
     // Parse input and generate AST
     auto ast_root = Parse(command_line_arguments);
+
+    std::cout << "---------------------------------------" << std::endl;
+    std::cout << "printing parse tree: \n" << std::endl;
+    ast_root->Print(std::cout);
+    std::cout << std::endl << "---------------------------------------" << std::endl;
+
+    // return 0;
     if (ast_root == nullptr)
     {
         // Check something was actually returned by parseAST().
@@ -56,7 +69,7 @@ int main(int argc, char **argv)
         return 3;
     }
 
-    PrettyPrint(ast_root, command_line_arguments);
+    // PrettyPrint(ast_root, command_line_arguments);
     Compile(ast_root, command_line_arguments);
 
     // Clean up afterwards.

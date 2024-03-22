@@ -1,9 +1,13 @@
 # Based on https://stackoverflow.com/a/52036564 which is well worth reading!
 
+# original
 # CXXFLAGS += -std=c++20 -W -Wall -g -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -fsanitize=address -static-libasan -O0 -rdynamic -I include
 
+CXXFLAGS += -std=c++20 -W -Wall -g -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -O0 -rdynamic -I include
+
+
 # For mac
-CXXFLAGS += -std=c++20 -W -Wall -g -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -fsanitize=address -static-libsan -O0 -rdynamic -I include
+# CXXFLAGS += -std=c++20 -W -Wall -g -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -fsanitize=address -static-libsan -O0 -rdynamic -I include
 
 SOURCES := $(wildcard src/*.cpp)
 DEPENDENCIES := $(patsubst %.cpp,%.d,$(SOURCES))
@@ -28,8 +32,12 @@ bin/c_compiler: $(OBJECTS)
 src/parser.tab.cpp src/parser.tab.hpp: src/parser.y
 	bison -v -d src/parser.y -o src/parser.tab.cpp
 
-src/lexer.yy.cpp : src/lexer.flex src/parser.tab.hpp
-	flex -o src/lexer.yy.cpp src/lexer.flex
+# src/lexer.yy.cpp : src/lexer.flex src/parser.tab.hpp
+# 	flex -o src/lexer.yy.cpp src/lexer.flex
+
+# For lexer.l
+src/lexer.yy.cpp : src/lexer.l src/parser.tab.hpp
+	flex -o src/lexer.yy.cpp src/lexer.l
 
 with_coverage : CXXFLAGS += --coverage
 with_coverage : bin/c_compiler
