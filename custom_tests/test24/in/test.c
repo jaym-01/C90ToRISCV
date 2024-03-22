@@ -15,6 +15,17 @@
 //     }
 // }
 
+typedef int test111;
+
+int test1(){
+    // float x = 2.5, y = 3.5;
+    // double z = 4.5, h = 4;
+
+    // return (x < y && z < h) || (x > y && z > h);
+
+    return sizeof(test111);
+}
+
 char test2(){
     char a = '\\';
     return a;

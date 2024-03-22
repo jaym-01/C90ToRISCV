@@ -14,16 +14,24 @@ public:
     SizeOfExpression(Node *type_name, Node* expr) : type_name_(type_name), expr_(expr) {};
 
     ~SizeOfExpression() {
-        delete type_name_;
-        delete expr_;
+        if(type_name_ != nullptr) delete type_name_;
+        if(expr_ != nullptr) delete expr_;
     };
 
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest_reg) const override {
         if(dest_reg == "") dest_reg = context.ReserveRegister("int");
 
         if(expr_ == nullptr){
-
             std::string type = type_name_->GetType(context);
+
+            // for type def types
+            if(type_size.find(type) == type_size.end()){
+                std::string id = type_name_->GetType(context);
+                ScopeContext *scope = context.GetCurScope();
+                TypeDefContext var = scope->GetTypeDef(id);
+                TypeDefContext tmp = resolve_type(type, scope);
+                type = tmp.type;
+            }
             stream << "li " << dest_reg << ", " << type_size[type] << std::endl;
         } else {
             std::string id = expr_->GetIdentifier();
@@ -44,7 +52,7 @@ public:
     }
 
     void DefineConstantType(std::string type) override {
-        type_ = type;
+        return;
     }
 };
 
