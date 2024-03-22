@@ -235,7 +235,7 @@ public:
 
     std::string GetType(Context &context) const override{
         // get type of children so you always get the type of the variable or constant used
-        return GetChildrenType(context);
+        return result_type_;
     }
 
     int GetNumBranches() const override{

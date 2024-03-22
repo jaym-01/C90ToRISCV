@@ -155,7 +155,8 @@ public:
     };
 
     std::string GetType(Context &context) const override{
-        return expression_->GetType(context);
+        // return expression_->GetType(context);
+        return type_;
     }
 
     std::string GetIdentifier() const override {
