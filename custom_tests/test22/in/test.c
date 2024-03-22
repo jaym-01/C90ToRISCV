@@ -1,5 +1,3 @@
-typedef int int_t;
-
 typedef int_t *pint_t;
 
 int_t test(int_t y)

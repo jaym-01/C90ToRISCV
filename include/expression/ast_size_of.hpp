@@ -15,6 +15,7 @@ public:
 
     ~SizeOfExpression() {
         delete type_name_;
+        delete expr_;
     };
 
     void EmitRISCWithDest(std::ostream &stream, Context &context, std::string &dest_reg) const override {
