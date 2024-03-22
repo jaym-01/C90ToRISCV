@@ -1,3 +1,6 @@
+#ifndef AST_TYPE_HELPERS
+#define AST_TYPE_HELPERS
+
 #include "../context/ast_context.hpp"
 #include <unordered_map>
 
@@ -11,11 +14,18 @@ inline std::unordered_map<std::string, int> types_l = {
     {"struct", 1},
 };
 
-inline std::string resolve_type(std::string type, ScopeContext *scope) {
+inline TypeDefContext resolve_type(std::string type, ScopeContext *scope) {
     if(types_l.find(type) != types_l.end()){
-        return type;
+        return {
+            .id = type,
+            .type = type,
+            .is_pntr = false,
+            .pntr_depth = 0,
+        };
     } else {
         TypeDefContext tmp_type = scope->GetTypeDef(type);
         return resolve_type(tmp_type.type, scope);
     }
 }
+
+#endif

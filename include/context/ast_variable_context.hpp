@@ -119,6 +119,7 @@ struct TypeDefContext {
     std::string id;
     std::string type;
     bool is_pntr = false;
+    int pntr_depth = 0;
 };
 
 

@@ -31,7 +31,8 @@ public:
 
         ScopeContext* cur_scope = context.GetCurScope();
         std::string type = declaration_specifiers_->GetTypeSpecifier();
-        type = resolve_type(type, context.GetCurScope());
+        TypeDefContext type_context = resolve_type(type, context.GetCurScope());
+        type = type_context.type;
 
         for (auto init_decl : init_declarator_list_->GetNodes())
         {
@@ -64,6 +65,8 @@ public:
             // 1. Initialise variable in context var_map
             std::string id = init_decl->GetIdentifier();
             VariableContext var_context = init_decl->InitVariableContext(type)[0];
+            var_context.pntr_depth += type_context.pntr_depth;
+            var_context.is_pntr = var_context.is_pntr | type_context.is_pntr;
             cur_scope->SetVarContext(id, var_context);
 
             // 2. EmitRISC for init_declarator
@@ -90,16 +93,20 @@ public:
     };
 
     void EmitRISCGlobalVar(std::ostream &stream, Context &context) const {
-
+        bool is_pntr;
 
         std::string type = declaration_specifiers_->GetTypeSpecifier();
-        type = resolve_type(type, context.global_scope);
+        TypeDefContext type_context = resolve_type(type, context.global_scope);
+        type = type_context.type;
 
         for (auto init_decl : init_declarator_list_->GetNodes())
         {
             if(declaration_specifiers_->GetDeclaratorType() == DeclaratorType::TypeDef){
+
                 std::string id = init_decl->GetIdentifier();
-                TypeDefContext type_def_context = {.id = id, .type = type, .is_pntr = false};
+                is_pntr = init_decl->IsPointer();
+
+                TypeDefContext type_def_context = {.id = id, .type = type, .is_pntr = is_pntr, .pntr_depth = is_pntr ? init_decl->GetPointerDepth() : 0};
                 // if()
                 context.global_scope->AddTypeDef(id, type_def_context);
                 continue;
@@ -112,6 +119,8 @@ public:
             std::string id = init_decl->GetIdentifier();
             VariableContext var_context = init_decl->InitVariableContext(type)[0];
             var_context.is_global = true;
+            var_context.pntr_depth += type_context.pntr_depth;
+            var_context.is_pntr = var_context.is_pntr | type_context.is_pntr;
             context.global_scope->SetVarContext(id, var_context);
 
             // 2. EmitRISC for init_declarator

@@ -36,6 +36,8 @@ public:
 
         std::vector<Node*> params = param_list_->GetNodes();
         ScopeContext* cur_scope = context.GetCurScope();
+        std::string tmp_type;
+        TypeDefContext type_context;
 
         // These are the registers that the caller will use to pass arguments to the callee
         int cur_s0_offset = 0, cur_a_reg = 0, cur_fp_reg = 0;
@@ -46,6 +48,16 @@ public:
             std::string id = params[i]->GetIdentifier();
             // type is defined further down, don't need to specify it here
             VariableContext arg_context = params[i]->InitVariableContext("")[0];
+
+            tmp_type = arg_context.type;
+            type_context = resolve_type(tmp_type, context.global_scope);
+            tmp_type = type_context.type;
+            std::cout << "type: " << tmp_type << std::endl;
+
+            arg_context.type = tmp_type;
+            arg_context.is_pntr = arg_context.is_pntr | type_context.is_pntr;
+            arg_context.pntr_depth += type_context.pntr_depth;
+
             // allocates stack memory to param
             int var_offset = context.CalcVarOffsetAndUpdate(arg_context);
 

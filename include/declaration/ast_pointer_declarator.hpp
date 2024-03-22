@@ -40,6 +40,8 @@ public:
 
     bool IsPointer() const override { return true; }
 
+    int GetPointerDepth() const override { return pointer_depth_; }
+
     void Print(std::ostream &stream) const override {
         stream << "pntr(";
         for(int i = 0; i < pointer_depth_; i++) stream << "*";
